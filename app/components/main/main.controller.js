@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the hearingTestApp
  */
-angular.module('hearingTestApp')
+angular.module('hearingTestApp.main')
   .controller('MainCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',

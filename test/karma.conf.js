@@ -36,9 +36,11 @@ module.exports = function(config) {
       'bower_components/angularPrint/angularPrint.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
-      "app/scripts/**/*.js",
+      "app/components/**/*.module.js",
+      "app/components/*.js",
+      "app/components/**/*.js",
       "test/mock/**/*.js",
-      "test/spec/**/*.js"
+      "test/spec/components/**/*.js"
     ],
 
     // list of files / patterns to exclude
@@ -76,8 +78,8 @@ module.exports = function(config) {
     reporters: ["progress", "coverage"],
 
     preprocessors: {
-        "app/scripts/*.js": "coverage",
-        "app/scripts/!(lib)/**/*.js": "coverage"
+        "app/components/*.js": "coverage",
+        "app/components/!(lib)/**/*.js": "coverage"
     },
 
     coverageReporter: {

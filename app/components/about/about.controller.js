@@ -7,7 +7,7 @@
  * # AboutCtrl
  * Controller of the hearingTestApp
  */
-angular.module('hearingTestApp')
+angular.module('hearingTestApp.about')
   .controller('AboutCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',
