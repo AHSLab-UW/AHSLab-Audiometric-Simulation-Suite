@@ -16,7 +16,6 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'hearingTestApp.main',
-    'hearingTestApp.about'
+    'hearingTestApp.main'
   ]);
   
