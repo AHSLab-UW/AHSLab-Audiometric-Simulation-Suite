@@ -33,7 +33,7 @@ For development:
 3. **Chechout** to a new branch from dev (name branch after the changes you plan to make) 
 4. **Edit** or make your changes
 5. **Commit** changes with description
-6. **Push** the your changes in your branch
+6. **Push** the changes in your branch
 7. **Pull Request** for code review
 8. **Merge** branch to dev
 9. **Delete** the created branch from step 3 and go back to step 2
