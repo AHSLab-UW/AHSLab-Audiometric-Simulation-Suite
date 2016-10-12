@@ -16,6 +16,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'hearingTestApp.main'
+    'webAudio',
+    'hearingTestApp.main',
+    'hearingTestApp.calibration'
   ]);
   

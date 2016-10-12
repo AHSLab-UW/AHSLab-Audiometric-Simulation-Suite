@@ -1,0 +1,14 @@
+<div id="calibrationDiv">
+  <div class="container-fluid">
+    <ng-transclude></ng-transclude>
+    <br/>
+    <div class="row">
+      <div class="col-xs-12">
+        <button type="button" class="btn btn-success" ng-click="vm.startTone()" ng-disabled="vm.isPlaying">Start</button>
+        <button type="button" class="btn btn-warning" ng-click="vm.stopTone()" ng-disabled="!vm.isPlaying">Stop</button>
+        &nbsp;&nbsp;&nbsp;
+        <span class="glyphicon glyphicon-volume-up" ng-show="vm.isPlaying"></span>
+      </div>
+    </div>
+  </div>
+</div>
