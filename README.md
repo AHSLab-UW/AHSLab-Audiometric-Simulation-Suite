@@ -5,9 +5,9 @@ version 0.15.1.
 
 ## Installation
 
-Clone the project to your machine.
+After forking the repository, clone the project to your machine.
 ```
-git clone https://github.iu.edu/brburzon/Constant-Stimuli-Hearing-Experiments
+git clone https://github.iu.edu/your-username/Hearing-Test-Simulator.git
 ```
 
 Install `yo`, `grunt-cli`, `bower`, `generator-angular` and `generator-karma`:
@@ -29,7 +29,7 @@ bower install
 For development:
 
 1. **Fork** current repository
-2. **Pull** from master and dev branch
+2. **Pull** from dev branch
 3. **Chechout** to a new branch from dev (name branch after the changes you plan to make) 
 4. **Edit** or make your changes
 5. **Commit** changes with description
