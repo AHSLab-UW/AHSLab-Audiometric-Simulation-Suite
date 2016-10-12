@@ -1,10 +1,9 @@
 <div class="container-fluid" id="hearingTestView" >
-    <div class="row">
-        <div class="panel col-sm-12">
-            <h2>Main View Sample</h2>
-            <div class="container-fluid">
-                This is an example component that should be removed when development begins.
-            </div>
-        </div>
+  <div class="row">
+    <div class="panel col-sm-12">
+      <div ng-include="'components/calibration/calibrationmodal.html'"></div>
+      <button type="button" class="col-xs-12 col-sm-12 btn btn-primary" data-toggle="modal"
+              data-target="#calibrationModal">Calibration</button>
     </div>
+  </div>
 </div>

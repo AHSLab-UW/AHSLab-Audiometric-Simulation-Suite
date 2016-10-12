@@ -8,10 +8,8 @@
  * Controller of the hearingTestApp
  */
 angular.module('hearingTestApp.main')
-  .controller('MainCtrl', function () {
-    this.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
-  });
+  .controller('MainCtrl', MainCtrl);
+
+function MainCtrl() {
+
+}
