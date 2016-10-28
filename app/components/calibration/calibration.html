@@ -1,14 +1,27 @@
 <div id="calibrationDiv">
-  <div class="container-fluid">
-    <ng-transclude></ng-transclude>
-    <br/>
-    <div class="row">
-      <div class="col-xs-12">
-        <button type="button" class="btn btn-success" ng-click="vm.startTone()" ng-disabled="vm.isPlaying">Start</button>
-        <button type="button" class="btn btn-warning" ng-click="vm.stopTone()" ng-disabled="!vm.isPlaying">Stop</button>
-        &nbsp;&nbsp;&nbsp;
-        <span class="glyphicon glyphicon-volume-up" ng-show="vm.isPlaying"></span>
-      </div>
+    <div class="modal-header">
+        <h2 class="modal-title">Calibration</h2>
     </div>
-  </div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <p>Press Start to present a continuous calibration tone.
+                    Then adjust the system volume control on your computer until
+                    the level of the calibration tone reaches 60 dBSPL.
+                    If you do not have access to a sound level meter, then adjust the
+                    volume to a comfortable level.
+                </p>
+                <br/>
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-success" ng-click="vm.startTone()" ng-disabled="vm.isPlaying">Start</button>
+                    <button type="button" class="btn btn-warning" ng-click="vm.stopTone()" ng-disabled="!vm.isPlaying">Stop</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-volume-up" ng-show="vm.isPlaying"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="vm.close()">Close</button>
+    </div>
 </div>

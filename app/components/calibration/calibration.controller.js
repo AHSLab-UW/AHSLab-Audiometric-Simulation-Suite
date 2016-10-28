@@ -10,16 +10,18 @@
 angular.module('hearingTestApp.calibration')
   .controller('CalibrationCtrl', CalibrationCtrl);
 
-function CalibrationCtrl(webAudioContextFactory) {
+function CalibrationCtrl($uibModalInstance, webAudioContextFactory) {
   var audioContext = webAudioContextFactory.getInstance();
   var oscillator = audioContext.createOscillator();
   var gainNode = audioContext.createGain();
 
   var vm = this;
-
   vm.isPlaying = false;
   vm.startTone = startTone;
   vm.stopTone = stopTone;
+  vm.close = close;
+
+  setModalCloseAction(stopTone);
 
   function startTone() {
     vm.isPlaying = true;
@@ -35,8 +37,18 @@ function CalibrationCtrl(webAudioContextFactory) {
   }
 
   function stopTone() {
-    oscillator.stop();
-    vm.isPlaying = false;
+    if (vm.isPlaying) {
+      oscillator.stop();
+      vm.isPlaying = false;
+    }
+  }
+
+  function close() {
+    $uibModalInstance.close();
+  }
+
+  function setModalCloseAction(action) {
+    $uibModalInstance.result.finally(action);
   }
 
 }

@@ -7,6 +7,7 @@ describe('Controller: CalibrationCtrl', function () {
 
   var CalibrationCtrl,
       scope,
+      $uibModalInstance,
       webAudioContextFactory,
       audioContext,
       oscillator,
@@ -28,14 +29,17 @@ describe('Controller: CalibrationCtrl', function () {
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
+    $uibModalInstance = jasmine.createSpyObj('$uibModalInstance', ['close']);
     audioContext = jasmine.createSpyObj('AudioContext', ['createOscillator', 'createGain']);
     webAudioContextFactory = jasmine.createSpyObj('webAudioContextFactory', ['getInstance']);
     audioContext.createOscillator.and.returnValue(oscillator);
     audioContext.createGain.and.returnValue(gainNode);
     webAudioContextFactory.getInstance.and.returnValue(audioContext);
+    $uibModalInstance.result = { finally: function() {} };
 
     CalibrationCtrl = $controller('CalibrationCtrl', {
       $scope: scope,
+      $uibModalInstance: $uibModalInstance,
       audioContext: audioContext,
       webAudioContextFactory: webAudioContextFactory
     });
@@ -56,4 +60,10 @@ describe('Controller: CalibrationCtrl', function () {
     CalibrationCtrl.stopTone();
     expect(CalibrationCtrl.isPlaying).toBe(false);
   });
+
+  it('should call $uibModalInstance.close when close is called', function() {
+    CalibrationCtrl.close();
+    expect($uibModalInstance.close).toHaveBeenCalled();
+  });
+
 });
