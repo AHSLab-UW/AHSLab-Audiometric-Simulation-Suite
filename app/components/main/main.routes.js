@@ -15,6 +15,6 @@ angular
       .when('/', {
         templateUrl: 'components/main/main.html',
         controller: 'MainCtrl',
-        controllerAs: 'main'
+        controllerAs: 'vm'
        });
   });

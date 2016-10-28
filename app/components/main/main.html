@@ -1,9 +1,8 @@
 <div class="container-fluid" id="hearingTestView" >
   <div class="row">
     <div class="panel col-sm-12">
-      <div ng-include="'components/calibration/calibrationmodal.html'"></div>
-      <button type="button" class="col-xs-12 col-sm-12 btn btn-primary" data-toggle="modal"
-              data-target="#calibrationModal">Calibration</button>
+      <button type="button" class="col-xs-12 col-sm-12 btn btn-primary"
+              ng-click="vm.openCalibration()">Calibration</button>
     </div>
   </div>
 </div>
