@@ -1,0 +1,58 @@
+'use strict';
+
+/**
+ * @ngdoc service
+ * @name hearingTestApp.factory:controlpanel
+ * @description
+ * # controlpanel
+ */
+angular.module('hearingTestApp.controlPanel')
+  .factory('webAudioContextFactory', webAudioContextFactory);
+
+function webAudioContextFactory($window) {
+  var audioContext;
+
+  var factory= {};
+
+  factory.getInstance = getInstance;
+  factory.unlockAudioContext = unlockAudioContext;
+
+  return factory;
+
+  /**
+   * Initializes and returns the audio context. If the audio context
+   * already exist then it simply returns it.
+   *
+   * @return {Object} Audio Context from the Web Audio API
+   */
+  function getInstance() {
+    if(!audioContext) {
+      unlockAudioContext();
+    }
+    return audioContext;
+  }
+
+  /**
+   * In IOS, the first audio must be a result of the user interaction.
+   * This is a workaround to allow audio to be played in IOS devices.
+   * This will play a silent tone when user interacts with the app.
+   */
+  function unlockAudioContext() {
+    var context;
+    try {
+      var getAudioContext = $window.AudioContext || $window.webkitAudioContext;
+      context = new getAudioContext();
+    }
+    catch (err) {
+      $window.alert('Your browser does not suppor WebAudio API. Update your browser ' +
+                    'or use the latest verion of Chrome, Safari, or Firefox.');
+    }
+    var oscillator = context.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 0; // value in hertz
+    oscillator.connect(context.destination);
+    oscillator.start(0);
+    oscillator.stop(0);
+    audioContext = context;
+  }
+}
