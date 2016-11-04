@@ -9,16 +9,17 @@
  * Main module of the application.
  */
 angular
-  .module('hearingTestApp', [
-    'ngAnimate',
-    'ngCookies',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch',
-    'ui.bootstrap',
-    'webAudio',
-    'hearingTestApp.main',
-    'hearingTestApp.calibration'
-  ]);
-  
+    .module('hearingTestApp', [
+        'ngAnimate',
+        'ngCookies',
+        'ngResource',
+        'ngRoute',
+        'ngSanitize',
+        'ngTouch',
+        'ui.bootstrap',
+        'webAudio',
+        'hearingTestApp.main',
+        'hearingTestApp.calibration',
+        'hearingTestApp.controlPanel',
+        'hearingTestApp.simulator'
+    ]);
