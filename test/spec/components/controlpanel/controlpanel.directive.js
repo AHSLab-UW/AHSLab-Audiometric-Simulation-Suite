@@ -7,7 +7,11 @@ describe('Directive: controlPanel', function () {
 
     // load the directive's module
     beforeEach(function() {
+<<<<<<< HEAD
         module('hearingTestApp');
+=======
+        module('hearingTestApp.controlPanel');
+>>>>>>> raised test coverage to 100%
 
         inject(function($rootScope) {
             scope = $rootScope.$new();

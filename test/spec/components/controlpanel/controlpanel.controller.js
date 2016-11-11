@@ -25,12 +25,23 @@ describe('Controller: ControlPanelCtrl', function() {
     };
 
     beforeEach(function() {
+<<<<<<< HEAD
         module('hearingTestApp');
 
         uibModalMock = jasmine.createSpyObj('$uibModal', ['open']);
 
         // spyOn(controlPanelMock, 'setFrequency').and.callThrough();
         // spyOn(controlPanelMock, 'getFrequency').and.callThrough();
+=======
+        module('hearingTestApp.controlPanel');
+
+        uibModalMock = jasmine.createSpyObj('$uibModal', ['open']);
+
+        spyOn(controlPanelMock, 'setFrequency').and.callThrough();
+        spyOn(controlPanelMock, 'getFrequency').and.callThrough();
+        spyOn(controlPanelMock, 'setStimulus').and.callThrough();
+        spyOn(controlPanelMock, 'getStimulus').and.callThrough();
+>>>>>>> raised test coverage to 100%
 
         inject(function($controller) {
             ControlPanelCtrl = $controller('ControlPanelCtrl', {
@@ -51,6 +62,7 @@ describe('Controller: ControlPanelCtrl', function() {
         });
     });
 
+<<<<<<< HEAD
     // describe('when decreaseFrequency is called, it', function() {
     //     it('should have a minimum value of 125Hz', function() {
     //         console.log(controlPanelMock.getFrequency());
@@ -76,3 +88,69 @@ describe('Controller: ControlPanelCtrl', function() {
 });
 
 
+=======
+    describe('when decreaseFrequency is called, it', function() {
+        it('should call controlPanel.setFrequency', function() {
+            ControlPanelCtrl.decreaseFrequency();
+            expect(controlPanelMock.setFrequency).toHaveBeenCalled();
+        });
+
+        it('should have a minimum value of 125Hz', function() {
+            for(var i = 0; i < 100; i++) {
+                ControlPanelCtrl.decreaseFrequency();
+            }
+            var actualFrequency = controlPanelMock.getFrequency();
+            var minFrequency = 125;
+            expect(actualFrequency).toBe(minFrequency);
+        });
+    });
+
+    describe('when increaseFrequency is called, it', function() {
+        it('should have a maximum value of 12000Hz', function() {
+            for(var i = 0; i < 100; i++) {
+                ControlPanelCtrl.increaseFrequency();
+            }
+            var actualFrequency = controlPanelMock.getFrequency();
+            var maxFrequency = 12000;
+            expect(actualFrequency).toBe(maxFrequency);
+        });
+
+        it('should call controlPanel.setFrequency', function() {
+            ControlPanelCtrl.increaseFrequency();
+            expect(controlPanelMock.setFrequency).toHaveBeenCalled();
+        });
+    });
+
+    describe('when decreaseStimulus is called, it', function() {
+        it('should have a maximum value of 12000Hz', function() {
+            for(var i = 0; i < 100; i++) {
+                ControlPanelCtrl.decreaseStimulus();
+            }
+            var actualStimulus = controlPanelMock.getStimulus();
+            var minStimulus = -10;
+            expect(actualStimulus).toBe(minStimulus);
+        });
+
+        it('should call controlPanel.setStimulus', function() {
+            ControlPanelCtrl.decreaseStimulus();
+            expect(controlPanelMock.setStimulus).toHaveBeenCalled();
+        });
+    });
+
+    describe('when increaseStimulus is called, it', function() {
+        it('should have a maximum value of 12000Hz', function() {
+            for(var i = 0; i < 100; i++) {
+                ControlPanelCtrl.increaseStimulus();
+            }
+            var actualStimulus = controlPanelMock.getStimulus();
+            var maxStimulus = 120;
+            expect(actualStimulus).toBe(maxStimulus);
+        });
+
+        it('should call controlPanel.setStimulus', function() {
+            ControlPanelCtrl.increaseStimulus();
+            expect(controlPanelMock.setStimulus).toHaveBeenCalled();
+        });
+    });
+});
+>>>>>>> raised test coverage to 100%

@@ -3,7 +3,7 @@
 describe('Controller: CalibrationCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('hearingTestApp'));
+  beforeEach(module('hearingTestApp.calibration'));
 
   var CalibrationCtrl,
       scope,
