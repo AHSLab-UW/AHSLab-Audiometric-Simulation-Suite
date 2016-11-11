@@ -3,57 +3,45 @@
         <h4>Control Panel</h4>
     </div>
     <div class="row">
-        <div class="dropdown">
-            <button class="btn btn-default btn-sm col-xs-12 dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                Option 1
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="#/">Option 1</a></li>
-                <li><a href="#/">Option 2</a></li>
-                <!-- <li><a href="#/">Something else here</a></li> -->
-                <!-- <li role="separator" class="divider"></li> -->
-                <!-- <li><a href="#/">Separated link</a></li> -->
-            </ul>
+
+        <div class="col-xs-12">
+            <div class="dropdown">
+                <button class="btn btn-default btn-sm col-xs-12 dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Option 1
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#/">Option 1</a></li>
+                    <li><a href="#/">Option 2</a></li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="row">
-        <button class="btn btn-default btn-sm col-xs-6">Right</button>
-        <button class="btn btn-default btn-sm col-xs-6 active">Left</button>
+        <div class="col-xs-12">
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-class="{active: vm.getEarSide() == 1}" ng-click="vm.setEarSide(1)">Right</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-class="{active: vm.getEarSide() == 0}" ng-click="vm.setEarSide(0)">Left</a>
+        </div>
     </div>
     <div class="row">
-        <button class="btn btn-default btn-sm col-xs-6">AC</button>
-        <button class="btn btn-default btn-sm col-xs-6 active">BC</button>
-    </div>
-    <div class="row">
-        <button class="btn btn-default btn-sm col-xs-6">Continuous</button>
-        <button class="btn btn-default btn-sm col-xs-6 active">Pulse</button>
-    </div>
-    <div class="row">
-        <div class="form-group">
             <label for="frequency" class="col-xs-5">Frequency</label>
-            <a href="#/"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
+            <a ng-href="" ng-click="vm.decreaseFrequency()"><span class="glyphicon glyphicon-minus-sign col-xs-2" aria-hidden="true"></span></a>
             <p class="col-xs-3" id="frequency">
-                250Hz
+                {{ vm.getFrequency() }}Hz
             </p>
-            <a href="#/"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
-        </div>
-        <div class="form-group">
+            <a ng-href="" ng-click="vm.increaseFrequency()"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
+    </div>
+    <div class="row">
             <label for="stimulus" class="col-xs-5">Stimulus</label>
-            <a href="#/"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
+            <a ng-href="" ng-click="vm.decreaseStimulus()"><span class="glyphicon glyphicon-minus-sign col-xs-2" aria-hidden="true"></span></a>
             <p class="col-xs-3" id="stimulus">
-                50dBHL
+                {{ vm.getStimulus() }}dBHL
             </p>
-            <a href="#/"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
+            <a ng-href="" ng-click="vm.increaseStimulus()"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <button type="button" class="col-xs-12 col-sm-12 btn btn-primary" ng-click="vm.openCalibration()">Calibration</button>
         </div>
-        <div class="form-group">
-            <label for="frequency" class="col-xs-5">Masking Level</label>
-            <a href="#/"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
-            <p class="col-xs-3">
-                None
-            </p>
-            <a href="#/"><span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span></a>
-        </div>
-        <button type="button" class="col-xs-12 col-sm-12 btn btn-primary" ng-click="vm.openCalibration()">Calibration</button>
     </div>
 </div>
