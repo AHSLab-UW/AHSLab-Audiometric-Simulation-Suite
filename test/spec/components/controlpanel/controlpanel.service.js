@@ -5,11 +5,8 @@ describe('Service: controlPanel', function() {
     var controlPanel;
 
     beforeEach(function() {
-<<<<<<< HEAD
-        module('hearingTestApp');
-=======
         module('hearingTestApp.controlPanel');
->>>>>>> raised test coverage to 100%
+
         inject(function(_controlPanel_) {
             controlPanel = _controlPanel_;
         });

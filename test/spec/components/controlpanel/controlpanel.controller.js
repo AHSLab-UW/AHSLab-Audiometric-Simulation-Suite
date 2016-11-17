@@ -25,14 +25,6 @@ describe('Controller: ControlPanelCtrl', function() {
     };
 
     beforeEach(function() {
-<<<<<<< HEAD
-        module('hearingTestApp');
-
-        uibModalMock = jasmine.createSpyObj('$uibModal', ['open']);
-
-        // spyOn(controlPanelMock, 'setFrequency').and.callThrough();
-        // spyOn(controlPanelMock, 'getFrequency').and.callThrough();
-=======
         module('hearingTestApp.controlPanel');
 
         uibModalMock = jasmine.createSpyObj('$uibModal', ['open']);
@@ -41,7 +33,6 @@ describe('Controller: ControlPanelCtrl', function() {
         spyOn(controlPanelMock, 'getFrequency').and.callThrough();
         spyOn(controlPanelMock, 'setStimulus').and.callThrough();
         spyOn(controlPanelMock, 'getStimulus').and.callThrough();
->>>>>>> raised test coverage to 100%
 
         inject(function($controller) {
             ControlPanelCtrl = $controller('ControlPanelCtrl', {
@@ -62,33 +53,6 @@ describe('Controller: ControlPanelCtrl', function() {
         });
     });
 
-<<<<<<< HEAD
-    // describe('when decreaseFrequency is called, it', function() {
-    //     it('should have a minimum value of 125Hz', function() {
-    //         console.log(controlPanelMock.getFrequency());
-    //         for(var i = 0; i < 100; i++) {
-    //             ControlPanelCtrl.decreaseFrequency();
-    //         }
-    //         var actualFrequency = ControlPanelCtrl.getFrequency();
-    //         var minFrequency = 125;
-    //         expect(actualFrequency).toBe(minFrequency);
-    //     });
-    // });
-
-    // describe('when increaseFrequency is called, it', function() {
-    //     it('should have a maximum value of 12000Hz', function() {
-    //         for(var i = 0; i < 100; i++) {
-    //             ControlPanelCtrl.increaseFrequency();
-    //         }
-    //         var actualFrequency = ControlPanelCtrl.getFrequency();
-    //         var maxFrequency = 125;
-    //         expect(actualFrequency).toBe(maxFrequency);
-    //     });
-    // });
-});
-
-
-=======
     describe('when decreaseFrequency is called, it', function() {
         it('should call controlPanel.setFrequency', function() {
             ControlPanelCtrl.decreaseFrequency();
@@ -153,4 +117,3 @@ describe('Controller: ControlPanelCtrl', function() {
         });
     });
 });
->>>>>>> raised test coverage to 100%

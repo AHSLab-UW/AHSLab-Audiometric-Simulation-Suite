@@ -1,19 +1,21 @@
 'use strict';
 
-describe('Controller: MainCtrl', function () {
+describe('Controller: MainCtrl', function() {
 
-  // load the controller's module
-  beforeEach(module('hearingTestApp.main'));
 
-  var MainCtrl;
+    var MainCtrl;
 
-  // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller) {
-    MainCtrl = $controller('MainCtrl', {});
-  }));
+    // Initialize the controller and a mock scope
+    beforeEach(function() {
+        module('hearingTestApp');
 
-  it('should be defined', function () {
-    expect(MainCtrl).toBeDefined();
-  });
+        inject(function($controller) {
+            MainCtrl = $controller('MainCtrl', {});
+        });
+    });
+
+    it('should be defined', function() {
+        expect(MainCtrl).toBeDefined();
+    });
 
 });
