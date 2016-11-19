@@ -5,7 +5,8 @@ describe('Service: controlPanel', function() {
     var controlPanel;
 
     beforeEach(function() {
-        module('hearingTestApp');
+        module('hearingTestApp.controlPanel');
+
         inject(function(_controlPanel_) {
             controlPanel = _controlPanel_;
         });

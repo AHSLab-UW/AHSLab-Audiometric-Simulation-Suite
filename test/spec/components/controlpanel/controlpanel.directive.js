@@ -7,7 +7,7 @@ describe('Directive: controlPanel', function () {
 
     // load the directive's module
     beforeEach(function() {
-        module('hearingTestApp');
+        module('hearingTestApp.controlPanel');
 
         inject(function($rootScope) {
             scope = $rootScope.$new();
