@@ -12,7 +12,7 @@ angular
     .controller('ControlPanelCtrl', ControlPanelCtrl);
 
 function ControlPanelCtrl($uibModal, controlPanel) {
-    var frequencyOptions = [125, 250, 500, 1000, 750, 1000, 2000, 3000, 4000, 6000, 8000, 12000];
+    var frequencyOptions = [125, 250, 500, 750, 1000, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
     var minStimulus = -10;
     var maxStimulus = 120;
@@ -30,9 +30,24 @@ function ControlPanelCtrl($uibModal, controlPanel) {
     vm.getStimulus = controlPanel.getStimulus;
     vm.decreaseStimulus = decreaseStimulus;
     vm.increaseStimulus = increaseStimulus;
+    vm.openAutoTest = openAutoTest;
+    vm.openManualTest = openManualTest;
 
+    /**
+     * Sets the testing flags for the automatic test
+     */
+    function openAutoTest() {
+        vm.isAutoTesting = true;
+        vm.isManualTesting = false;
+    }
 
-
+    /**
+     * Sets the testing flags for the manual test
+     */
+    function openManualTest() {
+        vm.isManualTesting = true;
+        vm.isAutoTesting = false;
+    }
 
     /**
      * Opens the calibration modal.

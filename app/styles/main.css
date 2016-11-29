@@ -88,6 +88,11 @@ body {
     color: #000;
 }
 
+.linkDisabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    color: gray;
+}
 
 /* Graph */
 
