@@ -21,5 +21,6 @@ angular
         'hearingTestApp.main',
         'hearingTestApp.calibration',
         'hearingTestApp.controlPanel',
-        'hearingTestApp.simulator'
+        'hearingTestApp.automaticExercise',
+        'hearingTestApp.resultRecorder'
     ]);

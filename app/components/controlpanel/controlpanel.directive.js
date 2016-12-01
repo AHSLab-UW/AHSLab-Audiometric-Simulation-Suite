@@ -15,7 +15,7 @@
     function controlPanel() {
         return {
             templateUrl: 'components/controlpanel/controlpanel.html',
-            scope: {},
+            scope: { isAutoTesting: '=', isManualTesting: '=' },
             restrict: 'E',
             replace: true,
             controller: 'ControlPanelCtrl',

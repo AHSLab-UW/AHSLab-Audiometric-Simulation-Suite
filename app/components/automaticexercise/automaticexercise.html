@@ -1,0 +1,31 @@
+<div id="automaticExercise">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Listen for the tone. Click Yes if you could hear it, or No if you could not.
+           Repeat until a threshold is found.
+        </p>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-xs-3">
+        <button type="button" class="btn btn-info" ng-click="vm.startExercise()" ng-disabled="vm.isInExercise">Start</button>
+      </div>
+      <div class="col-xs-9" style="float: right;">
+        <button type="button" class="btn btn-default" ng-disabled="!vm.isInExercise || vm.hasResponded || vm.isPlaying"
+                ng-click="vm.iterateExercise('yes')">Yes</button>
+        <button type="button" class="btn btn-default" ng-disabled="!vm.isInExercise || vm.hasResponded || vm.isPlaying"
+                ng-click="vm.iterateExercise('no')">No</button>
+        &nbsp;&nbsp;&nbsp;
+        <span class="glyphicon glyphicon-volume-up" ng-show="vm.isPlaying"></span>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-xs-3">
+        <button type="button" class="btn btn-warning" ng-click="vm.endExercise('abort')">Abort</button>
+      </div>
+    </div>
+  </div>
+</div>
