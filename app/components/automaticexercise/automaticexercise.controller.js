@@ -15,6 +15,12 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
   var vm = this;
   var audioContext = webAudioContextFactory.getInstance();
   var visitMap = [];
+  var MAX_VISIT = 3,
+      MAX_STIMULUS = 100,
+      DECREMENT = -10,
+      INCREMENT = 5,
+      TONE_TIME_SECONDS = 1,
+      DELAY_PLAY_SECONDS = 1;
 
   vm.stimulus = controlPanel.getStimulus();
   vm.isInExercise = false;
@@ -40,26 +46,26 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
   function iterateExercise(response) {
     vm.hasResponded = true;
     if (response === 'yes') {
-      if (updateVisitMap() === 3) {
+      if (updateVisitMap() === MAX_VISIT) {
         endExercise('success');
         return;
       } else {
-        vm.stimulus = vm.stimulus - 10;
+        vm.stimulus = vm.stimulus + DECREMENT;
         controlPanel.setStimulus(vm.stimulus);
       }
     }
     if (response === 'no') {
-      vm.stimulus = vm.stimulus + 5;
+      vm.stimulus = vm.stimulus + INCREMENT;
       controlPanel.setStimulus(vm.stimulus);
     }
 
-    if (vm.stimulus > 100) {
+    if (vm.stimulus > MAX_STIMULUS) {
       endExercise('abort');
     } else {
       $timeout(function() {
-        playTone(controlPanel.getFrequency(), 1, vm.stimulus);
+        playTone(controlPanel.getFrequency(), TONE_TIME_SECONDS, vm.stimulus);
         vm.hasResponded = false;
-      }, 1000);
+      }, DELAY_PLAY_SECONDS*1000);
     }
   }
 
