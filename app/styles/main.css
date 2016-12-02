@@ -44,8 +44,8 @@ body {
 .simulator {
     min-height: 550px;
     max-height: 550px;
-    min-width: 1040px;
-    max-width: 1040px;
+    min-width: 895px;
+    max-width: 895px;
     margin: 0 auto;
     float: none;
 }
@@ -96,14 +96,13 @@ body {
 
 /* Graph */
 
+.graph {
+    position: relative;
+}
+
 figure {
     width: 100%;
 }
-
-img {
-    width: 100%;
-}
-
 
 /* CONTENT */
 

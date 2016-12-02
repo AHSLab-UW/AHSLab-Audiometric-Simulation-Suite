@@ -12,7 +12,7 @@ angular
     .controller('ControlPanelCtrl', ControlPanelCtrl);
 
 function ControlPanelCtrl($uibModal, controlPanel) {
-    var frequencyOptions = [125, 250, 500, 750, 1000, 2000, 3000, 4000, 6000, 8000, 12000];
+    var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
     var minStimulus = -10;
     var maxStimulus = 120;
