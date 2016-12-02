@@ -11,18 +11,20 @@ angular
     .module('hearingTestApp.automaticExercise')
     .controller('AutomaticExerciseCtrl', AutomaticExerciseCtrl);
 
-function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, resultRecorder) {
+function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, resultRecorder, bufferGenerator) {
   var vm = this;
   var audioContext = webAudioContextFactory.getInstance();
+  var stimulus = controlPanel.getStimulus();
+  var earSide = controlPanel.getSide();
   var visitMap = [];
   var MAX_VISIT = 3,
-      MAX_STIMULUS = 100,
+      MAX_STIMULUS = 120,
+      MIN_STIMULUS = -10,
       DECREMENT = -10,
       INCREMENT = 5,
       TONE_TIME_SECONDS = 1,
       DELAY_PLAY_SECONDS = 1;
 
-  vm.stimulus = controlPanel.getStimulus();
   vm.isInExercise = false;
   vm.isPlaying = false;
   vm.hasResponded = false;
@@ -35,7 +37,9 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
    */
   function startExercise() {
     vm.isInExercise = true;
-    vm.stimulus = controlPanel.getStimulus();
+    vm.hasResponded = false;
+    stimulus = controlPanel.getStimulus();
+    earSide = controlPanel.getSide();
     visitMap = [];
     iterateExercise('start');
   }
@@ -50,23 +54,19 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
         endExercise('success');
         return;
       } else {
-        vm.stimulus = vm.stimulus + DECREMENT;
-        controlPanel.setStimulus(vm.stimulus);
+        stimulus = Math.max(stimulus+DECREMENT, MIN_STIMULUS);
+        controlPanel.setStimulus(stimulus);
       }
     }
     if (response === 'no') {
-      vm.stimulus = vm.stimulus + INCREMENT;
-      controlPanel.setStimulus(vm.stimulus);
+      stimulus = Math.min(stimulus+INCREMENT, MAX_STIMULUS);
+      controlPanel.setStimulus(stimulus);
     }
-
-    if (vm.stimulus > MAX_STIMULUS) {
-      endExercise('abort');
-    } else {
-      $timeout(function() {
-        playTone(controlPanel.getFrequency(), TONE_TIME_SECONDS, vm.stimulus);
-        vm.hasResponded = false;
-      }, DELAY_PLAY_SECONDS*1000);
-    }
+    
+    $timeout(function() {
+      playTone(controlPanel.getFrequency(), TONE_TIME_SECONDS, stimulus, earSide);
+      vm.hasResponded = false;
+    }, DELAY_PLAY_SECONDS*1000);
   }
 
   /**
@@ -85,56 +85,27 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
    * Record a stimulus level in the visitMap and return its count
    */
   function updateVisitMap() {
-    var currentLevelCount = visitMap[vm.stimulus];
+    var currentLevelCount = visitMap[stimulus];
     if (isNaN(currentLevelCount)) {
-      visitMap[vm.stimulus] = 1;
+      visitMap[stimulus] = 1;
     } else {
-      visitMap[vm.stimulus] = currentLevelCount + 1;
+      visitMap[stimulus] = currentLevelCount + 1;
     }
-    return visitMap[vm.stimulus];
+    return visitMap[stimulus];
   }
 
   /**
-   * Play a tone given frequency, timeInSeconds, and stimulus level
+   * Play a tone given frequency, timeInSeconds, stimulus level, and ear side
    */
-  function playTone(frequency, timeInSeconds, level) {
+  function playTone(frequency, timeInSeconds, level, ear) {
     var source = audioContext.createBufferSource();
-    source.buffer = generateBuffer(frequency, timeInSeconds, level);
+    source.buffer = bufferGenerator.generateBuffer(frequency, timeInSeconds, level, ear);
     source.connect(audioContext.destination);
     vm.isPlaying = true;
     source.start();
     $timeout(function() {
       vm.isPlaying = false;
     }, timeInSeconds*1000);
-  }
-
-  /**
-   * Generate an audio buffer given frequency, timeInSeconds, and stimulus level
-   */
-  function generateBuffer(frequency, timeInSeconds, level) {
-    var channels = 2,
-        sampleRate = audioContext.sampleRate,
-        bufferLength = sampleRate * timeInSeconds,
-        audioBuffer = audioContext.createBuffer(channels, bufferLength, sampleRate);
-
-    for (var ch = 0; ch < channels; ch++) {
-      var nowBuffering = audioBuffer.getChannelData(ch);
-      for (var i = 0; i < bufferLength; i++) {
-        nowBuffering[i] = calculateToneAtIndex(i, sampleRate, frequency, level);
-      }
-    }
-
-    return audioBuffer;
-  }
-
-  /**
-   * Compute the value of the tone at a given location in the audio buffer
-   */
-  function calculateToneAtIndex(i, sampleRate, frequency, level) {
-    var peakCalibrationValue = 0.01;
-    var Lcalib = 60;
-    var amplitude = peakCalibrationValue * Math.pow(10, (level-Lcalib)/20);
-    return amplitude * Math.sin(2 * Math.PI * frequency * (i/sampleRate));
   }
 
 }
