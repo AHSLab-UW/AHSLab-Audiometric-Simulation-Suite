@@ -6,7 +6,7 @@ angular
     .factory('graphMarks', graphMarks);
 
 
-function graphMarks(marks) {
+function graphMarks() {
     var markList = [];
 
     var graph = {};
@@ -36,7 +36,6 @@ function graphMarks(marks) {
                         left : left
                       };
         markList.push(newMark);
-        console.log(markList);
     }
 
     /*
