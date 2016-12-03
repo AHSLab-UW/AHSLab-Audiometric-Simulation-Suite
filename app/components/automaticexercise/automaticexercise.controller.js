@@ -54,19 +54,19 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
         endExercise('success');
         return;
       } else {
-        stimulus = Math.max(stimulus+DECREMENT, MIN_STIMULUS);
+        stimulus = Math.max(stimulus + DECREMENT, MIN_STIMULUS);
         controlPanel.setStimulus(stimulus);
       }
     }
     if (response === 'no') {
-      stimulus = Math.min(stimulus+INCREMENT, MAX_STIMULUS);
+      stimulus = Math.min(stimulus + INCREMENT, MAX_STIMULUS);
       controlPanel.setStimulus(stimulus);
     }
     
     $timeout(function() {
       playTone(controlPanel.getFrequency(), TONE_TIME_SECONDS, stimulus, earSide);
       vm.hasResponded = false;
-    }, DELAY_PLAY_SECONDS*1000);
+    }, DELAY_PLAY_SECONDS * 1000);
   }
 
   /**
@@ -76,7 +76,7 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
     vm.isInExercise = false;
     vm.hasResponded = false;
     if (terminatingCondition === 'success') {
-      resultRecorder.addResult(controlPanel.getFrequency(), controlPanel.getStimulus());
+      resultRecorder.addResult(controlPanel.getFrequency(), controlPanel.getStimulus(), earSide);
     }
     vm.isAutoTesting = false;
   }
@@ -105,7 +105,7 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
     source.start();
     $timeout(function() {
       vm.isPlaying = false;
-    }, timeInSeconds*1000);
+    }, timeInSeconds * 1000);
   }
 
 }

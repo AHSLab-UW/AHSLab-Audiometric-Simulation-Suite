@@ -11,6 +11,8 @@ angular.module('hearingTestApp.resultRecorder')
 
 function resultRecorder(graphMarks, marks) {
     var results = [];
+    var LEFT_EAR = 0,
+        RIGHT_EAR = 1;
     var recorder = {};
 
     recorder.addResult = addResult;
@@ -21,12 +23,13 @@ function resultRecorder(graphMarks, marks) {
     /**
      * Adds a result to the results array, given a frequency and stimulus
      */
-    function addResult(frequency, stimulus) {
-        results.push({frequency: frequency, stimulus: stimulus});
+    function addResult(frequency, stimulus, ear) {
+        results.push({frequency: frequency, stimulus: stimulus, ear: ear});
         // call to update graph
         var top = marks.yAxis[stimulus];
         var left = marks.xAxis[frequency];
-        graphMarks.pushMark(marks.AC_UNMASKED_LEFT, top, left);
+        var mark = ear === LEFT_EAR ? marks.AC_UNMASKED_LEFT : marks.AC_UNMASKED_RIGHT;
+        graphMarks.pushMark(mark, top, left);
     }
 
     /**
