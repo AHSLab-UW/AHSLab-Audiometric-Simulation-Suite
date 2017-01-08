@@ -5,10 +5,7 @@ version 0.15.1.
 
 ## Installation
 
-After forking the repository, clone the project to your machine.
-```
-git clone https://github.iu.edu/your-username/Hearing-Test-Simulator.git
-```
+Clone the project to your machine.
 
 Install `yo`, `grunt-cli`, `bower`, `generator-angular` and `generator-karma`:
 ```
@@ -19,7 +16,7 @@ To make sure you have all of the dependencies, run the following from the root f
 ```
 npm install
 ```
-and 
+and
 ```
 bower install
 ```
@@ -29,14 +26,13 @@ bower install
 For development:
 
 1. **Fork** current repository
-2. **Pull** from dev branch
-3. **Chechout** to a new branch from dev (name branch after the changes you plan to make) 
+2. **Pull** from master branch
+3. **Chechout** to a new branch from master
 4. **Edit** or make your changes
 5. **Commit** changes with description
 6. **Push** the changes in your branch
 7. **Pull Request** for code review
-8. **Merge** branch to dev
-9. **Delete** the created branch from step 3 and go back to step 2
+8. **Merge** branch to master
 
 ## Build & development
 
