@@ -6,8 +6,10 @@ angular
     .factory('graphMarks', graphMarks);
 
 
-function graphMarks() {
+function graphMarks(graphAxis, marks) {
     var markList = [];
+    var LEFT_EAR = 0,
+        RIGHT_EAR = 1;
 
     var graph = {};
 
@@ -27,10 +29,11 @@ function graphMarks() {
 
     /*
      * Validates the input and pushs it to the list.
-     * All parameters are strings. Valid params can
-     * be found in marks.constant.js
      */
-    function pushMark(mark, top, left) {
+    function pushMark(frequency, stimulus, ear) {
+        var top = graphAxis.yAxis[stimulus];
+        var left = graphAxis.xAxis[frequency];
+        var mark = ear === LEFT_EAR ? marks.AC_UNMASKED_LEFT : marks.AC_UNMASKED_RIGHT;
         var newMark = { path : mark,
                         top  : top,
                         left : left

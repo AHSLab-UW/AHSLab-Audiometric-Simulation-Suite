@@ -9,10 +9,8 @@
 angular.module('hearingTestApp.resultRecorder')
   .factory('resultRecorder', resultRecorder);
 
-function resultRecorder(graphMarks, graphAxis, marks) {
+function resultRecorder(graphMarks) {
     var results = [];
-    var LEFT_EAR = 0,
-        RIGHT_EAR = 1;
     var recorder = {};
 
     recorder.addResult = addResult;
@@ -25,11 +23,7 @@ function resultRecorder(graphMarks, graphAxis, marks) {
      */
     function addResult(frequency, stimulus, ear) {
         results.push({frequency: frequency, stimulus: stimulus, ear: ear});
-        // call to update graph
-        var top = graphAxis.yAxis[stimulus];
-        var left = graphAxis.xAxis[frequency];
-        var mark = ear === LEFT_EAR ? marks.AC_UNMASKED_LEFT : marks.AC_UNMASKED_RIGHT;
-        graphMarks.pushMark(mark, top, left);
+        graphMarks.pushMark(frequency, stimulus, ear);
     }
 
     /**
