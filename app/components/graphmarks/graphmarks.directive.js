@@ -3,10 +3,10 @@
 
 angular
     .module('hearingTestApp.graphMarks')
-    .directive('graphMarks', graphMarks);
+    .directive('graphMarks', graphMarksDirective);
 
 
-function graphMarks(graphMarks, controlPanel) {
+function graphMarksDirective(graphMarks, controlPanel) {
     return {
         templateUrl: 'components/graphmarks/graphmarks.html',
         scope: {},
