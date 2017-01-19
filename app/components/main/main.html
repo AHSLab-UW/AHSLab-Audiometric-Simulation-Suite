@@ -3,7 +3,7 @@
         <div class="panel col-sm-12 simulator">
             <control-panel is-auto-testing="vm.isAutoTesting" is-manual-testing="vm.isManualTesting"></control-panel>
             <div class="col-sm-9">
-                <div ng-show="!(vm.isAutoTesting || vm.isManualTesting)">
+                <div ng-show="!(vm.isAutoTesting)">
                     <figure>
                         <img src="images/audiogram.png" height="520px" width="634px" alt="graph image" />
                     </figure>
@@ -12,7 +12,6 @@
                 <div ng-show="vm.isAutoTesting">
                     <automatic-exercise is-auto-testing="vm.isAutoTesting"></automatic-exercise>
                 </div>
-                <div ng-show="vm.isManualTesting">Manual Test</div>
             </div>
         </div>
     </div>

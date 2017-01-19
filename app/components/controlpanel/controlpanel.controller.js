@@ -5,23 +5,26 @@
  * @name hearingTestApp.controller:ControlPanelCtrl
  * @description
  * # ControlPanelCtrl
- * Handles user interaction for the ControlPanel procedure
+ * Handles user interaction for the ControlPanel
  */
 angular
     .module('hearingTestApp.controlPanel')
     .controller('ControlPanelCtrl', ControlPanelCtrl);
 
-function ControlPanelCtrl($uibModal, controlPanel) {
+function ControlPanelCtrl($uibModal, controlPanel, webAudioContextFactory, resultRecorder, bufferGenerator) {
     var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
     var minStimulus = -10;
     var maxStimulus = 120;
     var stimulusStep = 5;
+    var audioContext = webAudioContextFactory.getInstance();
     var vm = this;
 
-    // TODO add binding for controlPanel.setOption when implementing the dropdown control
-
     vm.openCalibration = openCalibration;
+    vm.openAutoTest = openAutoTest;
+    vm.openManualTest = openManualTest;
+    vm.endManualTest = endManualTest;
+    vm.presentTone = presentTone;
     vm.getEarSide = controlPanel.getSide; // 0 for left ear and 1 for right ear
     vm.setEarSide = controlPanel.setSide;
     vm.getFrequency = controlPanel.getFrequency;
@@ -30,8 +33,17 @@ function ControlPanelCtrl($uibModal, controlPanel) {
     vm.getStimulus = controlPanel.getStimulus;
     vm.decreaseStimulus = decreaseStimulus;
     vm.increaseStimulus = increaseStimulus;
-    vm.openAutoTest = openAutoTest;
-    vm.openManualTest = openManualTest;
+
+    /**
+     * Opens the calibration modal.
+     */
+    function openCalibration() {
+        $uibModal.open({
+            templateUrl: 'components/calibration/calibration.html',
+            controller: 'CalibrationCtrl',
+            controllerAs: 'vm'
+        });
+    }
 
     /**
      * Sets the testing flags for the automatic test
@@ -49,15 +61,24 @@ function ControlPanelCtrl($uibModal, controlPanel) {
         vm.isAutoTesting = false;
     }
 
-    /**
-     * Opens the calibration modal.
-     */
-    function openCalibration() {
-        $uibModal.open({
-            templateUrl: 'components/calibration/calibration.html',
-            controller: 'CalibrationCtrl',
-            controllerAs: 'vm'
-        });
+    function endManualTest(status) {
+        vm.isManualTesting = false;
+        if (status === 'success') {
+            resultRecorder.addResult(controlPanel.getFrequency(),
+                                     controlPanel.getStimulus(),
+                                     controlPanel.getSide());
+        }
+    }
+
+    function presentTone() {
+        var source = audioContext.createBufferSource();
+        var frequency = controlPanel.getFrequency();
+        var level = controlPanel.getStimulus();
+        var timeInSeconds = 1;
+        var ear = controlPanel.getSide();
+        source.buffer = bufferGenerator.generateBuffer(frequency, timeInSeconds, level, ear);
+        source.connect(audioContext.destination);
+        source.start();
     }
 
     /**
