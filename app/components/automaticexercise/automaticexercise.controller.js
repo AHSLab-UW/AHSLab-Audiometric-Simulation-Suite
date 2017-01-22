@@ -11,9 +11,8 @@ angular
     .module('hearingTestApp.automaticExercise')
     .controller('AutomaticExerciseCtrl', AutomaticExerciseCtrl);
 
-function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, resultRecorder, bufferGenerator) {
+function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, resultRecorder) {
   var vm = this;
-  var audioContext = webAudioContextFactory.getInstance();
   var stimulus = controlPanel.getStimulus();
   var earSide = controlPanel.getSide();
   var visitMap = [];
@@ -62,9 +61,9 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
       stimulus = Math.min(stimulus + INCREMENT, MAX_STIMULUS);
       controlPanel.setStimulus(stimulus);
     }
-    
+
     $timeout(function() {
-      playTone(controlPanel.getFrequency(), TONE_TIME_SECONDS, stimulus, earSide);
+      presentTone(controlPanel.getFrequency(), TONE_TIME_SECONDS, stimulus, earSide);
       vm.hasResponded = false;
     }, DELAY_PLAY_SECONDS * 1000);
   }
@@ -97,12 +96,9 @@ function AutomaticExerciseCtrl($timeout, controlPanel, webAudioContextFactory, r
   /**
    * Play a tone given frequency, timeInSeconds, stimulus level, and ear side
    */
-  function playTone(frequency, timeInSeconds, level, ear) {
-    var source = audioContext.createBufferSource();
-    source.buffer = bufferGenerator.generateBuffer(frequency, timeInSeconds, level, ear);
-    source.connect(audioContext.destination);
+  function presentTone(frequency, timeInSeconds, level, ear) {
     vm.isPlaying = true;
-    source.start();
+    audioPlayer.playTone(frequency, timeInSeconds, level, ear);
     $timeout(function() {
       vm.isPlaying = false;
     }, timeInSeconds * 1000);

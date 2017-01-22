@@ -24,5 +24,6 @@ angular
         'hearingTestApp.automaticExercise',
         'hearingTestApp.resultRecorder',
         'hearingTestApp.graphMarks',
-        'hearingTestApp.bufferGenerator'
+        'hearingTestApp.bufferGenerator',
+        'hearingTestApp.audioPlayer'
     ]);
