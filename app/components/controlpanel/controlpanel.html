@@ -85,27 +85,59 @@
 
     <hr style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
 
-    <div class="row">
-        <div class="col-xs-6">
-            <button type="button" class="col-xs-12 col-sm-12 btn btn-warning"
-                    ng-click="vm.endManualTest('abort')" ng-show="vm.isManualTesting">
-                Abort
-            </button>
+    <div id="manualTest" ng-show="vm.isManualTesting" style="font-size: 75%;">
+        <div class="row">
+            <div class="col-xs-6"><i><u>Action</u></i></div>
+            <div class="col-xs-6"><i><u>HotKey</u></i></div>
         </div>
-        <div class="col-xs-6">
-            <button type="button" class="col-xs-12 col-sm-12 btn btn-default"
-                    ng-click="vm.endManualTest('success')" ng-show="vm.isManualTesting">
-                Finish
-            </button>
+        <br>
+        <div class="row">
+            <div class="col-xs-6">
+                <p style="color: blue; cursor: pointer;" ng-click="vm.presentTone()">Present Tone</p>
+            </div>
+            <div class="col-xs-6">
+                Space Bar
+            </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-12">
-            <button type="button" class="col-xs-12 col-sm-12 btn btn-primary"
-                    ng-click="vm.presentTone()" ng-show="vm.isManualTesting">
-                Present Tone
-            </button>
+        <div class="row">
+            <div class="col-xs-6">
+                <p>Adjust Frequency</p>
+            </div>
+            <div class="col-xs-6">
+                Left/Right Arrow Keys
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <p>Adjust Stimulus (+/- 5dB)</p>
+            </div>
+            <div class="col-xs-6">
+                Up/Down Arrow Keys
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <p style="color: blue; cursor: pointer;" ng-click="vm.endManualTest('success')">Finish</p>
+            </div>
+            <div class="col-xs-6">
+                'Enter' Key
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <p style="color: blue; cursor: pointer;" ng-click="vm.endManualTest('abort')">Abort</p>
+            </div>
+            <div class="col-xs-6">
+                'A' Key
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <button style="pointer-events: none;" class="col-xs-12 btn btn-xs btn-success"
+                        ng-show="vm.isPlaying">
+                    Tone Playing &nbsp;<span class="glyphicon glyphicon-volume-up"></span>
+                </button>
+            </div>
         </div>
     </div>
 
