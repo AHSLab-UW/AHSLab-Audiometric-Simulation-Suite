@@ -23,7 +23,7 @@ function resultRecorder(graphMarks) {
      */
     function addResult(frequency, stimulus, ear) {
         results.push({frequency: frequency, stimulus: stimulus, ear: ear});
-        graphMarks.pushMark(frequency, stimulus, ear);
+        graphMarks.pushResultMark(frequency, stimulus, ear);
     }
 
     /**

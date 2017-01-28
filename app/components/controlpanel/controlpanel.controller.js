@@ -11,7 +11,7 @@ angular
     .module('hearingTestApp.controlPanel')
     .controller('ControlPanelCtrl', ControlPanelCtrl);
 
-function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, audioPlayer, resultRecorder) {
+function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, audioPlayer, resultRecorder, graphMarks) {
     var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
     var minStimulus = -10;
@@ -50,6 +50,10 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         frequencyIndex = Math.max(0, frequencyIndex - 1);
         var newFrequency = frequencyOptions[frequencyIndex];
         controlPanel.setFrequency(newFrequency);
+        if (vm.isManualTesting) {
+            graphMarks.popMark();
+            graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+        }
     }
 
     /**
@@ -59,6 +63,10 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         frequencyIndex = Math.min(frequencyOptions.length - 1, frequencyIndex + 1);
         var newFrequency = frequencyOptions[frequencyIndex];
         controlPanel.setFrequency(newFrequency);
+        if (vm.isManualTesting) {
+            graphMarks.popMark();
+            graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+        }
     }
 
     /**
@@ -68,6 +76,10 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         var currentStimulus = controlPanel.getStimulus();
         var newStimulus = Math.max(minStimulus, currentStimulus - stimulusStep);
         controlPanel.setStimulus(newStimulus);
+        if (vm.isManualTesting) {
+            graphMarks.popMark();
+            graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+        }
     }
 
     /**
@@ -77,6 +89,10 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         var currentStimulus = controlPanel.getStimulus();
         var newStimulus = Math.min(maxStimulus, currentStimulus + stimulusStep);
         controlPanel.setStimulus(newStimulus);
+        if (vm.isManualTesting) {
+            graphMarks.popMark();
+            graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+        }
     }
 
     /**
@@ -104,6 +120,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
     function openManualTest() {
         vm.isManualTesting = true;
         vm.isAutoTesting = false;
+        graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 
     /********************************/
@@ -131,6 +148,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
      * Ends the manual test based on the given status
      */
     function endManualTest(status) {
+        graphMarks.popMark();
         vm.isManualTesting = false;
         if (status === 'success') {
             resultRecorder.addResult(controlPanel.getFrequency(),

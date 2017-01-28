@@ -14,11 +14,11 @@ function graphMarks(graphAxis, marks) {
     var graph = {};
 
     graph.getMarks = getMarks;
-    graph.pushMark = pushMark;
+    graph.pushResultMark = pushResultMark;
+    graph.pushCursorMark = pushCursorMark;
     graph.popMark = popMark;
 
     return graph;
-
 
     /*
      * Returns the list of marks.
@@ -30,10 +30,24 @@ function graphMarks(graphAxis, marks) {
     /*
      * Validates the input and pushs it to the list.
      */
-    function pushMark(frequency, stimulus, ear) {
+    function pushResultMark(frequency, stimulus, ear) {
         var top = graphAxis.yAxis[stimulus];
         var left = graphAxis.xAxis[frequency];
         var mark = ear === LEFT_EAR ? marks.AC_UNMASKED_LEFT : marks.AC_UNMASKED_RIGHT;
+        var newMark = { path : mark,
+                        top  : top,
+                        left : left
+                      };
+        markList.push(newMark);
+    }
+
+    /*
+     * Pushes cursor mark at the given frquency/stimulus
+     */
+    function pushCursorMark(frequency, stimulus) {
+        var top = graphAxis.yAxis[stimulus];
+        var left = graphAxis.xAxis[frequency];
+        var mark = marks.CURSOR;
         var newMark = { path : mark,
                         top  : top,
                         left : left
