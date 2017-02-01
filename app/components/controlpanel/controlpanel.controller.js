@@ -23,7 +23,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         RIGHT_KEY = 39,
         SPACE_KEY = 32,
         ENTER_KEY = 13,
-        A_KEY = 65;
+        D_KEY = 68;
     var vm = this;
 
     vm.getEarSide = controlPanel.getSide; // 0 for left ear and 1 for right ear
@@ -37,6 +37,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
     vm.openCalibration = openCalibration;
     vm.openAutoTest = openAutoTest;
     vm.openManualTest = openManualTest;
+    vm.recordResult = recordResult;
     vm.endManualTest = endManualTest;
     vm.presentTone = presentTone;
     vm.isPlaying = false;
@@ -137,24 +138,30 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
                 if (event.keyCode == DOWN_KEY) decreaseStimulus();
                 if (event.keyCode == UP_KEY) increaseStimulus();
                 if (event.keyCode == SPACE_KEY) presentTone();
-                if (event.keyCode == ENTER_KEY) endManualTest('success');
-                if (event.keyCode == A_KEY) endManualTest('abort');
+                if (event.keyCode == ENTER_KEY) recordResult();
+                if (event.keyCode == D_KEY) endManualTest();
                 $scope.$apply();
             }
         });
     }
 
     /**
-     * Ends the manual test based on the given status
+     * Records the result of a manual test
      */
-    function endManualTest(status) {
+    function recordResult() {
+        graphMarks.popMark();
+        resultRecorder.addResult(controlPanel.getFrequency(),
+                                 controlPanel.getStimulus(),
+                                 controlPanel.getSide());
+        graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+    }
+
+    /**
+     * Ends the manual test and removes the cursor mark
+     */
+    function endManualTest() {
         graphMarks.popMark();
         vm.isManualTesting = false;
-        if (status === 'success') {
-            resultRecorder.addResult(controlPanel.getFrequency(),
-                                     controlPanel.getStimulus(),
-                                     controlPanel.getSide());
-        }
     }
 
     /**
