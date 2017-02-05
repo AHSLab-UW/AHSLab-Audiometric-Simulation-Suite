@@ -42,8 +42,8 @@ body {
 /* SIMULATOR */
 
 .simulator {
-    min-height: 550px;
-    max-height: 550px;
+    min-height: 600px;
+    max-height: 600px;
     min-width: 895px;
     max-width: 895px;
     margin: 0 auto;
@@ -118,6 +118,17 @@ figure {
 
 /* FOOTER */
 
+.bottom-control {
+    background: #DDD;
+    border: #AAA solid 1px;
+    border-radius: 4px;
+    height: 50px;
+}
+
+.bottom-control button {
+    margin: 0.5em;
+}
+
 .footer {
     margin-top: 1em;
     color: black;
@@ -135,7 +146,6 @@ figure {
     color: #000;
     padding: 0.2em 0;
 }
-
 
 /* Extra small devices (phones, less than 768px) */
 

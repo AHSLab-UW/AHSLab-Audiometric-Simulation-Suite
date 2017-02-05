@@ -17,6 +17,7 @@ function graphMarks(graphAxis, marks) {
     graph.pushResultMark = pushResultMark;
     graph.pushCursorMark = pushCursorMark;
     graph.popMark = popMark;
+    graph.clearMarks = clearMarks;
 
     return graph;
 
@@ -60,6 +61,13 @@ function graphMarks(graphAxis, marks) {
      */
     function popMark() {
         return markList.pop();
+    }
+
+    /**
+     * Clears the marks from the mark list
+     */
+    function clearMarks() {
+        markList.length = 0;
     }
 
 }

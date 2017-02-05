@@ -1,16 +1,27 @@
 <div class="container-fluid" id="hearingTestView">
     <div class="row">
         <div class="panel col-sm-12 simulator">
-            <control-panel is-auto-testing="vm.isAutoTesting" is-manual-testing="vm.isManualTesting"></control-panel>
-            <div class="col-sm-9">
-                <div ng-show="!(vm.isAutoTesting)">
-                    <figure>
-                        <img src="images/audiogram.png" height="520px" width="634px" alt="graph image" />
-                    </figure>
-                    <graph-marks></graph-marks>
+            <div class="row">
+                <control-panel is-auto-testing="vm.isAutoTesting" is-manual-testing="vm.isManualTesting"></control-panel>
+                <div class="col-sm-9">
+                    <div ng-show="!(vm.isAutoTesting)">
+                        <figure>
+                            <img src="images/audiogram.png" height="520px" width="634px" alt="graph image" />
+                        </figure>
+                        <graph-marks></graph-marks>
+                    </div>
+                    <div ng-show="vm.isAutoTesting">
+                        <automatic-exercise is-auto-testing="vm.isAutoTesting"></automatic-exercise>
+                    </div>
                 </div>
-                <div ng-show="vm.isAutoTesting">
-                    <automatic-exercise is-auto-testing="vm.isAutoTesting"></automatic-exercise>
+            </div>
+            <div class="row">
+                <div class="bottom-control">
+                    <div ng-hide="vm.isAutoTesting || vm.isManualTesting">
+                        <button class="btn btn-warning" style="float: right;" ng-click="vm.clearData()">Clear Graph</button>
+                        <button class="btn btn-default" style="float: right;">Import</button>
+                        <button class="btn btn-default" style="float: right;">Export</button>
+                    </div>
                 </div>
             </div>
         </div>
