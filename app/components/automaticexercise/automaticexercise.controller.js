@@ -11,7 +11,7 @@ angular
     .module('hearingTestApp.automaticExercise')
     .controller('AutomaticExerciseCtrl', AutomaticExerciseCtrl);
 
-function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, resultRecorder) {
+function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks) {
   var vm = this;
   var stimulus = controlPanel.getStimulus();
   var earSide = controlPanel.getSide();
@@ -75,7 +75,9 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, resultRecord
     vm.isInExercise = false;
     vm.hasResponded = false;
     if (terminatingCondition === 'success') {
-      resultRecorder.addResult(controlPanel.getFrequency(), controlPanel.getStimulus(), earSide);
+      graphMarks.pushResultMark(controlPanel.getFrequency(),
+                                controlPanel.getStimulus(),
+                                earSide);
     }
     vm.isAutoTesting = false;
   }

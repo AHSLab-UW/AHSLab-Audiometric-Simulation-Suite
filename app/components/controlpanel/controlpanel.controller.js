@@ -11,7 +11,7 @@ angular
     .module('hearingTestApp.controlPanel')
     .controller('ControlPanelCtrl', ControlPanelCtrl);
 
-function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, audioPlayer, resultRecorder, graphMarks) {
+function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, audioPlayer, graphMarks) {
     var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
     var minStimulus = -10;
@@ -150,9 +150,9 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
      */
     function recordResult() {
         graphMarks.popMark();
-        resultRecorder.addResult(controlPanel.getFrequency(),
-                                 controlPanel.getStimulus(),
-                                 controlPanel.getSide());
+        graphMarks.pushResultMark(controlPanel.getFrequency(),
+                                  controlPanel.getStimulus(),
+                                  controlPanel.getSide());
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 

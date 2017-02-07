@@ -22,7 +22,6 @@ angular
         'hearingTestApp.calibration',
         'hearingTestApp.controlPanel',
         'hearingTestApp.automaticExercise',
-        'hearingTestApp.resultRecorder',
         'hearingTestApp.graphMarks',
         'hearingTestApp.bufferGenerator',
         'hearingTestApp.audioPlayer'

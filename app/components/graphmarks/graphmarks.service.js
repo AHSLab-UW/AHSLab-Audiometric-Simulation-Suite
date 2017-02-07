@@ -37,8 +37,20 @@ function graphMarks(graphAxis, marks) {
         var mark = ear === LEFT_EAR ? marks.AC_UNMASKED_LEFT : marks.AC_UNMASKED_RIGHT;
         var newMark = { path : mark,
                         top  : top,
-                        left : left
+                        left : left,
+                        frequency: frequency,
+                        stimulus: stimulus,
+                        ear: ear
                       };
+        // update mark if at the same frequency/ear combination
+        for(var i = 0; i < markList.length; i++) {
+            if (markList[i].frequency === newMark.frequency
+                && markList[i].ear === newMark.ear) {
+                markList[i].stimulus = newMark.stimulus;
+                markList[i].top = newMark.top;
+                return;
+            }
+        }
         markList.push(newMark);
     }
 
