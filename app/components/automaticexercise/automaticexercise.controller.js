@@ -31,9 +31,6 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks) 
   vm.iterateExercise = iterateExercise;
   vm.endExercise = endExercise;
 
-  /**
-   * Start the automatic hearing test
-   */
   function startExercise() {
     vm.isInExercise = true;
     vm.hasResponded = false;
@@ -43,9 +40,6 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks) 
     iterateExercise('start');
   }
 
-  /**
-   * Iterate through the exercise based on the given response
-   */
   function iterateExercise(response) {
     vm.hasResponded = true;
     if (response === 'yes') {
@@ -68,9 +62,6 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks) 
     }, DELAY_PLAY_SECONDS * 1000);
   }
 
-  /**
-   * End the exercise based on the given terminating condition
-   */
   function endExercise(terminatingCondition) {
     vm.isInExercise = false;
     vm.hasResponded = false;
@@ -82,9 +73,7 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks) 
     vm.isAutoTesting = false;
   }
 
-  /**
-   * Record a stimulus level in the visitMap and return its count
-   */
+  // Record a stimulus level in the visitMap and return its count
   function updateVisitMap() {
     var currentLevelCount = visitMap[stimulus];
     if (isNaN(currentLevelCount)) {
@@ -95,9 +84,6 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks) 
     return visitMap[stimulus];
   }
 
-  /**
-   * Play a tone given frequency, timeInSeconds, stimulus level, and ear side
-   */
   function presentTone(frequency, timeInSeconds, level, ear) {
     vm.isPlaying = true;
     audioPlayer.playTone(frequency, timeInSeconds, level, ear);

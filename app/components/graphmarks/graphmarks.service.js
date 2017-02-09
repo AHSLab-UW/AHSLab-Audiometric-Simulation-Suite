@@ -21,16 +21,10 @@ function graphMarks(graphAxis, marks) {
 
     return graph;
 
-    /*
-     * Returns the list of marks.
-     */
     function getMarks() {
         return markList;
     }
 
-    /*
-     * Validates the input and pushs it to the list.
-     */
     function pushResultMark(frequency, stimulus, ear) {
         var top = graphAxis.yAxis[stimulus];
         var left = graphAxis.xAxis[frequency];
@@ -54,9 +48,6 @@ function graphMarks(graphAxis, marks) {
         markList.push(newMark);
     }
 
-    /*
-     * Pushes cursor mark at the given frquency/stimulus
-     */
     function pushCursorMark(frequency, stimulus) {
         var top = graphAxis.yAxis[stimulus];
         var left = graphAxis.xAxis[frequency];
@@ -68,16 +59,10 @@ function graphMarks(graphAxis, marks) {
         markList.push(newMark);
     }
 
-    /*
-     * Pops the last item that was inserted in the stack.
-     */
     function popMark() {
         return markList.pop();
     }
 
-    /**
-     * Clears the marks from the mark list
-     */
     function clearMarks() {
         markList.length = 0;
     }

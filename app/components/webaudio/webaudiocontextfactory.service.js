@@ -20,12 +20,6 @@ function webAudioContextFactory($window) {
 
   return factory;
 
-  /**
-   * Initializes and returns the audio context. If the audio context
-   * already exist then it simply returns it.
-   *
-   * @return {Object} Audio Context from the Web Audio API
-   */
   function getInstance() {
     if(!audioContext) {
       unlockAudioContext();

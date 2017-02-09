@@ -44,9 +44,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
 
     setHotKeys();
 
-    /**
-     * Decreases the frequency to the next lower frequency option.
-     */
     function decreaseFrequency() {
         frequencyIndex = Math.max(0, frequencyIndex - 1);
         var newFrequency = frequencyOptions[frequencyIndex];
@@ -57,9 +54,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         }
     }
 
-    /**
-     * Increases the frequency to the next higher frequency option.
-     */
     function increaseFrequency() {
         frequencyIndex = Math.min(frequencyOptions.length - 1, frequencyIndex + 1);
         var newFrequency = frequencyOptions[frequencyIndex];
@@ -70,9 +64,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         }
     }
 
-    /**
-     * Decreases the stimulus to the next lower stimulus option.
-     */
     function decreaseStimulus() {
         var currentStimulus = controlPanel.getStimulus();
         var newStimulus = Math.max(minStimulus, currentStimulus - stimulusStep);
@@ -83,9 +74,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         }
     }
 
-    /**
-     * Increases the stimulus to the next higher stimulus option.
-     */
     function increaseStimulus() {
         var currentStimulus = controlPanel.getStimulus();
         var newStimulus = Math.min(maxStimulus, currentStimulus + stimulusStep);
@@ -96,9 +84,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         }
     }
 
-    /**
-     * Opens the calibration modal.
-     */
     function openCalibration() {
         $uibModal.open({
             templateUrl: 'components/calibration/calibration.html',
@@ -107,17 +92,11 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         });
     }
 
-    /**
-     * Sets the testing flags for the automatic test
-     */
     function openAutoTest() {
         vm.isAutoTesting = true;
         vm.isManualTesting = false;
     }
 
-    /**
-     * Sets the testing flags for the manual test
-     */
     function openManualTest() {
         vm.isManualTesting = true;
         vm.isAutoTesting = false;
@@ -127,9 +106,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
     /********************************/
     /*** Manual Hearing Test Code ***/
 
-    /**
-     * Sets keyboard listener for manual hearing test
-     */
     function setHotKeys() {
         $document.bind('keydown', function(event) {
             if (vm.isManualTesting) {
@@ -145,28 +121,19 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         });
     }
 
-    /**
-     * Records the result of a manual test
-     */
     function recordResult() {
-        graphMarks.popMark();
+        graphMarks.popMark(); // pop cursor mark
         graphMarks.pushResultMark(controlPanel.getFrequency(),
                                   controlPanel.getStimulus(),
                                   controlPanel.getSide());
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 
-    /**
-     * Ends the manual test and removes the cursor mark
-     */
     function endManualTest() {
-        graphMarks.popMark();
+        graphMarks.popMark(); // pop cursor mark
         vm.isManualTesting = false;
     }
 
-    /**
-     * Plays the tone for the manual test
-     */
     function presentTone() {
         var frequency = controlPanel.getFrequency();
         var level = controlPanel.getStimulus();

@@ -17,9 +17,6 @@ function audioPlayer(webAudioContextFactory, bufferGenerator) {
 
   return player;
 
-  /**
-   * Play a tone with a given frequency, time, level, and ear side
-   */
   function playTone(frequency, timeInSeconds, level, ear) {
       var source = audioContext.createBufferSource();
       source.buffer = bufferGenerator.generateBuffer(frequency, timeInSeconds, level, ear);

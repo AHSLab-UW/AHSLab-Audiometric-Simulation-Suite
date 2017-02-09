@@ -6,18 +6,10 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <div class="dropdown">
-                <button class="btn btn-default btn-sm col-xs-12 dropdown-toggle" type="button"
-                        id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
-                        ng-disabled="vm.isAutoTesting||vm.isManualTesting">
-                    Option 1
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a href="#/">Option 1</a></li>
-                    <li><a href="#/">Option 2</a></li>
-                </ul>
-            </div>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click=""
+               ng-class="{active: vm.getEarSide() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">AC</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click=""
+               ng-class="{active: vm.getEarSide() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">BC</a>
         </div>
     </div>
 
@@ -29,7 +21,7 @@
                ng-class="{active: vm.getEarSide() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">Right</a>
         </div>
     </div>
-
+    <br>
     <div class="row">
         <label for="frequency" class="col-xs-5">Frequency</label>
         <a ng-href="" ng-click="vm.decreaseFrequency()" ng-class="{linkDisabled: vm.isAutoTesting}">
@@ -55,11 +47,11 @@
             <span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span>
         </a>
     </div>
-
+    
     <div class="row">
         <div class="col-xs-12">
             <button type="button" class="col-xs-12 col-sm-12 btn btn-primary"
-                    ng-click="vm.openCalibration()" ng-disabled="vm.isAutoTesting||vm.isManualTesting">
+                    ng-click="vm.openCalibration()" ng-hide="vm.isAutoTesting||vm.isManualTesting">
                 Calibration
             </button>
         </div>
@@ -68,7 +60,7 @@
     <div class="row">
         <div class="col-xs-12">
             <button type="button" class="col-xs-12 col-sm-12 btn btn-success"
-                    ng-click="vm.openAutoTest()" ng-disabled="vm.isAutoTesting||vm.isManualTesting">
+                    ng-click="vm.openAutoTest()" ng-hide="vm.isAutoTesting||vm.isManualTesting">
                 Automatic Hearing Test
             </button>
         </div>
@@ -77,13 +69,13 @@
     <div class="row">
         <div class="col-xs-12">
             <button type="button" class="col-xs-12 col-sm-12 btn btn-success"
-                    ng-click="vm.openManualTest()" ng-disabled="vm.isAutoTesting||vm.isManualTesting">
-                Manual Hearing Test &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>
+                    ng-click="vm.openManualTest()" ng-hide="vm.isAutoTesting||vm.isManualTesting">
+                Manual Hearing Test
             </button>
         </div>
     </div>
 
-    <hr style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
+    <hr ng-show="vm.isManualTesting" style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
 
     <div id="manualTest" ng-show="vm.isManualTesting" style="font-size: 75%;">
         <div class="row">
