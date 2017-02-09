@@ -41,6 +41,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
     vm.endManualTest = endManualTest;
     vm.presentTone = presentTone;
     vm.isPlaying = false;
+    vm.clearData = clearData;
 
     setHotKeys();
 
@@ -101,6 +102,10 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         vm.isManualTesting = true;
         vm.isAutoTesting = false;
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+    }
+
+    function clearData() {
+        graphMarks.clearMarks();
     }
 
     /********************************/

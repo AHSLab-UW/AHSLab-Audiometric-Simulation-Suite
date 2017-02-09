@@ -47,7 +47,7 @@
             <span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span>
         </a>
     </div>
-    
+
     <div class="row">
         <div class="col-xs-12">
             <button type="button" class="col-xs-12 col-sm-12 btn btn-primary"
@@ -75,7 +75,13 @@
         </div>
     </div>
 
-    <hr ng-show="vm.isManualTesting" style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
+    <hr style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
+
+    <div class="row" ng-hide="vm.isAutoTesting || vm.isManualTesting">
+        <div class="col-xs-3"><button class="btn btn-xs btn-default">Import</button></div>
+        <div class="col-xs-3"><button class="btn btn-xs btn-default">Export</button></div>
+        <div class="col-xs-3"><button class="btn btn-xs btn-warning" ng-click="vm.clearData()">Clear Graph</button></div>
+    </div>
 
     <div id="manualTest" ng-show="vm.isManualTesting" style="font-size: 75%;">
         <div class="row">

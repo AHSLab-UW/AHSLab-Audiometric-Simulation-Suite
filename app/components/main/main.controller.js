@@ -10,14 +10,9 @@
 angular.module('hearingTestApp.main')
   .controller('MainCtrl', MainCtrl);
 
-function MainCtrl(graphMarks) {
+function MainCtrl() {
     var vm = this;
 
     vm.isAutoTesting = false;
     vm.isManualTesting = false;
-    vm.clearData = clearData;
-
-    function clearData() {
-        graphMarks.clearMarks();
-    }
 }

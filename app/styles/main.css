@@ -42,8 +42,8 @@ body {
 /* SIMULATOR */
 
 .simulator {
-    min-height: 600px;
-    max-height: 600px;
+    min-height: 550px;
+    max-height: 550px;
     min-width: 895px;
     max-width: 895px;
     margin: 0 auto;
