@@ -9,15 +9,16 @@
 angular.module('hearingTestApp.controlPanel')
   .factory('controlPanel', controlPanel);
 
-function controlPanel() {
-    var LEFT_EAR = 0;
-    var RIGHT_EAR = 1;
-    var side = RIGHT_EAR;
+function controlPanel(configConstants) {
+    var side = configConstants.RIGHT_EAR;
+    var conduction = configConstants.AC;
     var frequency = 250;
     var stimulus = 50;
     var panel = {};
 
     panel.resetState = resetState;
+    panel.setConduction = setConduction;
+    panel.getConduction = getConduction;
     panel.setSide = setSide;
     panel.getSide = getSide;
     panel.setFrequency = setFrequency;
@@ -28,9 +29,17 @@ function controlPanel() {
     return panel;
 
     function resetState() {
-        side = RIGHT_EAR;
+        side = configConstants.RIGHT_EAR;
         frequency = 250;
         stimulus = 50;
+    }
+
+    function setConduction(newConduction) {
+        conduction = newConduction;
+    }
+
+    function getConduction() {
+        return conduction;
     }
 
     function setSide(newSide) {

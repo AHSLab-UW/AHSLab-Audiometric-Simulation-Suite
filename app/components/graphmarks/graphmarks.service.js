@@ -6,10 +6,8 @@ angular
     .factory('graphMarks', graphMarks);
 
 
-function graphMarks(graphAxis, marks) {
+function graphMarks(graphAxis, marks, configConstants) {
     var markList = [];
-    var LEFT_EAR = 0,
-        RIGHT_EAR = 1;
 
     var graph = {};
 
@@ -25,26 +23,46 @@ function graphMarks(graphAxis, marks) {
         return markList;
     }
 
-    function pushResultMark(frequency, stimulus, ear) {
-        var top = graphAxis.yAxis[stimulus];
-        var left = graphAxis.xAxis[frequency];
-        var mark = ear === LEFT_EAR ? marks.AC_UNMASKED_LEFT : marks.AC_UNMASKED_RIGHT;
+    function pushResultMark(frequency, stimulus, ear, conduction) {
+        var top, left, mark, newConduction;
+        top = graphAxis.yAxis[stimulus];
+        left = graphAxis.xAxis[frequency];
+        if (conduction === configConstants.AC || conduction === undefined) {
+            newConduction = configConstants.AC;
+            if (ear === configConstants.LEFT_EAR) mark = marks.AC_UNMASKED_LEFT;
+            else mark = marks.AC_UNMASKED_RIGHT;
+        }
+        if (conduction === configConstants.BC) {
+            newConduction = configConstants.BC;
+            if (ear === configConstants.LEFT_EAR) {
+                mark = marks.BC_UNMASKED_LEFT;
+                left = graphAxis.xAxisLeftBC[frequency];
+            } else {
+                mark = marks.BC_UNMASKED_RIGHT;
+                left = graphAxis.xAxisRightBC[frequency];
+            }
+        }
+
         var newMark = { path : mark,
                         top  : top,
                         left : left,
                         frequency: frequency,
                         stimulus: stimulus,
-                        ear: ear
+                        ear: ear,
+                        conduction: newConduction
                       };
-        // update mark if at the same frequency/ear combination
+
+        // if newMark has the same frequency and symbol as an older mark,
+        // update the older mark to the new stimulus level
         for(var i = 0; i < markList.length; i++) {
             if (markList[i].frequency === newMark.frequency
-                && markList[i].ear === newMark.ear) {
+                && markList[i].path === newMark.path) {
                 markList[i].stimulus = newMark.stimulus;
                 markList[i].top = newMark.top;
                 return;
             }
         }
+
         markList.push(newMark);
     }
 

@@ -11,7 +11,7 @@ angular
     .module('hearingTestApp.controlPanel')
     .controller('ControlPanelCtrl', ControlPanelCtrl);
 
-function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, audioPlayer, graphMarks) {
+function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, controlPanel, audioPlayer, graphMarks, configConstants) {
     var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
     var minStimulus = -10;
@@ -26,7 +26,9 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         D_KEY = 68;
     var vm = this;
 
-    vm.getEarSide = controlPanel.getSide; // 0 for left ear and 1 for right ear
+    vm.getConduction = controlPanel.getConduction;
+    vm.setConduction = controlPanel.setConduction;
+    vm.getEarSide = controlPanel.getSide;
     vm.setEarSide = controlPanel.setSide;
     vm.getFrequency = controlPanel.getFrequency;
     vm.decreaseFrequency = decreaseFrequency;
@@ -94,11 +96,18 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
     }
 
     function openAutoTest() {
-        vm.isAutoTesting = true;
-        vm.isManualTesting = false;
+        if (controlPanel.getConduction() === configConstants.BC) {
+            $window.alert(configConstants.BC_WARNING_AUTO);
+        } else {
+            vm.isAutoTesting = true;
+            vm.isManualTesting = false;
+        }
     }
 
     function openManualTest() {
+        if (controlPanel.getConduction() === configConstants.BC) {
+            $window.alert(configConstants.BC_WARNING_MANUAL);
+        }
         vm.isManualTesting = true;
         vm.isAutoTesting = false;
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
@@ -130,7 +139,8 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
         graphMarks.popMark(); // pop cursor mark
         graphMarks.pushResultMark(controlPanel.getFrequency(),
                                   controlPanel.getStimulus(),
-                                  controlPanel.getSide());
+                                  controlPanel.getSide(),
+                                  controlPanel.getConduction());
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 
@@ -140,6 +150,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, controlPanel, 
     }
 
     function presentTone() {
+        if (controlPanel.getConduction() === configConstants.BC) return;
         var frequency = controlPanel.getFrequency();
         var level = controlPanel.getStimulus();
         var timeInSeconds = 1;

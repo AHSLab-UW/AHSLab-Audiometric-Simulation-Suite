@@ -6,10 +6,10 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click=""
-               ng-class="{active: vm.getEarSide() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">AC</a>
-            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click=""
-               ng-class="{active: vm.getEarSide() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">BC</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setConduction(0)"
+               ng-class="{active: vm.getConduction() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">AC</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setConduction(1)"
+               ng-class="{active: vm.getConduction() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">BC</a>
         </div>
     </div>
 
