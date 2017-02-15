@@ -24,8 +24,9 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
         SPACE_KEY = 32,
         ENTER_KEY = 13,
         D_KEY = 68;
-    var vm = this;
 
+    var vm = this;
+    vm.isPlaying = false;
     vm.getConduction = controlPanel.getConduction;
     vm.setConduction = controlPanel.setConduction;
     vm.getEarSide = controlPanel.getSide;
@@ -42,7 +43,8 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
     vm.recordResult = recordResult;
     vm.endManualTest = endManualTest;
     vm.presentTone = presentTone;
-    vm.isPlaying = false;
+    vm.openImport = openImport;
+    vm.openExport = openExport;
     vm.clearData = clearData;
 
     setHotKeys();
@@ -111,6 +113,22 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
         vm.isManualTesting = true;
         vm.isAutoTesting = false;
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+    }
+
+    function openImport() {
+        $uibModal.open({
+            templateUrl: 'components/import/import.html',
+            controller: 'ImportCtrl',
+            controllerAs: 'vm'
+        });
+    }
+
+    function openExport() {
+        $uibModal.open({
+            templateUrl: 'components/export/export.html',
+            controller: 'ExportCtrl',
+            controllerAs: 'vm'
+        });
     }
 
     function clearData() {

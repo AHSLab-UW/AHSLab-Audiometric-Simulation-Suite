@@ -78,8 +78,8 @@
     <hr style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
 
     <div class="row" ng-hide="vm.isAutoTesting || vm.isManualTesting">
-        <div class="col-xs-3"><button class="btn btn-xs btn-default">Import</button></div>
-        <div class="col-xs-3"><button class="btn btn-xs btn-default">Export</button></div>
+        <div class="col-xs-3"><button class="btn btn-xs btn-default" ng-click="vm.openImport()">Import</button></div>
+        <div class="col-xs-3"><button class="btn btn-xs btn-default" ng-click="vm.openExport()">Export</button></div>
         <div class="col-xs-3"><button class="btn btn-xs btn-warning" ng-click="vm.clearData()">Clear Graph</button></div>
     </div>
 

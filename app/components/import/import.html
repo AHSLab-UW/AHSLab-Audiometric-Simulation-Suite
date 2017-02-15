@@ -1,0 +1,19 @@
+<div id="importDiv">
+    <div class="modal-header">
+        <h2 class="modal-title">Import</h2>
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <h4>Upload a properly formatted CSV or BSON file:</h4>
+                <br/>
+                <input id="fileSelect" type="file" name="file" accept=".csv,.bson"/>
+                <br/>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="vm.close()">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="vm.importData()">Import</button>
+    </div>
+</div>

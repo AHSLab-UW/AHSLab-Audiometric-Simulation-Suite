@@ -16,6 +16,7 @@ angular
         'ngRoute',
         'ngSanitize',
         'ngTouch',
+        'ngFileUpload',
         'ui.bootstrap',
         'webAudio',
         'hearingTestApp.main',
@@ -24,5 +25,8 @@ angular
         'hearingTestApp.automaticExercise',
         'hearingTestApp.graphMarks',
         'hearingTestApp.bufferGenerator',
-        'hearingTestApp.audioPlayer'
+        'hearingTestApp.audioPlayer',
+        'hearingTestApp.import',
+        'hearingTestApp.export',
+        'hearingTestApp.fileProcessor'
     ]);
