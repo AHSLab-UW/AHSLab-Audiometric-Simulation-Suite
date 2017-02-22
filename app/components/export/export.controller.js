@@ -24,7 +24,7 @@ function ExportCtrl($uibModalInstance, fileProcessor) {
             console.log('bson');
         }
         if (vm.exportType === 'png') {
-            console.log('png');
+            fileProcessor.exportToPNG('AudiogramResults.png');
         }
     }
 

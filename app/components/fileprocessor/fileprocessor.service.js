@@ -11,6 +11,7 @@ function fileProcessor($window, graphMarks, configConstants) {
 
     var processor = {};
     processor.exportToCSV = exportToCSV;
+    processor.exportToPNG = exportToPNG;
     processor.importCSV = importCSV;
     return processor;
 
@@ -31,6 +32,20 @@ function fileProcessor($window, graphMarks, configConstants) {
             link.click();
             document.body.removeChild(link);
         }
+    }
+
+    function exportToPNG(filename) {
+        // using dom-to-image library which provides global variable domtoimage
+        domtoimage.toPng(document.getElementById('graphArea'))
+            .then(function(dataUrl) {
+                var link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUrl;
+                link.click();
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
     }
 
     function importCSV(textData) {
