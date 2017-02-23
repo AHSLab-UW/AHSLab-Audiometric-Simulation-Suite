@@ -4,24 +4,57 @@ angular
     .module('hearingTestApp.fileProcessor')
     .factory('fileProcessor', fileProcessor);
 
-function fileProcessor($window, graphMarks, configConstants) {
+function fileProcessor($window, graphMarks, configConstants, domToImageFactory, cryptoLibraryFactory) {
+    var domToImage = domToImageFactory.getInstance();
+    var cryptoLibrary = cryptoLibraryFactory.getInstance();
+    var encryptionKey = "MagicResultKey";
     var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var MIN_STIMULUS = -10;
     var MAX_STIMULUS = 120;
 
     var processor = {};
-    processor.exportToCSV = exportToCSV;
-    processor.exportToPNG = exportToPNG;
-    processor.importCSV = importCSV;
+    processor.exportResults = exportResults;
+    processor.importResults = importResults;
     return processor;
 
-    function exportToCSV(filename) {
-        var rows = convertMarksTo2dArray();
-        var csvFile = '';
-        for (var i = 0; i < rows.length; i++) {
-            csvFile += convertRowToString(rows[i]);
+    function exportResults(filename, type) {
+        if (type === 'image') {
+            exportToPNG(filename);
+        } else if (type === 'csv' || type === 'encrypted') {
+            exportDataPoints(filename, type);
         }
-        var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+    }
+
+    function importResults(givenData, type) {
+        var textData;
+        if (type === 'encrypted') textData = cryptoLibrary.decrypt(encryptionKey, givenData);
+        else if (type === 'csv') textData = givenData;
+        return parseData(textData);
+    }
+
+    function exportToPNG(filename) {
+        domToImage.toPng(document.getElementById('graphArea'))
+            .then(function(dataUrl) {
+                var link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUrl;
+                link.click();
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
+    }
+
+    function exportDataPoints(filename, type) {
+        var text = convertMarksToString();
+        var blob;
+        if (type === 'csv') {
+            blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+        }
+        if (type === 'encrypted') {
+            var encryptedText = cryptoLibrary.encrypt(encryptionKey, text);
+            blob = new Blob([encryptedText], { type: 'text/plain;charset=utf-8;' });
+        }
         var link = document.createElement("a");
         if (link.download !== undefined) {
             var url = URL.createObjectURL(blob);
@@ -34,24 +67,30 @@ function fileProcessor($window, graphMarks, configConstants) {
         }
     }
 
-    function exportToPNG(filename) {
-        // using dom-to-image library which provides global variable domtoimage
-        domtoimage.toPng(document.getElementById('graphArea'))
-            .then(function(dataUrl) {
-                var link = document.createElement('a');
-                link.download = filename;
-                link.href = dataUrl;
-                link.click();
-            })
-            .catch(function(error) {
-                console.error(error);
-            });
+    function convertMarksToString() {
+        var markList = graphMarks.getMarks().slice(0);
+        var result = 'Frequency,Stimulus,Ear,Conduction\n';
+        for (var i = 0; i < markList.length; i++) {
+            var m = markList[i];
+            var currentEar, currentConduction;
+            if (m.ear === configConstants.LEFT_EAR) currentEar = 'left';
+            else currentEar = 'right';
+            if (m.conduction === configConstants.AC) currentConduction = 'AC';
+            else currentConduction = 'BC';
+            result = result +
+                     m.frequency + ',' +
+                     m.stimulus + ',' +
+                     currentEar + ',' +
+                     currentConduction + '\n';
+        }
+        return result;
     }
 
-    function importCSV(textData) {
+    function parseData(textData) {
         var rows = textData.split('\n');
         rows.length = rows.length - 1; // ignore last empty line
         if (rows.length <= 1) {
+            // first row is just column names
             $window.alert('File cannot be imported, data is not formatted correctly.');
             return false;
         }
@@ -99,37 +138,6 @@ function fileProcessor($window, graphMarks, configConstants) {
         if (c === 'AC') return configConstants.AC;
         if (c === 'BC') return configConstants.BC;
         return false;
-    }
-
-    function convertMarksTo2dArray() {
-        var markList = graphMarks.getMarks().slice(0);
-        var result = [['Frequency', 'Stimulus', 'Ear', 'Conduction']];
-        for (var i = 0; i < markList.length; i++) {
-            var m = markList[i];
-            var currentEar, currentConduction;
-            if (m.ear === configConstants.LEFT_EAR) currentEar = 'left';
-            else currentEar = 'right';
-            if (m.conduction === configConstants.AC) currentConduction = 'AC';
-            else currentConduction = 'BC';
-            result.push([m.frequency, m.stimulus, currentEar, currentConduction]);
-        }
-        return result;
-    }
-
-    function convertRowToString(row) {
-        var finalVal = '';
-        for (var i = 0; i < row.length; i++) {
-            var innerValue = row[i] === null ? '' : row[i].toString();
-            var result = innerValue.replace(/"/g, '""');
-            if (result.search(/("|,|\n)/g) >= 0) {
-                result = '"' + result + '"';
-            }
-            if (i > 0) {
-                finalVal += ',';
-            }
-            finalVal += result;
-        }
-        return finalVal + '\n';
     }
 
 }

@@ -9,15 +9,11 @@
                 <input type="radio" value="csv" ng-model="vm.exportType">
                 <strong>CSV</strong> (table of recorded data)
                 <br/>
-                <input type="radio" value="bson" ng-model="vm.exportType">
-                <strong>BSON</strong> (table in binary encoding; to be imported back into this program)
+                <input type="radio" value="txt" ng-model="vm.exportType">
+                <strong>TXT</strong> (encrypted data saved as text)
                 <br/>
                 <input type="radio" value="png" ng-model="vm.exportType">
                 <strong>PNG</strong> (image of graph)
-                <br/><br/>
-                <p id="note"><u>Note:</u> The downloaded contents might be saved in plain format. You may have to rename it with
-                    the appropriate extension for it to be compatible with programs you wish to
-                    open it with (.csv for Excel, .bson for BSON, .png for an image).</p>
             </div>
         </div>
     </div>

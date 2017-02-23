@@ -19,6 +19,8 @@ angular
         'ngFileUpload',
         'ui.bootstrap',
         'webAudio',
+        'domToImage',
+        'cryptoLibrary',
         'hearingTestApp.main',
         'hearingTestApp.calibration',
         'hearingTestApp.controlPanel',

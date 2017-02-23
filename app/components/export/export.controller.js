@@ -18,13 +18,13 @@ function ExportCtrl($uibModalInstance, fileProcessor) {
 
     function exportData() {
         if (vm.exportType === 'csv') {
-            fileProcessor.exportToCSV('HearingTestResults.csv');
+            fileProcessor.exportResults('HearingTestResults.csv', 'csv');
         }
-        if (vm.exportType === 'bson') {
-            console.log('bson');
+        if (vm.exportType === 'txt') {
+            fileProcessor.exportResults('EncryptedResults.txt', 'encrypted');
         }
         if (vm.exportType === 'png') {
-            fileProcessor.exportToPNG('AudiogramResults.png');
+            fileProcessor.exportResults('AudiogramResults.png', 'image');
         }
     }
 

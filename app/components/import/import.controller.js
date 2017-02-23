@@ -10,18 +10,31 @@
 angular.module('hearingTestApp.import')
   .controller('ImportCtrl', ImportCtrl);
 
-function ImportCtrl($uibModalInstance, fileProcessor) {
+function ImportCtrl($uibModalInstance, $window, fileProcessor) {
     var vm = this;
     vm.importData = importData;
     vm.close = close;
 
     function importData() {
         var file = document.getElementById('fileSelect').files[0];
+        var fileType = getFileType(file);
         var reader = new FileReader();
         reader.onloadend = function(e) {
-            if (fileProcessor.importCSV(e.target.result)) close();
+            if (fileType === '.csv') {
+                if (fileProcessor.importResults(e.target.result, 'csv')) close();
+            } else if (fileType === '.txt') {
+                if (fileProcessor.importResults(e.target.result, 'encrypted')) close();
+            } else {
+                $window.alert('Must upload .csv or .txt file');
+            }
         };
         reader.readAsText(file);
+    }
+
+    function getFileType(file) {
+        var filename = file.name;
+        var startOfExtension = filename.length - 4;
+        return filename.substring(startOfExtension);
     }
 
     function close() {
