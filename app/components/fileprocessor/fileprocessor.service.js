@@ -4,7 +4,7 @@ angular
     .module('hearingTestApp.fileProcessor')
     .factory('fileProcessor', fileProcessor);
 
-function fileProcessor($window, graphMarks, configConstants, domToImageFactory, cryptoLibraryFactory) {
+function fileProcessor($window, graphMarks, configConstants, domToImageFactory, cryptoLibraryFactory, simulatedListener) {
     var domToImage = domToImageFactory.getInstance();
     var cryptoLibrary = cryptoLibraryFactory.getInstance();
     var encryptionKey = "MagicResultKey";
@@ -26,10 +26,29 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     }
 
     function importResults(givenData, type) {
-        var textData;
-        if (type === 'encrypted') textData = cryptoLibrary.decrypt(encryptionKey, givenData);
-        else if (type === 'csv') textData = givenData;
-        return parseData(textData);
+        if (type === 'encrypted') {
+            try {
+                var markList = parseData(cryptoLibrary.decrypt(encryptionKey, givenData));
+                if (markList !== false) {
+                    simulatedListener.setPatientData(markList);
+                    return true;
+                }
+            } catch (e) {
+                return false;
+            }
+            return false;
+        } else {
+            var markList = parseData(givenData);
+            if (markList !== false) {
+                graphMarks.clearMarks();
+                for (var i = 0; i < markList.length; i++) {
+                    var m = markList[i];
+                    graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction);
+                }
+                return true;
+            }
+            return false;
+        }
     }
 
     function exportToPNG(filename) {
@@ -108,12 +127,7 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
                 return false;
             }
         }
-        graphMarks.clearMarks();
-        for (var i = 0; i < markList.length; i++) {
-            var m = markList[i];
-            graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction);
-        }
-        return true;
+        return markList;
     }
 
     function parseFrequency(f) {

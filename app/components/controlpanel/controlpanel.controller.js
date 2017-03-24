@@ -11,7 +11,8 @@ angular
     .module('hearingTestApp.controlPanel')
     .controller('ControlPanelCtrl', ControlPanelCtrl);
 
-function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, controlPanel, audioPlayer, graphMarks, configConstants) {
+function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
+                          controlPanel, audioPlayer, graphMarks, configConstants, simulatedListener) {
     var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
     var minStimulus = -10;
@@ -27,6 +28,8 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
 
     var vm = this;
     vm.isPlaying = false;
+    vm.isSimulated = false;
+    vm.simulatedResponse = false;
     vm.getConduction = controlPanel.getConduction;
     vm.setConduction = controlPanel.setConduction;
     vm.getEarSide = controlPanel.getSide;
@@ -39,7 +42,9 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
     vm.increaseStimulus = increaseStimulus;
     vm.openCalibration = openCalibration;
     vm.openAutoTest = openAutoTest;
+    vm.openAutoSimulated = openAutoSimulated;
     vm.openManualTest = openManualTest;
+    vm.openManualSimulated = openManualSimulated;
     vm.recordResult = recordResult;
     vm.endManualTest = endManualTest;
     vm.presentTone = presentTone;
@@ -89,14 +94,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
         }
     }
 
-    function openCalibration() {
-        $uibModal.open({
-            templateUrl: 'components/calibration/calibration.html',
-            controller: 'CalibrationCtrl',
-            controllerAs: 'vm'
-        });
-    }
-
     function openAutoTest() {
         if (controlPanel.getConduction() === configConstants.BC) {
             $window.alert(configConstants.BC_WARNING_AUTO);
@@ -106,6 +103,27 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
         }
     }
 
+    function openAutoSimulated() {
+        $uibModal.open({
+            templateUrl: 'components/import/importsimulated.html',
+            controller: 'ImportCtrl',
+            controllerAs: 'vm'
+        }).result.then(function() {
+            var patientLevel = simulatedListener.levelForPatient(controlPanel.getFrequency(),
+                                                                 controlPanel.getSide(),
+                                                                 controlPanel.getConduction());
+            if (patientLevel !== false) {
+                graphMarks.pushResultMark(controlPanel.getFrequency(),
+                                          patientLevel,
+                                          controlPanel.getSide(),
+                                          controlPanel.getConduction());
+                simulatedListener.setPatientData(false);
+            } else {
+                $window.alert('No data to determine simulated result for current parameters.');
+            }
+        });
+    }
+
     function openManualTest() {
         if (controlPanel.getConduction() === configConstants.BC) {
             $window.alert(configConstants.BC_WARNING_MANUAL);
@@ -113,6 +131,28 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
         vm.isManualTesting = true;
         vm.isAutoTesting = false;
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+    }
+
+    function openManualSimulated() {
+        $uibModal.open({
+            templateUrl: 'components/import/importsimulated.html',
+            controller: 'ImportCtrl',
+            controllerAs: 'vm'
+        }).result.then(function() {
+            var patientData = simulatedListener.getPatientData();
+            if (patientData !== false) {
+                vm.isSimulated = true;
+                openManualTest();
+            }
+        });
+    }
+
+    function openCalibration() {
+        $uibModal.open({
+            templateUrl: 'components/calibration/calibration.html',
+            controller: 'CalibrationCtrl',
+            controllerAs: 'vm'
+        });
     }
 
     function openImport() {
@@ -165,19 +205,33 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window, contr
     function endManualTest() {
         graphMarks.popMark(); // pop cursor mark
         vm.isManualTesting = false;
+        vm.isSimulated = false;
+        simulatedListener.setPatientData(false);
     }
 
     function presentTone() {
-        if (controlPanel.getConduction() === configConstants.BC) return;
-        var frequency = controlPanel.getFrequency();
-        var level = controlPanel.getStimulus();
         var timeInSeconds = 1;
-        var ear = controlPanel.getSide();
-        vm.isPlaying = true;
-        audioPlayer.playTone(frequency, timeInSeconds, level, ear);
-        $timeout(function() {
-            vm.isPlaying = false;
-        }, timeInSeconds * 1000);
+        if (vm.isSimulated) {
+            vm.simulatedResponse = simulatedListener.getResponse(controlPanel.getStimulus(),
+                                                                 controlPanel.getFrequency(),
+                                                                 controlPanel.getSide(),
+                                                                 controlPanel.getConduction());
+            vm.isPlaying = true;
+            $timeout(function() {
+                vm.isPlaying = false;
+            }, timeInSeconds * 1000);
+            return;
+        }
+        if (controlPanel.getConduction() === configConstants.AC) {
+            var frequency = controlPanel.getFrequency();
+            var level = controlPanel.getStimulus();
+            var ear = controlPanel.getSide();
+            vm.isPlaying = true;
+            audioPlayer.playTone(frequency, timeInSeconds, level, ear);
+            $timeout(function() {
+                vm.isPlaying = false;
+            }, timeInSeconds * 1000);
+        }
     }
 
 }

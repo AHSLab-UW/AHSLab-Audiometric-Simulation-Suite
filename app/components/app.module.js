@@ -30,5 +30,6 @@ angular
         'hearingTestApp.audioPlayer',
         'hearingTestApp.import',
         'hearingTestApp.export',
-        'hearingTestApp.fileProcessor'
+        'hearingTestApp.fileProcessor',
+        'hearingTestApp.simulatedListener'
     ]);
