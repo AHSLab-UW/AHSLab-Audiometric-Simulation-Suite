@@ -23,23 +23,30 @@ function graphMarks(graphAxis, marks, configConstants) {
         return markList;
     }
 
-    function pushResultMark(frequency, stimulus, ear, conduction) {
+    function pushResultMark(frequency, stimulus, ear, conduction, masking) {
         var top, left, mark, newConduction;
         top = graphAxis.yAxis[stimulus];
         left = graphAxis.xAxis[frequency];
         if (conduction === configConstants.AC || conduction === undefined) {
             newConduction = configConstants.AC;
-            if (ear === configConstants.LEFT_EAR) mark = marks.AC_UNMASKED_LEFT;
-            else mark = marks.AC_UNMASKED_RIGHT;
+            if (ear === configConstants.LEFT_EAR) {
+                if (masking === configConstants.MASKING) mark = marks.AC_MASKED_LEFT;
+                else mark = marks.AC_UNMASKED_LEFT;
+            } else {
+                if (masking === configConstants.MASKING) mark = marks.AC_MASKED_RIGHT;
+                else mark = marks.AC_UNMASKED_RIGHT;
+            }
         }
         if (conduction === configConstants.BC) {
             newConduction = configConstants.BC;
             if (ear === configConstants.LEFT_EAR) {
-                mark = marks.BC_UNMASKED_LEFT;
                 left = graphAxis.xAxisLeftBC[frequency];
+                if (masking === configConstants.MASKING) mark = marks.BC_MASKED_LEFT;
+                else mark = marks.BC_UNMASKED_LEFT;
             } else {
-                mark = marks.BC_UNMASKED_RIGHT;
                 left = graphAxis.xAxisRightBC[frequency];
+                if (masking === configConstants.MASKING) mark = marks.BC_MASKED_RIGHT;
+                else mark = marks.BC_UNMASKED_RIGHT;
             }
         }
 

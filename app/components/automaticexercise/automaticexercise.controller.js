@@ -70,7 +70,9 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks, 
         if (terminatingCondition === 'success') {
             graphMarks.pushResultMark(controlPanel.getFrequency(),
                                       controlPanel.getStimulus(),
-                                      earSide);
+                                      earSide,
+                                      controlPanel.getConduction(),
+                                      controlPanel.getMasking());
         }
         vm.isAutoTesting = false;
     }

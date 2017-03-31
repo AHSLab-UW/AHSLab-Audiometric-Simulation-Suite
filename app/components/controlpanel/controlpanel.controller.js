@@ -218,7 +218,8 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         graphMarks.pushResultMark(controlPanel.getFrequency(),
                                   controlPanel.getStimulus(),
                                   controlPanel.getSide(),
-                                  controlPanel.getConduction());
+                                  controlPanel.getConduction(),
+                                  controlPanel.getMasking());
         graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 
