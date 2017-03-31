@@ -21,6 +21,15 @@
                ng-class="{active: vm.getEarSide() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">Right</a>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setMasking(1)"
+               ng-class="{active: vm.getMasking() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">Masked</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setMasking(0)"
+               ng-class="{active: vm.getMasking() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">Unmasked</a>
+        </div>
+    </div>
     <br>
     <div class="row">
         <label for="frequency" class="col-xs-5">Frequency</label>
@@ -36,7 +45,7 @@
     </div>
 
     <div class="row">
-        <label for="stimulus" class="col-xs-5">Stimulus</label>
+        <label for="stimulus" class="col-xs-5">Sig. Lev.</label>
         <a ng-href="" ng-click="vm.decreaseStimulus()" ng-class="{linkDisabled: vm.isAutoTesting}">
             <span class="glyphicon glyphicon-minus-sign col-xs-2" aria-hidden="true"></span>
         </a>
@@ -44,6 +53,19 @@
             {{ vm.getStimulus() }}dBHL
         </p>
         <a ng-href="" ng-click="vm.increaseStimulus()" ng-class="{linkDisabled: vm.isAutoTesting}">
+            <span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div class="row">
+        <label for="maskerLevel" class="col-xs-5">Masker</label>
+        <a ng-href="" ng-click="vm.decreaseMaskerLevel()" ng-class="{linkDisabled: vm.isAutoTesting}">
+            <span class="glyphicon glyphicon-minus-sign col-xs-2" aria-hidden="true"></span>
+        </a>
+        <p class="col-xs-3" id="stimulus">
+            {{ vm.getMaskerLevel() }}dBHL
+        </p>
+        <a ng-href="" ng-click="vm.increaseMaskerLevel()" ng-class="{linkDisabled: vm.isAutoTesting}">
             <span class="glyphicon glyphicon-plus-sign col-xs-2" aria-hidden="true"></span>
         </a>
     </div>

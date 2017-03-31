@@ -12,8 +12,10 @@ angular.module('hearingTestApp.controlPanel')
 function controlPanel(configConstants) {
     var side = configConstants.RIGHT_EAR;
     var conduction = configConstants.AC;
+    var masking = configConstants.NO_MASKING;
     var frequency = 250;
     var stimulus = 50;
+    var maskerLevel = 40;
     var panel = {};
 
     panel.resetState = resetState;
@@ -21,10 +23,14 @@ function controlPanel(configConstants) {
     panel.getConduction = getConduction;
     panel.setSide = setSide;
     panel.getSide = getSide;
+    panel.setMasking = setMasking;
+    panel.getMasking = getMasking;
     panel.setFrequency = setFrequency;
     panel.getFrequency = getFrequency;
     panel.setStimulus = setStimulus;
     panel.getStimulus = getStimulus;
+    panel.setMaskerLevel = setMaskerLevel;
+    panel.getMaskerLevel = getMaskerLevel;
 
     return panel;
 
@@ -50,6 +56,14 @@ function controlPanel(configConstants) {
         return side;
     }
 
+    function setMasking(newMasking) {
+        masking = newMasking;
+    }
+
+    function getMasking() {
+        return masking;
+    }
+
     function setFrequency(newFrequency) {
         frequency = newFrequency;
     }
@@ -64,5 +78,13 @@ function controlPanel(configConstants) {
 
     function getStimulus() {
         return stimulus;
+    }
+
+    function setMaskerLevel(newMaskerLevel) {
+        maskerLevel = newMaskerLevel;
+    }
+
+    function getMaskerLevel() {
+        return maskerLevel;
     }
 }

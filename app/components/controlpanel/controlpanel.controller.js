@@ -15,9 +15,12 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
                           controlPanel, audioPlayer, graphMarks, configConstants, simulatedListener) {
     var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
     var frequencyIndex = 0;
-    var minStimulus = -10;
-    var maxStimulus = 120;
-    var stimulusStep = 5;
+    var minStimulus = -10,
+        minMasker = -10;
+    var maxStimulus = 120,
+        maxMasker = 120;
+    var stimulusStep = 5,
+        maskerStep = 5;
     var UP_KEY = 38,
         DOWN_KEY = 40,
         LEFT_KEY = 37,
@@ -34,12 +37,17 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
     vm.setConduction = controlPanel.setConduction;
     vm.getEarSide = controlPanel.getSide;
     vm.setEarSide = controlPanel.setSide;
+    vm.getMasking = controlPanel.getMasking;
+    vm.setMasking = controlPanel.setMasking;
     vm.getFrequency = controlPanel.getFrequency;
     vm.decreaseFrequency = decreaseFrequency;
     vm.increaseFrequency = increaseFrequency;
     vm.getStimulus = controlPanel.getStimulus;
     vm.decreaseStimulus = decreaseStimulus;
     vm.increaseStimulus = increaseStimulus;
+    vm.getMaskerLevel = controlPanel.getMaskerLevel;
+    vm.decreaseMaskerLevel = decreaseMaskerLevel;
+    vm.increaseMaskerLevel = increaseMaskerLevel;
     vm.openCalibration = openCalibration;
     vm.openAutoTest = openAutoTest;
     vm.openAutoSimulated = openAutoSimulated;
@@ -92,6 +100,18 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
             graphMarks.popMark();
             graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
         }
+    }
+
+    function decreaseMaskerLevel() {
+        var currentMaskerLevel = controlPanel.getMaskerLevel();
+        var newMaskerLevel = Math.max(minMasker, currentMaskerLevel - maskerStep);
+        controlPanel.setMaskerLevel(newMaskerLevel);
+    }
+
+    function increaseMaskerLevel() {
+        var currentMaskerLevel = controlPanel.getMaskerLevel();
+        var newMaskerLevel = Math.min(maxMasker, currentMaskerLevel + maskerStep);
+        controlPanel.setMaskerLevel(newMaskerLevel);
     }
 
     function openAutoTest() {
@@ -226,8 +246,13 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
             var frequency = controlPanel.getFrequency();
             var level = controlPanel.getStimulus();
             var ear = controlPanel.getSide();
+            var maskerLevel = controlPanel.getMaskerLevel();
             vm.isPlaying = true;
-            audioPlayer.playTone(frequency, timeInSeconds, level, ear);
+            if (controlPanel.getMasking() === configConstants.MASKING) {
+                audioPlayer.playToneWithMasker(frequency, timeInSeconds, level, ear, maskerLevel);
+            } else {
+                audioPlayer.playTone(frequency, timeInSeconds, level, ear);
+            }
             $timeout(function() {
                 vm.isPlaying = false;
             }, timeInSeconds * 1000);
