@@ -11,11 +11,11 @@ angular.module('hearingTestApp.bufferGenerator')
 
 function bufferGenerator(webAudioContextFactory, configConstants) {
     var audioContext = webAudioContextFactory.getInstance();
-    var generator = {};
+    var RAMP_SIZE = 1000;
 
+    var generator = {};
     generator.generateBuffer = generateBuffer;
     generator.generateBufferWithMasker = generateBufferWithMasker;
-
     return generator;
 
     function generateBuffer(frequency, timeInSeconds, level, ear) {
@@ -29,6 +29,7 @@ function bufferGenerator(webAudioContextFactory, configConstants) {
             nowBuffering[i] = calculateToneAtIndex(i, sampleRate, frequency, level);
         }
 
+        applyRamp(nowBuffering, RAMP_SIZE);
         return audioBuffer;
     }
 
@@ -52,6 +53,8 @@ function bufferGenerator(webAudioContextFactory, configConstants) {
             maskerBuffering[i] = calculateMaskerAtIndex(i, sampleRate, frequency, maskerLevel);
         }
 
+        applyRamp(toneBuffering, RAMP_SIZE);
+        applyRamp(maskerBuffering, RAMP_SIZE);
         return audioBuffer;
     }
 
@@ -69,8 +72,13 @@ function bufferGenerator(webAudioContextFactory, configConstants) {
         return amplitude * Math.random();
     }
 
-    function randomIntFromInterval(min,max) {
-        return Math.floor(Math.random()*(max-min+1)+min);
+    function applyRamp(bufferArray, rampSize) {
+        var endIndex = bufferArray.length - 1;
+        for (var i = 1; i <= rampSize; i++) {
+            var rampValue = (1 - Math.cos((i/rampSize) * Math.PI))/2;
+            bufferArray[i] = bufferArray[i] * rampValue;
+            bufferArray[endIndex] = bufferArray[endIndex--] * rampValue;
+        }
     }
 
 }
