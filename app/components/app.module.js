@@ -21,6 +21,8 @@ angular
         'webAudio',
         'domToImage',
         'cryptoLibrary',
+        'mathjs',
+        'fastFourierTransform',
         'hearingTestApp.main',
         'hearingTestApp.calibration',
         'hearingTestApp.controlPanel',

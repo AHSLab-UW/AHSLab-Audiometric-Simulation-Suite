@@ -90,10 +90,13 @@
     <script src="bower_components/ng-file-upload-shim/ng-file-upload-shim.js"></script>
     <script src="bower_components/angularPrint/angularPrint.js"></script>
     <script src="bower_components/dom-to-image/src/dom-to-image.js"></script>
+    <script src="bower_components/mathjs/dist/math.min.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="components/gaussian/gaussian.js"></script>
+        <script src="components/fastfouriertransform/dsp.js"></script>
         <script src="components/app.module.js"></script>
         <script src="components/app.routes.js"></script>
         <script src="components/main/main.module.js"></script>
@@ -133,6 +136,10 @@
         <script src="components/fileprocessor/fileprocessor.service.js"></script>
         <script src="components/simulatedlistener/simulatedlistener.module.js"></script>
         <script src="components/simulatedlistener/simulatedlistener.service.js"></script>
+        <script src="components/mathjs/mathjs.module.js"></script>
+        <script src="components/mathjs/mathjs.service.js"></script>
+        <script src="components/fastfouriertransform/fastfouriertransform.module.js"></script>
+        <script src="components/fastfouriertransform/fastfouriertransform.service.js"></script>
         <!-- endbuild -->
 </body>
 </html>
