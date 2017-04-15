@@ -53,7 +53,6 @@ function bufferGenerator(webAudioContextFactory, configConstants, mathjsInstance
         var maskerBuffering = audioBuffer.getChannelData(otherSide);
         for (var i = 0; i < bufferLength; i++) {
             maskerBuffering[i] = noise[i];
-            //maskerBuffering[i] = calculateMaskerAtIndex(i, sampleRate, frequency, maskerLevel);
         }
 
         applyRamp(toneBuffering, RAMP_SIZE);
@@ -66,13 +65,6 @@ function bufferGenerator(webAudioContextFactory, configConstants, mathjsInstance
         var Lcalib = 60;
         var amplitude = peakCalibrationValue * Math.pow(10, (level-Lcalib)/20);
         return amplitude * Math.sin(2 * Math.PI * frequency * (i/sampleRate));
-    }
-
-    function calculateMaskerAtIndex(i, sampleRate, frequency, level) {
-        var peakCalibrationValue = 0.01;
-        var Lcalib = 60;
-        var amplitude = peakCalibrationValue * Math.pow(10, (level-Lcalib)/20);
-        return amplitude * Math.random();
     }
 
     function createNoise(bufferSize, signalFrequency, sampleRate, maskerLevel) {
