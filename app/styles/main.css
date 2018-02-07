@@ -42,8 +42,8 @@ body {
 /* SIMULATOR */
 
 .simulator {
-    min-height: 550px;
-    max-height: 550px;
+    min-height: 590px;
+    max-height: 590px;
     min-width: 895px;
     max-width: 895px;
     margin: 0 auto;
@@ -61,7 +61,7 @@ body {
     background: #DDD;
     border: #AAA solid 1px;
     border-radius: 4px;
-    height: 520px;
+    height: 540px;
 }
 
 .control-panel h4 {
