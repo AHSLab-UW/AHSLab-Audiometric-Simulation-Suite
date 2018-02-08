@@ -8,7 +8,7 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     var domToImage = domToImageFactory.getInstance();
     var cryptoLibrary = cryptoLibraryFactory.getInstance();
     var encryptionKey = "MagicResultKey";
-    var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
+    var frequencyOptions = [250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000]; // 125, 12000 removed per Dr. Shen request 02/01/2018
     var MIN_STIMULUS = -10;
     var MAX_STIMULUS = 120;
 
@@ -28,8 +28,9 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     function importResults(givenData, type) {
         if (type === 'encrypted') {
             try {
-                var markList = parseData(cryptoLibrary.decrypt(encryptionKey, givenData));
+                let markList = parseData(cryptoLibrary.decrypt(encryptionKey, givenData));
                 if (markList !== false) {
+                    console.log(markList);
                     simulatedListener.setPatientData(markList);
                     return true;
                 }
@@ -43,7 +44,8 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
                 graphMarks.clearMarks();
                 for (var i = 0; i < markList.length; i++) {
                     var m = markList[i];
-                    graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction);
+                    console.log('m',m);
+                    graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction, m.masked,m.response);
                 }
                 return true;
             }
@@ -88,19 +90,27 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
 
     function convertMarksToString() {
         var markList = graphMarks.getMarks().slice(0);
-        var result = 'Frequency,Stimulus,Ear,Conduction\n';
+        console.log('mark list',markList);
+        var result = 'Frequency,Stimulus,Ear,Conduction,Masked,Response\n';
         for (var i = 0; i < markList.length; i++) {
             var m = markList[i];
+            console.log('markList', m);
             var currentEar, currentConduction;
+            var masked = m.masked;
+            let response = m.response;
             if (m.ear === configConstants.LEFT_EAR) currentEar = 'left';
             else currentEar = 'right';
             if (m.conduction === configConstants.AC) currentConduction = 'AC';
             else currentConduction = 'BC';
+
             result = result +
                      m.frequency + ',' +
                      m.stimulus + ',' +
                      currentEar + ',' +
-                     currentConduction + '\n';
+                     currentConduction + ',' +
+                     masked + ',' +
+                     response + '\n';
+            console.log('res', result);
         }
         return result;
     }
@@ -119,10 +129,19 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
             var frequency = parseFrequency(row[0]),
                 stimulus = parseStimulus(row[1]),
                 ear = parseEar(row[2]),
-                conduction = parseConduction(row[3]);
-            if (frequency !== false && stimulus !== false && ear !== false && conduction !== false) {
-                markList.push({frequency:frequency,stimulus:stimulus,ear:ear,conduction:conduction});
+                conduction = parseConduction(row[3]),
+                masking = parseMasking(row[4]),
+                response = parseResponse(row[5]);
+            // If the response value doesn't exist we assume they are all responses
+          console.log('res',frequency, stimulus, ear,conduction,masking,response);
+            if (response === false) {
+              response = configConstants.RESPONSE;
+            }
+          console.log('res',frequency, stimulus, ear,conduction,masking,response);
+            if (frequency !== false && stimulus !== false && ear !== false && conduction !== false && masking !== false && response !== false) {
+                markList.push({frequency:frequency,stimulus:stimulus,ear:ear,conduction:conduction,masked:masking,response: response});
             } else {
+              console.log("1");
                 $window.alert('File cannot be imported, data is not formatted correctly.');
                 return false;
             }
@@ -152,6 +171,18 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
         if (c === 'AC') return configConstants.AC;
         if (c === 'BC') return configConstants.BC;
         return false;
+    }
+
+    function parseMasking(m) {
+      if (m[0] === "1") return configConstants.MASKING;
+      if (m[0] === "0") return configConstants.NO_MASKING;
+      return false;
+    }
+
+    function parseResponse(r) {
+      if (r === "1") return configConstants.RESPONSE;
+      if (r === "0") return configConstants.NO_RESPONSE;
+      return false;
     }
 
 }

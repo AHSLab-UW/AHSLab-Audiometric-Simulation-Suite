@@ -27,18 +27,30 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         RIGHT_KEY = 39,
         SPACE_KEY = 32,
         ENTER_KEY = 13,
-        D_KEY = 68;
+        R_KEY = 82,
+        D_KEY = 68,
+        C_KEY = 67,
+        M_KEY = 77,
+        E_KEY = 69;
 
     var vm = this;
+    vm.side = controlPanel.getSide();
+    vm.masker = controlPanel.getMasking();
+    vm.response = controlPanel.getResponse();
+    console.log(vm.masker);
+    vm.conduction = controlPanel.getConduction();
     vm.isPlaying = false;
     vm.isSimulated = false;
     vm.simulatedResponse = false;
+    vm.isGraphMaker = false;
     vm.getConduction = controlPanel.getConduction;
     vm.setConduction = controlPanel.setConduction;
     vm.getEarSide = controlPanel.getSide;
     vm.setEarSide = controlPanel.setSide;
     vm.getMasking = controlPanel.getMasking;
     vm.setMasking = controlPanel.setMasking;
+    vm.getResponse = controlPanel.getResponse;
+    vm.setResponse = controlPanel.setResponse;
     vm.getFrequency = controlPanel.getFrequency;
     vm.decreaseFrequency = decreaseFrequency;
     vm.increaseFrequency = increaseFrequency;
@@ -55,10 +67,16 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
     vm.openManualSimulated = openManualSimulated;
     vm.recordResult = recordResult;
     vm.endManualTest = endManualTest;
+    vm.endGraphMaker = endGraphMaker;
+    vm.graphMakerOpened = false;
     vm.presentTone = presentTone;
     vm.openImport = openImport;
     vm.openExport = openExport;
     vm.clearData = clearData;
+    vm.openGraphMaker = openGraphMaker;
+    vm.cycleConduction = cycleConduction;
+    vm.cycleEar = cycleEar;
+    vm.cycleRes = cycleRes;
 
     setHotKeys();
 
@@ -66,17 +84,18 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         frequencyIndex = Math.max(0, frequencyIndex - 1);
         var newFrequency = frequencyOptions[frequencyIndex];
         controlPanel.setFrequency(newFrequency);
-        if (vm.isManualTesting) {
+        if (vm.isManualTesting||vm.isGraphMaker) {
             graphMarks.popMark();
             graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
         }
     }
 
     function increaseFrequency() {
+
         frequencyIndex = Math.min(frequencyOptions.length - 1, frequencyIndex + 1);
         var newFrequency = frequencyOptions[frequencyIndex];
         controlPanel.setFrequency(newFrequency);
-        if (vm.isManualTesting) {
+        if (vm.isManualTesting||vm.isGraphMaker) {
             graphMarks.popMark();
             graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
         }
@@ -86,7 +105,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         var currentStimulus = controlPanel.getStimulus();
         var newStimulus = Math.max(minStimulus, currentStimulus - stimulusStep);
         controlPanel.setStimulus(newStimulus);
-        if (vm.isManualTesting) {
+        if (vm.isManualTesting||vm.isGraphMaker) {
             graphMarks.popMark();
             graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
         }
@@ -96,7 +115,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         var currentStimulus = controlPanel.getStimulus();
         var newStimulus = Math.min(maxStimulus, currentStimulus + stimulusStep);
         controlPanel.setStimulus(newStimulus);
-        if (vm.isManualTesting) {
+        if (vm.isManualTesting||vm.isGraphMaker) {
             graphMarks.popMark();
             graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
         }
@@ -136,7 +155,8 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
                 graphMarks.pushResultMark(controlPanel.getFrequency(),
                                           patientLevel,
                                           controlPanel.getSide(),
-                                          controlPanel.getConduction());
+                                          controlPanel.getConduction(),
+                                          controlPanel.getResponse());
                 simulatedListener.setPatientData(false);
             } else {
                 $window.alert('No data to determine simulated result for current parameters.');
@@ -165,6 +185,19 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
                 openManualTest();
             }
         });
+    }
+
+    function openGraphMaker() {
+      if (!vm.graphMakerOpened){
+        $uibModal.open({
+          templateUrl: 'components/graphMakerTemplates/graphTemplate.html',
+          controller: 'GraphMakerTemp',
+          controllerAs: 'vm'
+        });
+      }
+      vm.isGraphMaker = true;
+      vm.graphMakerOpened = true;
+      graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 
     function openCalibration() {
@@ -200,27 +233,54 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
 
     function setHotKeys() {
         $document.bind('keydown', function(event) {
-            if (vm.isManualTesting) {
+            if (vm.isManualTesting ||vm.isGraphMaker) {
                 if (event.keyCode == LEFT_KEY) decreaseFrequency();
                 if (event.keyCode == RIGHT_KEY) increaseFrequency();
                 if (event.keyCode == DOWN_KEY) decreaseStimulus();
                 if (event.keyCode == UP_KEY) increaseStimulus();
-                if (event.keyCode == SPACE_KEY) presentTone();
+                if (event.keyCode == SPACE_KEY && !vm.isGraphMaker) presentTone();
                 if (event.keyCode == ENTER_KEY) recordResult();
-                if (event.keyCode == D_KEY) endManualTest();
+                if (event.keyCode == C_KEY && vm.isGraphMaker) cycleConduction();
+                if (event.keyCode == E_KEY && vm.isGraphMaker) cycleEar();
+                if (event.keyCode == R_KEY && vm.isGraphMaker) cycleRes();
+                if (event.keyCode == M_KEY && vm.isGraphMaker) cycleMasker();
+                if (event.keyCode == D_KEY && vm.isGraphMaker){ endGraphMaker();}
+                else if(event.keyCode == D_KEY && vm.isManualTesting){
+                  endManualTest();
+                }
+
+
                 $scope.$apply();
             }
         });
     }
 
+    function cycleEar(){
+      vm.side = vm.side === 1 ? 0 : 1;
+      controlPanel.setSide(vm.side);
+    }
+    function cycleRes(){
+      vm.response = vm.response === 1 ? 0 : 1;
+      controlPanel.setResponse(vm.response);
+    }
+    function cycleConduction(){
+      vm.conduction = vm.conduction === 1 ? 0 : 1;
+      controlPanel.setConduction(vm.conduction);
+    }
+    function cycleMasker(){
+      vm.masker = vm.masker === 1 ? 0 : 1;
+      controlPanel.setMasking(vm.masker);
+    }
+
     function recordResult() {
-        graphMarks.popMark(); // pop cursor mark
-        graphMarks.pushResultMark(controlPanel.getFrequency(),
-                                  controlPanel.getStimulus(),
-                                  controlPanel.getSide(),
-                                  controlPanel.getConduction(),
-                                  controlPanel.getMasking());
-        graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+      graphMarks.popMark(); // pop cursor mark
+      graphMarks.pushResultMark(controlPanel.getFrequency(),
+        controlPanel.getStimulus(),
+        controlPanel.getSide(),
+        controlPanel.getConduction(),
+        controlPanel.getMasking(),
+        controlPanel.getResponse());
+      graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 
     function endManualTest() {
@@ -229,6 +289,13 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         vm.isSimulated = false;
         simulatedListener.setPatientData(false);
     }
+    function endGraphMaker() {
+      graphMarks.popMark(); // pop cursor mark
+      vm.isManualTesting = false;
+      vm.isSimulated = false;
+      vm.isGraphMaker = false;
+      simulatedListener.setPatientData(false);
+    }
 
     function presentTone() {
         var timeInSeconds = 1;
@@ -236,7 +303,8 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
             vm.simulatedResponse = simulatedListener.getResponse(controlPanel.getStimulus(),
                                                                  controlPanel.getFrequency(),
                                                                  controlPanel.getSide(),
-                                                                 controlPanel.getConduction());
+                                                                 controlPanel.getConduction(),
+                                                                 controlPanel.getMasking());
             vm.isPlaying = true;
             $timeout(function() {
                 vm.isPlaying = false;

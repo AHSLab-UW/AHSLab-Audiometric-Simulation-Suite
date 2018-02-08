@@ -13,6 +13,7 @@ function controlPanel(configConstants) {
     var side = configConstants.RIGHT_EAR;
     var conduction = configConstants.AC;
     var masking = configConstants.NO_MASKING;
+    var response = configConstants.RESPONSE;
     var frequency = 250;
     var stimulus = 50;
     var maskerLevel = 40;
@@ -25,6 +26,8 @@ function controlPanel(configConstants) {
     panel.getSide = getSide;
     panel.setMasking = setMasking;
     panel.getMasking = getMasking;
+    panel.setResponse = setResponse;
+    panel.getResponse = getResponse;
     panel.setFrequency = setFrequency;
     panel.getFrequency = getFrequency;
     panel.setStimulus = setStimulus;
@@ -62,6 +65,14 @@ function controlPanel(configConstants) {
 
     function getMasking() {
         return masking;
+    }
+
+    function setResponse(newResponse) {
+      response = newResponse;
+    }
+
+    function getResponse() {
+      return response;
     }
 
     function setFrequency(newFrequency) {

@@ -1,5 +1,8 @@
 <div ng-repeat="mark in vm.marks">
-    <img alt="" src="{{ mark.path }}" width="15px" height="15px" style="position: absolute;
+    <img alt="" src="{{ mark.path }}" width={{mark.width+"px"}} height={{mark.height+"px"}} style="position: absolute;
                                                                        top: {{ mark.top }};
                                                                        left: {{ mark.left }};"/>
 </div>
+<script>
+
+</script>

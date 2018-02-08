@@ -1,10 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div id="importDiv">
+  <div class="modal-header">
+    <h2 class="modal-title">Audiograph Template</h2>
+    <p>Uploads a pre-made audiograph with the described </p>
+  </div>
+  <div class="modal-body">
+    <div class="container-fluid">
+      <div class="row">
+        <h4>Choose a Template to use:</h4>
+        <div class="list-group">
+          <a id="0" class="list-group-item">Blank Audiograph</a>
+          <a id="1" class="list-group-item">Mild Bilateral Conductive Hearing Loss</a>
+          <a id="2" class="list-group-item">Severe Bilateral Conductive Hearing Loss</a>
+          <a id="3" class="list-group-item">Severe Unilateral Conductive Hearing Loss</a>
+          <!--<a class="list-group-item">Third item</a>-->
+        </div>
+        <!--<br/>-->
+        <!--<input id="fileSelect" type="file" name="file" accept=".csv"/>-->
+        <!--<br/>-->
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="vm.close()">Close</button>
+    <button type="button" class="btn btn-primary" ng-click="vm.selection()">Ok</button>
+  </div>
+</div>
+
+<script >
+  $(function(){
+    console.log('ready');
+
+    $('.list-group a').click(function(e) {
+      e.preventDefault()
+
+      $that = $(this);
+
+      $('.list-group').find('a').removeClass('active');
+      $that.addClass('active');
+    });
+  })
+</script>
