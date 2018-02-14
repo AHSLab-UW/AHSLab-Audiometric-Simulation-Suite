@@ -13,15 +13,15 @@ angular
 
 function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
                           controlPanel, audioPlayer, graphMarks, configConstants, simulatedListener) {
-    var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
-    var frequencyIndex = 0;
-    var minStimulus = -10,
+    let frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
+    let frequencyIndex = 1;
+    let minStimulus = -10,
         minMasker = -10;
-    var maxStimulus = 120,
+    let maxStimulus = 120,
         maxMasker = 120;
-    var stimulusStep = 5,
+    let stimulusStep = 5,
         maskerStep = 5;
-    var UP_KEY = 38,
+    let UP_KEY = 38,
         DOWN_KEY = 40,
         LEFT_KEY = 37,
         RIGHT_KEY = 39,
@@ -33,11 +33,10 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         M_KEY = 77,
         E_KEY = 69;
 
-    var vm = this;
+    let vm = this;
     vm.side = controlPanel.getSide();
     vm.masker = controlPanel.getMasking();
     vm.response = controlPanel.getResponse();
-    console.log(vm.masker);
     vm.conduction = controlPanel.getConduction();
     vm.isPlaying = false;
     vm.isSimulated = false;
@@ -91,7 +90,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
     }
 
     function increaseFrequency() {
-
         frequencyIndex = Math.min(frequencyOptions.length - 1, frequencyIndex + 1);
         var newFrequency = frequencyOptions[frequencyIndex];
         controlPanel.setFrequency(newFrequency);
@@ -248,8 +246,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
                 else if(event.keyCode == D_KEY && vm.isManualTesting){
                   endManualTest();
                 }
-
-
                 $scope.$apply();
             }
         });

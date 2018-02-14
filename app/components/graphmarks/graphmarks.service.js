@@ -49,7 +49,6 @@ function graphMarks(graphAxis, marks, configConstants) {
         if(frequency === 125 || frequency === 12000) {
           return
         }
-        console.log(typeof(masking), response, typeof(response));
         var top, left, mark, newConduction, width, height;
         top = graphAxis.yAxis[stimulus];
         left = graphAxis.xAxis[frequency];
