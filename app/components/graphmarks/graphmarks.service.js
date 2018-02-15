@@ -60,18 +60,20 @@ function graphMarks(graphAxis, marks, configConstants) {
           height = 15;
           if (ear === configConstants.LEFT_EAR) {
             if (masking === configConstants.MASKING){
+              markType = 'lm';
                 if (response === configConstants.RESPONSE){
                   mark = marks.AC_MASKED_LEFT;
-                  markType = "lm";
                 } else {
                   mark = marks.AC_MASKED_LEFT_NO;
+
                   width = 20;
                   height = 20;
                 }
             } else {
+              markType = 'lu';
               if (response === configConstants.RESPONSE){
                 mark = marks.AC_UNMASKED_LEFT;
-                markType = "lu";
+
               } else {
                 mark = marks.AC_UNMASKED_LEFT_NO;
                 width = 20;
@@ -81,9 +83,9 @@ function graphMarks(graphAxis, marks, configConstants) {
             left = (parseInt(graphAxis.xAxis[frequency].split('p')[0]) +1 ) + 'px';
           } else {
             if (masking === configConstants.MASKING){
+              markType = 'rm';
               if (response === configConstants.RESPONSE) {
                 mark = marks.AC_MASKED_RIGHT;
-                markType = "rm";
               } else {
                 mark = marks.AC_MASKED_RIGHT_NO;
                 width = 20;
@@ -91,9 +93,9 @@ function graphMarks(graphAxis, marks, configConstants) {
                 left = (parseInt(graphAxis.xAxis[frequency].split('p')[0]) -4 ) + 'px';
               }
             } else{
+              markType = 'ru';
               if (response === configConstants.RESPONSE) {
                 mark = marks.AC_UNMASKED_RIGHT;
-                markType = "ru";
               } else {
                 mark = marks.AC_UNMASKED_RIGHT_NO;
                 width = 20;
@@ -123,9 +125,11 @@ function graphMarks(graphAxis, marks, configConstants) {
                     mark = marks.BC_UNMASKED_LEFT;
                     width = 25;
                     height = 12;
+                    ear = configConstants.RIGHT_EAR;
                   } else {
                     left = (parseInt(graphAxis.xAxisRightBC[frequency].split('p')[0])+2.5) + 'px';
                     mark = marks.BC_UNMASKED_LEFT_NO;
+                    ear = configConstants.RIGHT_EAR;
                     width = 27;
                     height = 20;
                   }
@@ -163,7 +167,8 @@ function graphMarks(graphAxis, marks, configConstants) {
 
         // Structure our info
         if(markType){
-          markJ[0][markType][0][frequency.toString()] = { "frequency": frequency, "stimulus": stimulus, "left":x,"top":y};
+          markJ[0][markType][0][frequency.toString()] = { 'frequency': frequency, 'stimulus': stimulus,
+            'response': response, 'left':x,'top':y};
         }
 
         // Sorts the info so the line is drawn from lowest freq to highest
@@ -193,10 +198,9 @@ function graphMarks(graphAxis, marks, configConstants) {
         // if newMark has the same frequency and symbol as an older mark,
         // update the older mark to the new stimulus level
         for(var i = 0; i < markList.length; i++) {
-            if (markList[i].frequency === newMark.frequency
-                && markList[i].path === newMark.path) {
-                markList[i].stimulus = newMark.stimulus;
-                markList[i].top = newMark.top;
+            if (markList[i].frequency === newMark.frequency && markList[i].ear === newMark.ear
+                && markList[i].conduction === newMark.conduction && markList[i].masked === newMark.masked) {
+                markList[i] = newMark;
                 return;
             }
         }
@@ -251,32 +255,41 @@ function graphMarks(graphAxis, marks, configConstants) {
         color = key[0] === 'l' ? blue : red;
         ctx.strokeStyle = color;
         ctx.lineWidth=4;
-        prvX = null;
-        prvY = null;
+        let prvX = null;
+        let prvY = null;
         Object.keys(marks[0][key][0]).forEach(function(mark) {
           let x = marks[0][key][0][mark].left;
           let y = marks[0][key][0][mark].top;
+          let response = marks[0][key][0][mark].response;
           if (prvX !== null) {
             let angleDeg = getXY(x, y, prvX, prvY);
+            let aX, bX, aY, bY = 0;
             if (prvY < y) {
-              var aX = prvX + Math.cos(angleDeg) * offset;
-              var aY = prvY + Math.sin(angleDeg) * offset;
+              aX = prvX + Math.cos(angleDeg) * offset;
+              aY = prvY + Math.sin(angleDeg) * offset;
 
-              var bX = x - Math.cos(angleDeg) * offset;
-              var bY = y - Math.sin(angleDeg) * offset;
+              bX = x - Math.cos(angleDeg) * offset;
+              bY = y - Math.sin(angleDeg) * offset;
             } else {
-              var aX = x - Math.cos(angleDeg) * offset;
-              var aY = y - Math.sin(angleDeg) * offset;
+              aX = x - Math.cos(angleDeg) * offset;
+              aY = y - Math.sin(angleDeg) * offset;
 
-              var bX = prvX + Math.cos(angleDeg) * offset;
-              var bY = prvY + Math.sin(angleDeg) * offset;
+              bX = prvX + Math.cos(angleDeg) * offset;
+              bY = prvY + Math.sin(angleDeg) * offset;
             }
             ctx.moveTo(aX, aY);
-            ctx.lineTo(bX, bY);
+            if(response) {
+              ctx.lineTo(bX, bY);
+            }
 
           }
-          prvX = x;
-          prvY = y;
+          if (response) {
+            prvX = x;
+            prvY = y;
+          } else {
+            prvX = null;
+            prvY = null;
+          }
           ctx.closePath();
           ctx.stroke();
         });

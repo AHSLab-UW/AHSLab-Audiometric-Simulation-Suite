@@ -67,7 +67,7 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     }
 
     function exportDataPoints(filename, type) {
-        var text = convertMarksToString();
+        var text = convertMarksToString(type);
         var blob;
         if (type === 'csv') {
             blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
@@ -87,31 +87,44 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
             document.body.removeChild(link);
         }
     }
-
-    function convertMarksToString() {
-        var markList = graphMarks.getMarks().slice(0);
-        console.log('mark list',markList);
-        var result = 'Frequency,Stimulus,Ear,Conduction,Masked,Response\n';
-        for (var i = 0; i < markList.length; i++) {
-            var m = markList[i];
-            console.log('markList', m);
-            var currentEar, currentConduction;
-            var masked = m.masked;
+    // Updates to fix the exporting of no-response values for the mark list refer to Issue 2 & 3 - Feb 2018
+    function convertMarksToString(type) {
+        let markList = graphMarks.getMarks().slice(0);
+        // console.log('mark list',markList);
+        let result;
+        if(type==='csv') {
+          result = 'Frequency,Stimulus,Ear,Conduction,Masked,Response\n';
+        } else if(type === 'encrypted'){
+          result = 'Frequency,Stimulus,Ear,Conduction,Masked\n';
+        }
+        for (let i = 0; i < markList.length; i++) {
+            let m = markList[i];
+            // console.log('markList', m);
+            let currentEar, currentConduction;
+            let masked = m.masked;
             let response = m.response;
             if (m.ear === configConstants.LEFT_EAR) currentEar = 'left';
             else currentEar = 'right';
             if (m.conduction === configConstants.AC) currentConduction = 'AC';
             else currentConduction = 'BC';
-
-            result = result +
-                     m.frequency + ',' +
-                     m.stimulus + ',' +
-                     currentEar + ',' +
-                     currentConduction + ',' +
-                     masked + ',' +
-                     response + '\n';
-            console.log('res', result);
+            if (type === 'csv') {
+                result = result +
+                  m.frequency + ',' +
+                  m.stimulus + ',' +
+                  currentEar + ',' +
+                  currentConduction + ',' +
+                  masked + ',' +
+                  response + '\n';
+            } else if (type === 'encrypted' && response === configConstants.RESPONSE) {
+                result = result +
+                  m.frequency + ',' +
+                  m.stimulus + ',' +
+                  currentEar + ',' +
+                  currentConduction + ',' +
+                  masked + '\n';
+            }
         }
+        console.log('res', result);
         return result;
     }
 
