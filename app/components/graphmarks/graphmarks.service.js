@@ -129,7 +129,7 @@ function graphMarks(graphAxis, marks, configConstants) {
                   } else {
                     left = (parseInt(graphAxis.xAxisRightBC[frequency].split('p')[0])+2.5) + 'px';
                     mark = marks.BC_UNMASKED_LEFT_NO;
-                    ear = configConstants.RIGHT_EAR;
+                    ear = configConstants.RIGHT_EARgrunt;
                     width = 27;
                     height = 20;
                   }

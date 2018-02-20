@@ -36,7 +36,7 @@
            ng-class="{active: vm.getResponse() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">No Response</a>
       </div>
     </div>
-    <br>
+    <hr style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
     <div class="row">
         <label for="frequency" class="col-xs-5">Frequency</label>
         <a ng-href="" ng-click="vm.decreaseFrequency()" ng-class="{linkDisabled: vm.isAutoTesting}">
@@ -76,7 +76,38 @@
         </a>
     </div>
 
-    <div class="row">
+    <div class="row main dropdown" ng-hide="vm.isAutoTesting||vm.isManualTesting||vm.isGraphMaker">
+        <div class="col-xs-12" >
+            <button type="button" class="col-xs-12 col-sm-12 btn btn-md btn-success"
+                  >Hearing Test</button>
+            <div id="hearingTest" class="dropdown-content">
+                <a ng-click="vm.openAutoTest()">Automatic</a>
+                <a ng-click="vm.openManualTest()">Manual</a>
+            </div>
+        </div>
+    </div>
+    <div class="row main dropdown" ng-hide="vm.isAutoTesting||vm.isManualTesting||vm.isGraphMaker">
+        <div class="col-xs-12" >
+            <button type="button" class="col-xs-12 col-sm-12 btn btn-md btn-primary"
+                    >Audiometry Practice</button>
+            <div id="practice" class="dropdown-content">
+                <a ng-click="vm.openAutoSimulated()">Automatic</a>
+                <a ng-click="vm.openManualSimulated()">Manual</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row main" ng-hide="vm.isAutoTesting || vm.isManualTesting||vm.isGraphMaker">
+        <div class="col-xs-12">
+            <button type="button" class="col-xs-12 col-sm-12 btn btn-md btn-info" ng-click="vm.openGraphMaker()">
+                Draw Audiogram
+            </button>
+        </div>
+    </div>
+
+    <!--                    Removed: 02/16/2018 - in favor of drop downs, keeping for future reference               -->
+
+    <!-- <div class="row">
         <div class="col-xs-12">
             <button type="button" class="col-xs-12 col-sm-12 btn btn-sm btn-success"
                     ng-click="vm.openAutoTest()" ng-hide="vm.isAutoTesting||vm.isManualTesting||vm.isGraphMaker">
@@ -110,27 +141,19 @@
                 Manual Simulated
             </button>
         </div>
-    </div>
+    </div>-->
 
     <hr style="border: 1px solid #999; margin-top: 5px; margin-bottom: 10px;">
 
     <div class="row" ng-hide="vm.isAutoTesting || vm.isManualTesting||vm.isGraphMaker">
         <div class="col-xs-12">
-            <button type="button" class="col-xs-12 col-sm-12 btn btn-xs btn-primary"
+            <button type="button" class="col-xs-12 col-sm-12 btn btn-xs btn-warning"
                     ng-click="vm.openCalibration()">
                 Calibration
             </button>
         </div>
     </div>
 
-    <div class="row" ng-hide="vm.isAutoTesting || vm.isManualTesting||vm.isGraphMaker">
-        <div class="col-xs-12">
-            <button type="button" class="col-xs-12 col-sm-12 btn btn-xs btn-primary"
-                    ng-click="vm.openGraphMaker()">
-              Graph Maker
-            </button>
-        </div>
-    </div>
 
     <div class="row" ng-show="vm.isManualTesting && vm.isSimulated">
         <div class="col-xs-12">
@@ -150,7 +173,7 @@
     <div class="row" ng-hide="vm.isAutoTesting || vm.isManualTesting||vm.isGraphMaker">
         <div class="col-xs-3"><button class="btn btn-xs btn-default" ng-click="vm.openImport()">Import</button></div>
         <div class="col-xs-3"><button class="btn btn-xs btn-default" ng-click="vm.openExport()">Export</button></div>
-        <div class="col-xs-3"><button class="btn btn-xs btn-warning" ng-click="vm.clearData()">Clear Graph</button></div>
+        <div class="col-xs-3"><button class="btn btn-xs btn-danger" ng-click="vm.clearData()">Clear Graph</button></div>
     </div>
 
     <div id="manualTest" ng-show="vm.isManualTesting" style="font-size: 75%;">
@@ -319,3 +342,4 @@
   </div>
 
 </div>
+

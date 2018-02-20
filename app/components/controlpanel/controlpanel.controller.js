@@ -76,8 +76,24 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
     vm.cycleConduction = cycleConduction;
     vm.cycleEar = cycleEar;
     vm.cycleRes = cycleRes;
-
+    vm.myFunction = myFunction;
+    vm.myFunction2 = myFunction2;
     setHotKeys();
+
+    function myFunction(){
+        console.log('drop down');
+        //document.getElementById('hearingTest').classList.toggle('show');
+        document.getElementById('hearingTest').style.display = 'block';
+        setTimeout(()=>{
+          document.getElementById('hearingTest').style.display = 'hidden';
+        },1000);
+
+    }
+    function myFunction2(){
+      console.log('drop down');
+      //document.getElementById('hearingTest').classList.toggle('show');
+      document.getElementById('practice').style.display = 'block';
+    }
 
     function decreaseFrequency() {
         frequencyIndex = Math.max(0, frequencyIndex - 1);
