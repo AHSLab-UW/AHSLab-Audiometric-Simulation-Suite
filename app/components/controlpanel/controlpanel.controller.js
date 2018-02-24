@@ -13,15 +13,15 @@ angular
 
 function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
                           controlPanel, audioPlayer, graphMarks, configConstants, simulatedListener) {
-    let frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
-    let frequencyIndex = 1;
-    let minStimulus = -10,
+    var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
+    var frequencyIndex = 1;
+    var minStimulus = -10,
         minMasker = -10;
-    let maxStimulus = 120,
+    var maxStimulus = 120,
         maxMasker = 120;
-    let stimulusStep = 5,
+    var stimulusStep = 5,
         maskerStep = 5;
-    let UP_KEY = 38,
+    var UP_KEY = 38,
         DOWN_KEY = 40,
         LEFT_KEY = 37,
         RIGHT_KEY = 39,
@@ -33,7 +33,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         M_KEY = 77,
         E_KEY = 69;
 
-    let vm = this;
+    var vm = this;
     vm.side = controlPanel.getSide();
     vm.masker = controlPanel.getMasking();
     vm.response = controlPanel.getResponse();
@@ -76,24 +76,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
     vm.cycleConduction = cycleConduction;
     vm.cycleEar = cycleEar;
     vm.cycleRes = cycleRes;
-    vm.myFunction = myFunction;
-    vm.myFunction2 = myFunction2;
     setHotKeys();
-
-    function myFunction(){
-        console.log('drop down');
-        //document.getElementById('hearingTest').classList.toggle('show');
-        document.getElementById('hearingTest').style.display = 'block';
-        setTimeout(()=>{
-          document.getElementById('hearingTest').style.display = 'hidden';
-        },1000);
-
-    }
-    function myFunction2(){
-      console.log('drop down');
-      //document.getElementById('hearingTest').classList.toggle('show');
-      document.getElementById('practice').style.display = 'block';
-    }
 
     function decreaseFrequency() {
         frequencyIndex = Math.max(0, frequencyIndex - 1);

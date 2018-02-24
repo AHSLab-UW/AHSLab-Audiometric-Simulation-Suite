@@ -28,7 +28,7 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     function importResults(givenData, type) {
         if (type === 'encrypted') {
             try {
-                let markList = parseData(cryptoLibrary.decrypt(encryptionKey, givenData));
+                var markList = parseData(cryptoLibrary.decrypt(encryptionKey, givenData));
                 if (markList !== false) {
                     console.log(markList);
                     simulatedListener.setPatientData(markList);
@@ -44,7 +44,6 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
                 graphMarks.clearMarks();
                 for (var i = 0; i < markList.length; i++) {
                     var m = markList[i];
-                    console.log('m',m);
                     graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction, m.masked,m.response);
                 }
                 return true;
@@ -89,20 +88,20 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     }
     // Updates to fix the exporting of no-response values for the mark list refer to Issue 2 & 3 - Feb 2018
     function convertMarksToString(type) {
-        let markList = graphMarks.getMarks().slice(0);
+        var markList = graphMarks.getMarks().slice(0);
         // console.log('mark list',markList);
-        let result;
+        var result;
         if(type==='csv') {
           result = 'Frequency,Stimulus,Ear,Conduction,Masked,Response\n';
         } else if(type === 'encrypted'){
           result = 'Frequency,Stimulus,Ear,Conduction,Masked\n';
         }
-        for (let i = 0; i < markList.length; i++) {
-            let m = markList[i];
+        for (var i = 0; i < markList.length; i++) {
+            var m = markList[i];
             // console.log('markList', m);
-            let currentEar, currentConduction;
-            let masked = m.masked;
-            let response = m.response;
+            var currentEar, currentConduction;
+            var masked = m.masked;
+            var response = m.response;
             if (m.ear === configConstants.LEFT_EAR) currentEar = 'left';
             else currentEar = 'right';
             if (m.conduction === configConstants.AC) currentConduction = 'AC';

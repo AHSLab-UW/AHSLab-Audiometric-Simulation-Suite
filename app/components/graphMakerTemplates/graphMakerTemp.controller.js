@@ -17,7 +17,6 @@ function GraphCtrl($uibModalInstance, $window, fileProcessor) {
 
   function selection() {
     var selected = document.getElementsByClassName('active')[4].id;
-    console.log(selected);
     var filename = '';
     if(selected === '0'){
       close();

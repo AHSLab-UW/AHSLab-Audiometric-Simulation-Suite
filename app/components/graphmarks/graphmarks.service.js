@@ -9,7 +9,7 @@ angular
 function graphMarks(graphAxis, marks, configConstants) {
     var markList = [];
     // MarkJ (Mark JSON) stores the mark list and mark locations in a JSON Object
-    let markJ = [{
+    var markJ = [{
         "lm": [{}],
         "lu": [{}],
         "rm": [{}],
@@ -23,9 +23,9 @@ function graphMarks(graphAxis, marks, configConstants) {
     // Black = '#000000'
     // Red = '#C1272D'
     // Blue = '#0000FF'
-    let black = '#000000';
-    let red = '#C1272D';
-    let blue = '#0000FF';
+    var black = '#000000';
+    var red = '#C1272D';
+    var blue = '#0000FF';
 
     graph.getMarks = getMarks;
     graph.pushResultMark = pushResultMark;
@@ -52,7 +52,7 @@ function graphMarks(graphAxis, marks, configConstants) {
         var top, left, mark, newConduction, width, height;
         top = graphAxis.yAxis[stimulus];
         left = graphAxis.xAxis[frequency];
-        let markType = false;
+        var markType = false;
         // The following is the nested if-else code for determining ear, masker, response, and conduction type
         if (conduction === configConstants.AC || conduction === undefined) {
           newConduction = configConstants.AC;
@@ -129,7 +129,7 @@ function graphMarks(graphAxis, marks, configConstants) {
                   } else {
                     left = (parseInt(graphAxis.xAxisRightBC[frequency].split('p')[0])+2.5) + 'px';
                     mark = marks.BC_UNMASKED_LEFT_NO;
-                    ear = configConstants.RIGHT_EARgrunt;
+                    ear = configConstants.RIGHT_EAR;
                     width = 27;
                     height = 20;
                   }
@@ -172,11 +172,12 @@ function graphMarks(graphAxis, marks, configConstants) {
         }
 
         // Sorts the info so the line is drawn from lowest freq to highest
-        Object.keys(markJ[0]).forEach(function(key) {
+        for(var key in markJ[0]) {
           markJ[0][key].sort(function(a, b){
             return a.frequency - b.frequency;
           });
-        });
+        };
+
 
         // Calls draw function with the marks JSON
         drawPath(markJ);
@@ -247,23 +248,23 @@ function graphMarks(graphAxis, marks, configConstants) {
       // Clears Rect in-between drawings of the lines, clears out the old lines
       ctx.clearRect(0,0,700,700);
       // Initializing the stroke value
-      let color = black;
+      var color = black;
 
       // This code iterate through the JSON data structure
-      Object.keys(marks[0]).forEach(function(key) {
+      for(var key in marks[0]){
         ctx.beginPath();
         color = key[0] === 'l' ? blue : red;
         ctx.strokeStyle = color;
         ctx.lineWidth=4;
-        let prvX = null;
-        let prvY = null;
-        Object.keys(marks[0][key][0]).forEach(function(mark) {
-          let x = marks[0][key][0][mark].left;
-          let y = marks[0][key][0][mark].top;
-          let response = marks[0][key][0][mark].response;
+        var prvX = null;
+        var prvY = null;
+        for(var mark in marks[0][key][0]) {
+          var x = marks[0][key][0][mark].left;
+          var y = marks[0][key][0][mark].top;
+          var response = marks[0][key][0][mark].response;
           if (prvX !== null) {
-            let angleDeg = getXY(x, y, prvX, prvY);
-            let aX, bX, aY, bY = 0;
+            var angleDeg = getXY(x, y, prvX, prvY);
+            var aX, bX, aY, bY = 0;
             if (prvY < y) {
               aX = prvX + Math.cos(angleDeg) * offset;
               aY = prvY + Math.sin(angleDeg) * offset;
@@ -292,8 +293,8 @@ function graphMarks(graphAxis, marks, configConstants) {
           }
           ctx.closePath();
           ctx.stroke();
-        });
-      });
+        }
+      }
     }
 
 }

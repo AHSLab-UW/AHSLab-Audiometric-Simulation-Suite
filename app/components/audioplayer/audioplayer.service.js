@@ -36,11 +36,10 @@ function audioPlayer(webAudioContextFactory, bufferGenerator) {
     }
 
     function convert(level,freq) {
-      let dbSPL = {125: 45, 250:27,500:13.5,
+      var dbSPL = {125: 45, 250:27,500:13.5,
                   750:9, 1000:7.5,1500:7.5,
                   2000:9, 3000:11.5,4000:12,
                   6000:16, 8000:15.5,12000:15.5};
-      console.log(level,freq, dbSPL[freq], level+dbSPL[freq]);
       return level + dbSPL[freq]
     }
 }
