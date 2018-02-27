@@ -68,11 +68,13 @@ function AutomaticExerciseCtrl($timeout, controlPanel, audioPlayer, graphMarks, 
         vm.isInExercise = false;
         vm.hasResponded = false;
         if (terminatingCondition === 'success') {
+          // frequency, stimulus, ear, conduction, masking, response
             graphMarks.pushResultMark(controlPanel.getFrequency(),
                                       controlPanel.getStimulus(),
                                       earSide,
                                       controlPanel.getConduction(),
-                                      controlPanel.getMasking());
+                                      controlPanel.getMasking(),
+                                      1);
         }
         vm.isAutoTesting = false;
     }
