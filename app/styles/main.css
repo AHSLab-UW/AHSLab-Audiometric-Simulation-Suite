@@ -8,20 +8,14 @@ body {
 /* NAVIGATION */
 
 .navbar a:link {
-    color: #FFF;
+    color: crimson;
     font-size: 1.8em;
 }
 
-.navbar a:visited {
-    color: #FFF;
-}
 
-.navbar a:active {
-    color: #FFF;
-}
 
-.navbar a:hover {
-    color: #FFF;
+.navbar span:hover {
+    color: crimson !important;
 }
 
 .navbar-header {
@@ -36,6 +30,12 @@ body {
     overflow: visible !important;
     line-height: 1.2em;
     float: none;
+    color: white !important;
+    font-size: xx-large;
+    font-weight: bold;
+}
+.navbar-brand span:hover {
+  color: crimson;
 }
 
 
