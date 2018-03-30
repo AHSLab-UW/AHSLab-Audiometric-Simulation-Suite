@@ -4,10 +4,11 @@
         <div class="col-sm-9" id="graphArea">
             <div ng-show="!(vm.isAutoTesting)">
                 <figure>
-                    <img src="images/audiogram.png" width="634px" height="520px" alt="graph image" />
+                    <img src="images/audiogram_mask.png" width="634px" alt="graph image" />
                     <graph-marks></graph-marks>
-                    <canvas id="canvas" style="z-index: 10;position: absolute; top: 0; left: 0;" width="634px" height="520px"></canvas>
-                    <canvas id="canvas2" style="z-index: 10;position: absolute; top: 0; left: 0;" width="634px" height="520px"></canvas>
+                    <masker-marks></masker-marks>
+                    <canvas id="canvas" style="z-index: 10;position: absolute; top: 0; left: 0;" width="634px" ></canvas>
+                    <canvas id="canvas2" style="z-index: 10;position: absolute; top: 0; left: 0;" width="634px"></canvas>
                 </figure>
             </div>
             <div ng-show="vm.isAutoTesting">

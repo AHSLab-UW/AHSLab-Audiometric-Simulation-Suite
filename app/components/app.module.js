@@ -28,6 +28,7 @@ angular
         'hearingTestApp.controlPanel',
         'hearingTestApp.automaticExercise',
         'hearingTestApp.graphMarks',
+        'hearingTestApp.maskerMarks',
         'hearingTestApp.bufferGenerator',
         'hearingTestApp.audioPlayer',
         'hearingTestApp.import',

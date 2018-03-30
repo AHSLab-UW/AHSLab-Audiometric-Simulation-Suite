@@ -6,7 +6,7 @@ angular
     .factory('graphMarks', graphMarks);
 
 
-function graphMarks(graphAxis, marks, configConstants) {
+function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks) {
     var markList = [];
     // MarkJ (Mark JSON) stores the mark list and mark locations in a JSON Object
     var markJ = [{
@@ -208,6 +208,13 @@ function graphMarks(graphAxis, marks, configConstants) {
 
         // Push the new mark
         markList.push(newMark);
+        if(response === configConstants.RESPONSE && masking === configConstants.MASKING){
+          var row = conduction.toString()+'_'+ear.toString();
+          console.log('row',row);
+          maskerMarks.pushResultMask(frequency, row, controlPanel.getMaskerLevel());
+        }
+
+
     }
 
     function pushCursorMark(frequency, stimulus) {
