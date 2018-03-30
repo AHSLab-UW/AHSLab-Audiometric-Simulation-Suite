@@ -5,13 +5,13 @@
 
 
 angular
-  .module('hearingTestApp.graphMarks')
+  .module('hearingTestApp.maskerMarks')
   .directive('maskerMarks', maskerMarksDirective);
 
 
 function maskerMarksDirective(maskerMarks, controlPanel) {
   return {
-    templateUrl: 'components/maskermarks/maskermarks.html',
+    templateUrl: 'components/maskerMarks/maskerMarks.html',
     scope: {},
     restrict: 'E',
     replace: false,
@@ -22,7 +22,7 @@ function maskerMarksDirective(maskerMarks, controlPanel) {
   };
 
   function postLink(scope, element, atttribute, ctrl) {
-    ctrl.marks = graphMarks.getMarks();
+    ctrl.masks = maskerMarks.getMasks();
   }
 
 }
