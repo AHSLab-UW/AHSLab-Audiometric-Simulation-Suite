@@ -190,6 +190,16 @@ figure {
     }
 }
 
+/* 03/27/2018 - Add css for masker boxes on audiogram */
+.mask {
+  position: absolute;
+  text-align: center;
+  font-weight: 700;
+  font-size: medium;
+}
+
+
+
 /* 2/16/18 - Add css for drop down buttons on control panel */
 /* Dropdown Button */
 
@@ -198,7 +208,6 @@ figure {
 
 .dropdown-content {
   display: none;
-  position: ;
   background-color: #f1f1f1;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
