@@ -19,7 +19,8 @@ function GraphCtrl($uibModalInstance, $window, fileProcessor) {
     var selected = document.getElementsByClassName('active')[4].id;
     var filename = '';
     if(selected === '0'){
-      close();
+      close(true);
+      return;
     }else if(selected === '1'){
       filename = 'MildBilateralConductiveHearingLoss';
     } else if(selected === '2'){
@@ -32,13 +33,13 @@ function GraphCtrl($uibModalInstance, $window, fileProcessor) {
       reader.onloadend = function(e) {
         console.log('Type file ', response.type, e.target);
         if (response.type === 'text/csv') {
-          if (fileProcessor.importResults(e.target.result, 'csv')) close();
+          if (fileProcessor.importResults(e.target.result, 'csv')) close(true);
           else $window.alert('Data is not properly formatted.');
         } else if (response.type === 'text') {
-          if (fileProcessor.importResults(e.target.result, 'encrypted')) close();
+          if (fileProcessor.importResults(e.target.result, 'encrypted')) close(true);
           else $window.alert('Data is not properly formatted.');
         } else {
-          if (fileProcessor.importResults(e.target.result, 'csv')) close();
+          if (fileProcessor.importResults(e.target.result, 'csv')) close(true);
           //$window.alert('Must upload .csv or .txt file');
         }
       };
@@ -64,8 +65,10 @@ function GraphCtrl($uibModalInstance, $window, fileProcessor) {
 
   }
 
-  function close() {
-    $uibModalInstance.close();
+  function close(selected) {
+    if(selected) ;
+    else console.log('bye');
+    $uibModalInstance.close({$value:selected})
   }
 
 }

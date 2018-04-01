@@ -190,11 +190,17 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
           templateUrl: 'components/graphMakerTemplates/graphTemplate.html',
           controller: 'GraphMakerTemp',
           controllerAs: 'vm'
+        }).result.then(function(result) {
+          if(result.$value) {
+            vm.isGraphMaker = true;
+            vm.graphMakerOpened = true;
+            graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+          }
         });
+      } else {
+        vm.isGraphMaker = true;
+        graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
       }
-      vm.isGraphMaker = true;
-      vm.graphMakerOpened = true;
-      graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
     }
 
     function openCalibration() {

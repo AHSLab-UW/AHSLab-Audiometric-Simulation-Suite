@@ -8,7 +8,7 @@
       <div class="row">
         <h4>Choose a Template to use:</h4>
         <div class="list-group">
-          <a id="0" class="list-group-item">Blank Audiograph</a>
+          <a id="0" class="list-group-item active">Blank Audiogram</a>
           <a id="1" class="list-group-item">Mild Bilateral Conductive Hearing Loss</a>
           <a id="2" class="list-group-item">Severe Bilateral Conductive Hearing Loss</a>
           <a id="3" class="list-group-item">Severe Unilateral Conductive Hearing Loss</a>
@@ -21,7 +21,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" ng-click="vm.close()">Close</button>
+    <button type="button" class="btn btn-default" ng-click="vm.close(false)">Close</button>
     <button type="button" class="btn btn-primary" ng-click="vm.selection()">Ok</button>
   </div>
 </div>
@@ -31,7 +31,7 @@
     console.log('ready');
 
     $('.list-group a').click(function(e) {
-      e.preventDefault()
+      e.preventDefault();
 
       $that = $(this);
 
