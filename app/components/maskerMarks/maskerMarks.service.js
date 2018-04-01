@@ -12,7 +12,7 @@ function maskerMarks(maskAxis, configConstants) {
 
     masks.getMasks = getMasks;
     masks.pushResultMask = pushResultMask;
-    //masks.clearMasks = clearMasks;
+    masks.clearMasks = clearMasks;
 
     return masks;
 
@@ -25,12 +25,21 @@ function maskerMarks(maskAxis, configConstants) {
         if(frequency === 125 || frequency === 12000) {
           return
         }
-        var top, left, width, value;
-
-
         // Push the new mark
         console.log(maskAxis.top[row]);
+
+        for(var i = 0; i < maskList.length; i++) {
+          console.log(maskList[i]);
+          if (maskList[i].frequency === frequency && maskList[i].row === row) {
+            maskList[i].value = value;
+            console.log('col');
+            return;
+          }
+        }
+
         maskList.push({
+          row : row,
+          frequency : frequency,
           top  : maskAxis.top[row],
           left : maskAxis.left[frequency],
           value: value,
@@ -38,13 +47,11 @@ function maskerMarks(maskAxis, configConstants) {
         });
     }
 
-    // // ClearMarks clears the canvas objects, lines drawn, and symbols
-    // function clearMasks() {
-    //     maskList.length = 0;
-    //     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    //     ctx.beginPath();
-    //     ctx.closePath();
-    // }
+    // ClearMarks clears the canvas objects, lines drawn, and symbols
+    function clearMasks() {
+      console.log('clear');
+      maskList.length = 0;
+    }
 
 }
 

@@ -224,9 +224,6 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
     function clearData() {
         graphMarks.clearMarks();
     }
-    function test() {
-      console.log('hi');
-    }
 
     /********************************/
     /*** Manual Hearing Test Code ***/

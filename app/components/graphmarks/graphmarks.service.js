@@ -19,9 +19,7 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
 
-  ctx.beginPath();
-  ctx.arc(500,500,50,0,2*Math.PI);
-  ctx.stroke();
+
 
     var prvX = null;
     var prvY = null;
@@ -203,19 +201,20 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
 
         // if newMark has the same frequency and symbol as an older mark,
         // update the older mark to the new stimulus level
+        var flag = false;
         for(var i = 0; i < markList.length; i++) {
             if (markList[i].frequency === newMark.frequency && markList[i].ear === newMark.ear
                 && markList[i].conduction === newMark.conduction && markList[i].masked === newMark.masked) {
                 markList[i] = newMark;
-                return;
+                flag = true;
+                break;
             }
         }
 
         // Push the new mark
-        markList.push(newMark);
+        if (!flag) markList.push(newMark);
         if(response === configConstants.RESPONSE && masking === configConstants.MASKING){
           var row = conduction.toString()+'_'+ear.toString();
-          console.log('row',row);
           maskerMarks.pushResultMask(frequency, row, controlPanel.getMaskerLevel());
         }
 
@@ -242,6 +241,7 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
     // ClearMarks clears the canvas objects, lines drawn, and symbols
     function clearMarks() {
         markList.length = 0;
+        maskerMarks.clearMasks();
         ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
         ctx.beginPath();
         ctx.closePath();
@@ -255,16 +255,14 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
 
     // Draw path takes a JSON mark list and computes the line between elements, draws the line and handles color
     function drawPath(marks){
-      console.log('draw',marks);
+      //console.log('draw',marks);
       // Offset used for where the line meets the symbol
       var offset = 15;
       // Clears Rect in-between drawings of the lines, clears out the old lines
       ctx.clearRect(0,0,700,700);
       // Initializing the stroke value
       var color = black;
-      ctx.beginPath();
-      ctx.arc(100,75,50,0,2*Math.PI);
-      ctx.stroke();
+
       // This code iterate through the JSON data structure
       for(var key in marks[0]){
         ctx.beginPath();
@@ -278,8 +276,6 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
           var y = marks[0][key][0][mark].top;
           var response = marks[0][key][0][mark].response;
           if (prvX !== null) {
-            console.log('drawing', x, y);
-
             var angleDeg = getXY(x, y, prvX, prvY);
             var aX, bX, aY, bY = 0;
             if (prvY < y) {
