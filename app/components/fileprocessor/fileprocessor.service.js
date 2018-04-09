@@ -15,14 +15,22 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     var processor = {};
     processor.exportResults = exportResults;
     processor.importResults = importResults;
+    processor.exportAll     = exportAll;
     return processor;
 
     function exportResults(filename, type) {
         if (type === 'image') {
-            exportToPNG(filename);
+            exportToPNG(filename + 'png');
         } else if (type === 'csv' || type === 'encrypted') {
             exportDataPoints(filename, type);
         }
+    }
+
+    function exportAll(filename) {
+      console.log('in');
+      exportToPNG(filename);
+      exportDataPoints(filename, 'csv');
+      exportDataPoints(filename, 'encrypted');
     }
 
     function importResults(givenData, type) {
@@ -70,10 +78,12 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
         var blob;
         if (type === 'csv') {
             blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+            filename = filename + '.csv'
         }
         if (type === 'encrypted') {
             var encryptedText = cryptoLibrary.encrypt(encryptionKey, text);
             blob = new Blob([encryptedText], { type: 'text/plain;charset=utf-8;' });
+            filename = filename + '.txt'
         }
         var link = document.createElement("a");
         if (link.download !== undefined) {
