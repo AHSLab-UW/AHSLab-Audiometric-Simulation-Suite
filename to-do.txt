@@ -1,0 +1,21 @@
+[ -- 04/08/2018 -- ]
+[x] Finish export function *Done
+[Started] Start testing audiograms
+
+[ --  04/10  -- ]
+Questions:
+- Masker boxes
+- ans: flip
+- How to handle missing data
+- How to handle No-responses
+- Ask if 'un-locking' the selection buttons is fine for manual testing
+- ans: yes
+
+[ --  04/12  -- ]
+
+todo-
+- get ride of 8k
+- indicate button pressed
+
+note-
+- 70bB bc is limit
