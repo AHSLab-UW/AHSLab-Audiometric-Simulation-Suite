@@ -49,7 +49,8 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
     }
 
     function pushResultMark(frequency, stimulus, ear, conduction, masking, response) {
-        if(frequency === 125 || frequency === 12000) {
+        // Remove 125, 8000, 12000 per Dr. Shen request
+        if(frequency === 125 || frequency === 12000 || frequency === 8000) {
           return
         }
         var top, left, mark, newConduction, width, height;

@@ -27,7 +27,6 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
     }
 
     function exportAll(filename) {
-      console.log('in');
       exportToPNG(filename);
       exportDataPoints(filename, 'csv');
       exportDataPoints(filename, 'encrypted');
@@ -38,7 +37,6 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
             try {
                 var markList = parseData(cryptoLibrary.decrypt(encryptionKey, givenData));
                 if (markList !== false) {
-                    console.log(markList);
                     simulatedListener.setPatientData(markList);
                     return true;
                 }
@@ -133,7 +131,6 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
                   masked + '\n';
             }
         }
-        console.log('res', result);
         return result;
     }
 
@@ -155,15 +152,12 @@ function fileProcessor($window, graphMarks, configConstants, domToImageFactory, 
                 masking = parseMasking(row[4]),
                 response = parseResponse(row[5]);
             // If the response value doesn't exist we assume they are all responses
-          console.log('res',frequency, stimulus, ear,conduction,masking,response);
             if (response === false) {
               response = configConstants.RESPONSE;
             }
-          console.log('res',frequency, stimulus, ear,conduction,masking,response);
             if (frequency !== false && stimulus !== false && ear !== false && conduction !== false && masking !== false && response !== false) {
                 markList.push({frequency:frequency,stimulus:stimulus,ear:ear,conduction:conduction,masked:masking,response: response});
             } else {
-              console.log("1");
                 $window.alert('File cannot be imported, data is not formatted correctly.');
                 return false;
             }

@@ -166,34 +166,91 @@ function simulatedListener($window,configConstants) {
           10/01/2017 - Testing with just AC
 
          AC: 0,
-         //BC: 1
+         BC: 1
          LEFT_EAR: 0,
          RIGHT_EAR: 1,
          */
 
         var NTE = Math.abs(ear - 1);
-        var acTE = 'f';
-        var bcTE = 'f';
-        var acNTE = 'f';
-        var bcNTE = 'f';
+        var acTE = false;
+        var bcTE = false;
+        var acNTE = false;
+        var bcNTE = false;
+        var tempAcNTE = null;
+        var tempAcTE = null;
+        var tempBcBoth = null;
+        var tempBcTE = null;
         var masked = masking;
         if (patientData !== false) {
           for (var i = 0; i < patientData.length; i++) {
             var m = patientData[i];
-            if (m.frequency === frequency && m.ear === ear && m.conduction === 0 && m.masked === 1) {
-              acTE = m.stimulus;
-            } else if (m.frequency === frequency && m.ear === NTE && m.conduction === 0 && m.masked === 1) {
-              acNTE = m.stimulus;
-            } else if (m.frequency === frequency && m.ear === ear && m.conduction === 1 && m.masked === 1) {
-              bcTE = m.stimulus;
-            } else if (m.frequency === frequency && m.ear === NTE && m.conduction === 1 && m.masked === 1) {
-              bcNTE = m.stimulus;
+            if (m.frequency === frequency && m.ear === ear && m.conduction === 0 ) {
+              if(m.masked === 1){
+                acTE = m.stimulus;
+              } else {
+                tempAcTE = m.stimulus;
+              }
+              console.log('acTE', acTE, 'tempAcTE', tempAcTE);
+              // Not sure what this is for?
+            // } else if (m.frequency === frequency && m.ear === ear && m.conduction === 0 && m.masked === 0 && acTE === undefined) {
+            //   acTE = m.stimulus
+            } else if (m.frequency === frequency && m.ear === NTE && m.conduction === 0) {
+              if(m.masked === 1){
+                acNTE = m.stimulus;
+              } else {
+                tempAcNTE = m.stimulus;
+              }
+              console.log('acNTE', acNTE, 'tempAcNTE', tempAcNTE);
+            } else if (m.frequency === frequency && m.ear === ear && m.conduction === 1) {
+              if(m.masked === 1){
+                bcTE = m.stimulus;
+              } else {
+                tempBcBoth = m.stimulus;
+              }
+              console.log('bcTE', bcTE, 'tempBcTE', tempBcBoth);
+            } else if (m.frequency === frequency && m.ear === NTE && m.conduction === 1) {
+              if(m.masked === 1){
+                bcNTE = m.stimulus;
+              } else {
+                tempBcBoth = m.stimulus;
+              }
+              console.log('bcNTE', bcNTE, 'tempBcNTE', tempBcBoth);
             }
           }
         }
+        // This assigns the bc of TE and NTE to either themselves or the unmasked value
+        bcTE = (bcTE) ? bcTE : tempBcBoth;
+        bcNTE = (bcNTE) ? bcNTE : tempBcBoth;
+
+        if (bcTE === null || bcNTE === null){
+          $window.alert(configConstants.NO_BC_DATA);
+        }
+
+
+        // This assigns the ac of TE and NTE to either themselves or the unmasked value using ternary op
+        acTE = (acTE) ? acTE : tempAcTE;
+        acNTE = (acNTE) ? acNTE : tempAcNTE;
+
+        // If bcTE is greater than acTE there is a mistake so set both to the avg of the two
+        if(bcTE > acTE){
+          var avg = (bcTE + acTE) /2;
+          bcTE = avg;
+          acTE = avg;
+        }
+
+        // If bcNTE is greater than acNTE there is a mistake so set both to the avg of the two
+        if(bcNTE > acNTE){
+          var avg = (bcNTE + acNTE) /2;
+          bcNTE = avg;
+          acNTE = avg;
+        }
+
+        console.log('testing - bcte', bcTE, 'bcNTE', bcNTE);
+        console.log('testing - acte', acTE, 'acNTE', acNTE);
+
         if (isNaN(acTE) || isNaN(acNTE) || isNaN(bcTE) || isNaN(bcNTE)){
           console.log('----------Missing Data--------');
-          $window.alert(configConstants.NO_MASKED_DATA);
+          $window.alert(configConstants.NO_BC_DATA);
         }
         return maskerPlateau(acTE,acNTE,bcTE,bcNTE,conduction,level, masked);
 

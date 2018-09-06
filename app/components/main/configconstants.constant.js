@@ -15,7 +15,8 @@
             NO_RESPONSE: 0,
             BC_WARNING_AUTO: 'Bone Conduction tests are not available.',
             BC_WARNING_MANUAL: 'No sound will be presented during Bone Conduction test. However, you may mark the BC thresholds on the audiogram.',
-            NO_MASKED_DATA: 'The imported data has one or more missing values for the MASKED thresholds levels at this Frequency.'
+            NO_BC_DATA: 'The imported data has one or more missing values for the BC thresholds levels at this Frequency.'
+
         });
 
 }());

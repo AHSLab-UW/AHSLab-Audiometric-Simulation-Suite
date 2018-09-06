@@ -17,7 +17,6 @@ function maskerMarks(maskAxis, configConstants) {
     return masks;
 
     function getMasks() {
-        console.log(maskList);
         return maskList;
     }
 
@@ -26,13 +25,9 @@ function maskerMarks(maskAxis, configConstants) {
           return
         }
         // Push the new mark
-        console.log(maskAxis.top[row]);
-
         for(var i = 0; i < maskList.length; i++) {
-          console.log(maskList[i]);
           if (maskList[i].frequency === frequency && maskList[i].row === row) {
             maskList[i].value = value;
-            console.log('col');
             return;
           }
         }

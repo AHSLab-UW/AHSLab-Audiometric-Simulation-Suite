@@ -31,7 +31,8 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
         D_KEY = 68,
         C_KEY = 67,
         M_KEY = 77,
-        E_KEY = 69;
+        E_KEY = 69,
+        BACK_KEY = 8;
 
     var vm = this;
     vm.side = controlPanel.getSide();
@@ -248,6 +249,7 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
                 if (event.keyCode == R_KEY && vm.isGraphMaker) cycleRes();
                 if (event.keyCode == M_KEY && vm.isGraphMaker) cycleMasker();
                 if (event.keyCode == D_KEY && vm.isGraphMaker){ endGraphMaker();}
+                if (event.keyCode == BACK_KEY){ deleteMark();}
                 else if(event.keyCode == D_KEY && vm.isManualTesting){
                   endManualTest();
                 }
@@ -276,6 +278,17 @@ function ControlPanelCtrl($uibModal, $document, $scope, $timeout, $window,
     function recordResult() {
       graphMarks.popMark(); // pop cursor mark
       graphMarks.pushResultMark(controlPanel.getFrequency(),
+        controlPanel.getStimulus(),
+        controlPanel.getSide(),
+        controlPanel.getConduction(),
+        controlPanel.getMasking(),
+        controlPanel.getResponse());
+      graphMarks.pushCursorMark(controlPanel.getFrequency(), controlPanel.getStimulus());
+    }
+    // TODO
+    function deleteMark() {
+      graphMarks.popMark();
+      graphMarks.deleteResultMark(controlPanel.getFrequency(),
         controlPanel.getStimulus(),
         controlPanel.getSide(),
         controlPanel.getConduction(),

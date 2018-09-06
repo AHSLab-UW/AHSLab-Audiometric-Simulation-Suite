@@ -2,28 +2,28 @@
     <br>
     <div class="row">
         <div class="col-xs-12">
-            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setConduction(0)"
-               ng-class="{active: vm.getConduction() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">AC</a>
-            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setConduction(1)"
-               ng-class="{active: vm.getConduction() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">BC</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6 test1" ng-click="vm.setConduction(0)"
+               ng-class="{active: vm.getConduction() == 0, disabled: vm.isAutoTesting}">AC</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6 test1" ng-click="vm.setConduction(1)"
+               ng-class="{active: vm.getConduction() == 1, disabled: vm.isAutoTesting}">BC</a>
         </div>
     </div>
 
     <div class="row">
         <div class="col-xs-12">
-            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setEarSide(0)"
-               ng-class="{active: vm.getEarSide() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">Left</a>
-            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setEarSide(1)"
-               ng-class="{active: vm.getEarSide() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">Right</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6 test2" ng-click="vm.setEarSide(0)"
+               ng-class="{active: vm.getEarSide() == 0, disabled: vm.isAutoTesting}">Left</a>
+            <a ng-href="" class="btn btn-default btn-sm col-xs-6 test2" ng-click="vm.setEarSide(1)"
+               ng-class="{active: vm.getEarSide() == 1, disabled: vm.isAutoTesting}">Right</a>
         </div>
     </div>
 
     <div class="row">
         <div class="col-xs-12">
-            <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setMasking(1)"
-               ng-class="{active: vm.getMasking() == 1, disabled: vm.isAutoTesting||vm.isManualTesting}">Masked</a>
+            <a ng-href="" class="btn btn-sm btn-default col-xs-6" ng-click="vm.setMasking(1)"
+               ng-class="{'btn-success': vm.getMasking() == 1, active: vm.getMasking() == 1, disabled: vm.isAutoTesting}">Masked</a>
             <a ng-href="" class="btn btn-default btn-sm col-xs-6" ng-click="vm.setMasking(0)"
-               ng-class="{active: vm.getMasking() == 0, disabled: vm.isAutoTesting||vm.isManualTesting}">Unmasked</a>
+               ng-class="{'btn-success': vm.getMasking() == 0, active: vm.getMasking() == 0, disabled: vm.isAutoTesting}">Unmasked</a>
         </div>
     </div>
     <div class="row">
