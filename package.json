@@ -46,5 +46,8 @@
   },
   "scripts": {
     "test": "grunt test"
+  },
+  "dependencies": {
+    "bower": "^1.8.4"
   }
 }

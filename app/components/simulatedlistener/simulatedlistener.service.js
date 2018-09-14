@@ -181,6 +181,7 @@ function simulatedListener($window,configConstants) {
         var tempBcBoth = null;
         var tempBcTE = null;
         var masked = masking;
+
         if (patientData !== false) {
           for (var i = 0; i < patientData.length; i++) {
             var m = patientData[i];
@@ -231,16 +232,18 @@ function simulatedListener($window,configConstants) {
         acTE = (acTE) ? acTE : tempAcTE;
         acNTE = (acNTE) ? acNTE : tempAcNTE;
 
-        // If bcTE is greater than acTE there is a mistake so set both to the avg of the two
+        var avg = 0;
+        //
+      // If bcTE is greater than acTE there is a mistake so set both to the avg of the two
         if(bcTE > acTE){
-          var avg = (bcTE + acTE) /2;
+          avg = (bcTE + acTE) /2;
           bcTE = avg;
           acTE = avg;
         }
 
         // If bcNTE is greater than acNTE there is a mistake so set both to the avg of the two
         if(bcNTE > acNTE){
-          var avg = (bcNTE + acNTE) /2;
+          avg = (bcNTE + acNTE) /2;
           bcNTE = avg;
           acNTE = avg;
         }
