@@ -98,49 +98,56 @@ function fileProcessor($window, graphMarks, maskerMarks, configConstants, domToI
 
   // Updates to fix the exporting of no-response values for the mark list refer to Issue 2 & 3 - Feb 2018
   function convertMarksToString(type) {
-    var markList = graphMarks.getMarks().slice(0);
-    var result;
+    // init the result and data lists
+    var markList = graphMarks.getMarks().slice(0),
+        maskerList = maskerMarks.getMasks().slice(0),
+        result;
+
+    // respective table attributes
     if (type === 'csv') {
       result = 'Frequency,Stimulus,Ear,Conduction,Masked,Mask Level,Response\n';
     } else if (type === 'encrypted') {
       result = 'Frequency,Stimulus,Ear,Conduction,Masked,Mask Level\n';
     }
-    for (var i = 0; i < markList.length; i++) {
-      var m = markList[i];
-      var currentEar, currentConduction;
-      var masked = m.masked;
 
-      // if a masking exists, we need to grab the masklist for the values
-      var maskValue = 'nil';
-      if (masked === 1) {
-        var maskList = maskerMarks.getMasks().slice(0);
-        maskValue = maskList[i].value;
+    // adding each row into the result
+    // note:
+    //      maskerMarks.service.js includes a way to grab the mask level set by the control panel,
+    //      however there is an issue with the way it is programmed. the service pushes individual
+    //      masking objects onto a list that doesn't account for the overall position of current mark
+    //      being drawn. as a quick fix to this issue, i hold the position of the masking list so i
+    //      don't need to rewrite the maskerMarks.service.js logic.
+    var maskIterator = 0;
+    for (var i = 0; i < markList.length; i++) {
+      var currMark = markList[i];
+      var currEar,
+          currConduction,
+          currResponse = currMark.response,
+          currMasked = currMark.masked,
+          currMaskVal = 0;
+
+      // if mask exists, change grab and set value.
+      if (currMasked === 1){
+        currMaskVal = maskerList[maskIterator].value;
+        maskIterator++;
       }
 
-      var response = m.response;
-      if (m.ear === configConstants.LEFT_EAR) currentEar = 'left';
-      else currentEar = 'right';
-      if (m.conduction === configConstants.AC) currentConduction = 'AC';
-      else currentConduction = 'BC';
+      // ears and conduction
+      (currMark.ear === configConstants.LEFT_EAR) ? currEar = 'left' : currEar = 'right';
+      (currMark.conduction === configConstants.AC) ? currConduction = 'AC' : currConduction = 'BC';
+
+      // final str build
       if (type === 'csv') {
         result = result +
-          m.frequency + ',' +
-          m.stimulus + ',' +
-          currentEar + ',' +
-          currentConduction + ',' +
-          masked + ',' +
-          maskValue + ',' +
-          response + '\n';
-      } else if (type === 'encrypted' && response === configConstants.RESPONSE) {
+          currMark.frequency + ',' + currMark.stimulus + ',' + currEar + ',' + currConduction + ',' + currMasked + ',' +
+          currMaskVal + ',' + currResponse + '\n';
+      } else if (type === 'encrypted' && currResponse === configConstants.RESPONSE) {
         result = result +
-          m.frequency + ',' +
-          m.stimulus + ',' +
-          currentEar + ',' +
-          currentConduction + ',' +
-          masked + ',' +
-          maskValue + '\n';
+          currMark.frequency + ',' + currMark.stimulus + ',' + currEar + ',' + currConduction + ',' + currMasked + ',' +
+          currMaskVal + '\n';
       }
     }
+
     return result;
   }
 
