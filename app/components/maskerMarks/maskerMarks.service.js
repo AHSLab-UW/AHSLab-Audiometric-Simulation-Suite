@@ -22,7 +22,7 @@ function maskerMarks(maskAxis, configConstants) {
 
     function pushResultMask(frequency, row , value) {
         if(frequency === 125 || frequency === 12000) {
-          return
+          return;
         }
         // Push the new mark
         for(var i = 0; i < maskList.length; i++) {
