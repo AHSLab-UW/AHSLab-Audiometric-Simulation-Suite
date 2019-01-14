@@ -5,29 +5,17 @@ angular
   .module('hearingTestApp.graphMarks')
   .factory('graphMarks', graphMarks);
 
-
 function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks) {
-  var markList = [];
-  // MarkJ (Mark JSON) stores the mark list and mark locations in a JSON Object
-  var markJ = [{
-    "lm": [{}],
-    "lu": [{}],
-    "rm": [{}],
-    "ru": [{}]
-  }];
-  var graph = {};
-  var canvas = document.getElementById('canvas');
-  var ctx = canvas.getContext('2d');
-
-
-  var prvX = null;
-  var prvY = null;
-  // Black = '#000000'
-  // Red = '#C1272D'
-  // Blue = '#0000FF'
-  var black = '#000000';
-  var red = '#C1272D';
-  var blue = '#0000FF';
+  var markList = [],
+    markJ = [{"lm": [{}], "lu": [{}], "rm": [{}], "ru": [{}]}],
+    graph = {},
+    canvas = document.getElementById('canvas'),
+    ctx = canvas.getContext('2d'),
+    prvX = null,
+    prvY = null,
+    black = '#000000',
+    red = '#C1272D',
+    blue = '#0000FF';
 
   graph.getMarks = getMarks;
   graph.pushResultMark = pushResultMark;
@@ -37,26 +25,27 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
 
   return graph;
 
+
   function getMarks() {
     return markList;
   }
 
-  function getXY(ax, ay, bx, by) {
-    var angleRad = Math.atan((ay - by) / (ax - bx));
-    var angleDeg = angleRad * 180 / Math.PI;
-    return angleRad;
-  }
-
-  function pushResultMark(frequency, stimulus, ear, conduction, masking, response) {
+  function pushResultMark(frequency, stimulus, ear, conduction, masking, response, maskingVal = controlPanel.getMaskerLevel()) {
+    // TODO: frequency bug
     // Remove 125, 8000, 12000 per Dr. Shen request
     if (frequency === 125 || frequency === 12000 || frequency === 8000) {
       return;
     }
-    var top, left, mark, newConduction, width, height;
-    top = graphAxis.yAxis[stimulus];
-    left = graphAxis.xAxis[frequency];
-    var markType = false;
-    // The following is the nested if-else code for determining ear, masker, response, and conduction type
+
+    var top = graphAxis.yAxis[stimulus],
+      left = graphAxis.xAxis[frequency],
+      mark,
+      newConduction,
+      width,
+      height,
+      markType = false;
+
+    // The following is for determining ear, masker, response, and conduction type.
     if (conduction === configConstants.AC || conduction === undefined) {
       newConduction = configConstants.AC;
       width = 15;
@@ -182,7 +171,7 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
         return a.frequency - b.frequency;
       });
     }
-    ;
+
 
 
     // Calls draw function with the marks JSON
@@ -207,8 +196,10 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
     // update the older mark to the new stimulus level
     var flag = false;
     for (var i = 0; i < markList.length; i++) {
-      if (markList[i].frequency === newMark.frequency && markList[i].ear === newMark.ear
-        && markList[i].conduction === newMark.conduction && markList[i].masked === newMark.masked) {
+      if (markList[i].frequency       === newMark.frequency
+            && markList[i].ear        === newMark.ear
+            && markList[i].conduction === newMark.conduction
+            && markList[i].masked     === newMark.masked) {
         markList[i] = newMark;
         flag = true;
         break;
@@ -219,7 +210,7 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
     if (!flag) markList.push(newMark);
     if (response === configConstants.RESPONSE && masking === configConstants.MASKING) {
       var row = conduction.toString() + '_' + ear.toString();
-      maskerMarks.pushResultMask(frequency, row, controlPanel.getMaskerLevel());
+      maskerMarks.pushResultMask(frequency, row, maskingVal);
     }
 
 
@@ -256,6 +247,11 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
       "rm": [{}],
       "ru": [{}]
     }];
+  }
+
+  function getXY(ax, ay, bx, by) {
+    var angleRad = Math.atan((ay - by) / (ax - bx));
+    return angleRad;
   }
 
   // Draw path takes a JSON mark list and computes the line between elements, draws the line and handles color
@@ -314,6 +310,4 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
       }
     }
   }
-
 }
-

@@ -53,7 +53,7 @@ function fileProcessor($window, graphMarks, maskerMarks, configConstants, domToI
 
         for (var i = 0; i < markList.length; i++) {
           var m = markList[i];
-          graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction, m.masked, m.masking, m.response);
+          graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction, m.masked, m.response, m.masking);
         }
 
         return true;
