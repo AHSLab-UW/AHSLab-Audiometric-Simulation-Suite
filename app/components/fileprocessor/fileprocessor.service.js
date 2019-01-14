@@ -47,11 +47,15 @@ function fileProcessor($window, graphMarks, maskerMarks, configConstants, domToI
     } else {
       var markList = parseData(givenData);
       if (markList !== false) {
+        // clearing the marks and masks
         graphMarks.clearMarks();
+        maskerMarks.clearMasks();
+
         for (var i = 0; i < markList.length; i++) {
           var m = markList[i];
-          graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction, m.masked, m.response);
+          graphMarks.pushResultMark(m.frequency, m.stimulus, m.ear, m.conduction, m.masked, m.masking, m.response);
         }
+
         return true;
       }
       return false;
@@ -162,12 +166,15 @@ function fileProcessor($window, graphMarks, maskerMarks, configConstants, domToI
     var markList = [];
     for (var i = 1; i < rows.length; i++) {
       var row = rows[i].split(',');
-      var frequency = parseFrequency(row[0]),
-        stimulus = parseStimulus(row[1]),
-        ear = parseEar(row[2]),
-        conduction = parseConduction(row[3]),
-        masking = parseMasking(row[4]),
-        response = parseResponse(row[5]);
+      var frequency = parseFrequency(row[0]);
+      var stimulus = parseStimulus(row[1]);
+      var ear = parseEar(row[2]);
+      var conduction = parseConduction(row[3]);
+
+      // mask boolean is row 4, mask level is 5
+      var masking = parseMasking([row[4],row[5]]);
+
+      var response = parseResponse(row[6]);
       // If the response value doesn't exist we assume they are all responses
       if (response === false) {
         response = configConstants.RESPONSE;
@@ -178,7 +185,8 @@ function fileProcessor($window, graphMarks, maskerMarks, configConstants, domToI
           stimulus: stimulus,
           ear: ear,
           conduction: conduction,
-          masked: masking,
+          masked: masking[0],
+          masking: masking[1],
           response: response
         });
       } else {
@@ -213,9 +221,22 @@ function fileProcessor($window, graphMarks, maskerMarks, configConstants, domToI
     return false;
   }
 
+  // takes in both the mask bool and the possible mask value
   function parseMasking(m) {
-    if (m[0] === "1") return configConstants.MASKING;
-    if (m[0] === "0") return configConstants.NO_MASKING;
+    var mask_state = m[0];
+    var mask_value = m[1];
+
+    // case of no masking on given mark
+    if (mask_state === "0"){
+      return [configConstants.NO_MASKING, configConstants.NO_MASKING];
+    }
+
+    // case of present masking on given mark
+    if (mask_state === "1"){
+      return [configConstants.MASKING, mask_value];
+    }
+
+    // emergency exit
     return false;
   }
 
