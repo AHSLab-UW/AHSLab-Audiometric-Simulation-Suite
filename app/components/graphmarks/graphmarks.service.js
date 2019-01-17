@@ -31,12 +31,6 @@ function graphMarks(graphAxis, marks, controlPanel, configConstants, maskerMarks
   }
 
   function pushResultMark(frequency, stimulus, ear, conduction, masking, response, maskingVal = controlPanel.getMaskerLevel()) {
-    // TODO: frequency bug
-    // Remove 125, 8000, 12000 per Dr. Shen request
-    if (frequency === 125 || frequency === 12000 || frequency === 8000) {
-      return;
-    }
-
     var top = graphAxis.yAxis[stimulus],
       left = graphAxis.xAxis[frequency],
       mark,
