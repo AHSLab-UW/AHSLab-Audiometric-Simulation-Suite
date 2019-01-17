@@ -21,9 +21,6 @@ function maskerMarks(maskAxis, configConstants) {
     }
 
     function pushResultMask(frequency, row , value) {
-        if(frequency === 125 || frequency === 12000) {
-          return;
-        }
         // Push the new mark
         for(var i = 0; i < maskList.length; i++) {
           if (maskList[i].frequency === frequency && maskList[i].row === row) {
@@ -44,7 +41,6 @@ function maskerMarks(maskAxis, configConstants) {
 
     // ClearMarks clears the canvas objects, lines drawn, and symbols
     function clearMasks() {
-      console.log('clear');
       maskList.length = 0;
     }
 

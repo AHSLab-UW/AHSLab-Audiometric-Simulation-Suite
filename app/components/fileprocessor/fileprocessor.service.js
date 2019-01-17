@@ -8,7 +8,7 @@ function fileProcessor($window, graphMarks, maskerMarks, configConstants, domToI
   var domToImage = domToImageFactory.getInstance();
   var cryptoLibrary = cryptoLibraryFactory.getInstance();
   var encryptionKey = "MagicResultKey";
-  var frequencyOptions = [250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000]; // 125, 12000 removed per Dr. Shen request 02/01/2018
+  var frequencyOptions = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000, 12000];
   var MIN_STIMULUS = -10;
   var MAX_STIMULUS = 120;
 
