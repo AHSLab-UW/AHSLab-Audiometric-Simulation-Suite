@@ -1,0 +1,175 @@
+import { useEffect, useRef, useState } from 'react';
+import { startCalibrationTone } from '../audio/player';
+import { MESSAGES } from '../constants';
+import { decryptText } from '../model/crypto';
+import { CsvFormatError, parseCsv } from '../model/csv';
+import { DEFAULT_FILENAMES, exportResults, type ExportFormat } from '../model/files';
+import type { Mark } from '../types';
+import { Dialog } from './Dialog';
+
+interface BaseProps {
+  onClose: () => void;
+}
+
+export function CalibrationDialog({ onClose }: BaseProps) {
+  const stop = useRef<(() => void) | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const halt = () => {
+    stop.current?.();
+    stop.current = null;
+    setPlaying(false);
+  };
+  useEffect(() => () => stop.current?.(), []);
+
+  return (
+    <Dialog title="Calibration" onClose={() => { halt(); onClose(); }}>
+      <p>
+        Press Start to present a continuous calibration tone, then adjust your computer's volume until the tone
+        reaches 60 dB SPL. Without a sound level meter, set the volume to a comfortable level.
+      </p>
+      <div className="row">
+        <button type="button" className="btn primary" disabled={playing} onClick={() => { stop.current = startCalibrationTone(); setPlaying(true); }}>
+          Start
+        </button>
+        <button type="button" className="btn" disabled={!playing} onClick={halt}>Stop</button>
+        {playing && <span role="status">🔊 Tone playing</span>}
+      </div>
+    </Dialog>
+  );
+}
+
+const SAMPLE_PATIENTS = [
+  { file: 'MildBilateralConductiveHearingLoss', label: 'Mild bilateral conductive hearing loss' },
+  { file: 'ModToSevereBilateralConductiveHearingLoss', label: 'Moderate to severe bilateral conductive hearing loss' },
+  { file: 'SevereUnilateralHearingLoss', label: 'Severe unilateral hearing loss' },
+];
+
+const readFile = (file: File) => file.text();
+
+interface ImportProps extends BaseProps {
+  onImport: (marks: Mark[]) => void;
+}
+
+export function ImportDialog({ onClose, onImport }: ImportProps) {
+  const [error, setError] = useState<string | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+
+  async function submit() {
+    const file = input.current?.files?.[0];
+    if (!file) return setError('Choose a CSV file first.');
+    try {
+      onImport(parseCsv(await readFile(file)));
+      onClose();
+    } catch (e) {
+      setError(e instanceof CsvFormatError ? MESSAGES.BAD_FILE : 'The file could not be read.');
+    }
+  }
+
+  return (
+    <Dialog title="Import audiogram" onClose={onClose} actions={<button type="button" className="btn primary" onClick={submit}>Import</button>}>
+      <label htmlFor="csv-file">Choose a CSV file exported from this app to display its data:</label>
+      <input id="csv-file" ref={input} type="file" accept=".csv" />
+      {error && <p role="alert" className="error">{error}</p>}
+    </Dialog>
+  );
+}
+
+interface PatientProps extends BaseProps {
+  onLoad: (patient: Mark[]) => void;
+}
+
+export function PatientDialog({ onClose, onLoad }: PatientProps) {
+  const [error, setError] = useState<string | null>(null);
+  const [sample, setSample] = useState(SAMPLE_PATIENTS[0].file);
+  const input = useRef<HTMLInputElement>(null);
+
+  async function load(getText: () => Promise<string>) {
+    try {
+      onLoad(parseCsv(decryptText(await getText())));
+      onClose();
+    } catch {
+      setError(MESSAGES.BAD_FILE);
+    }
+  }
+
+  const loadUpload = () => {
+    const file = input.current?.files?.[0];
+    return file ? load(() => readFile(file)) : setError('Choose a .txt file first.');
+  };
+  const loadSample = () =>
+    load(async () => {
+      const response = await fetch(`${import.meta.env.BASE_URL}audiograms/${sample}.txt`);
+      if (!response.ok) throw new Error('Sample not found');
+      return response.text();
+    });
+
+  return (
+    <Dialog title="Choose a simulated patient" onClose={onClose}>
+      <fieldset>
+        <legend>Sample patient</legend>
+        <div className="row">
+          <select value={sample} onChange={(e) => setSample(e.target.value)} aria-label="Sample patient">
+            {SAMPLE_PATIENTS.map((p) => <option key={p.file} value={p.file}>{p.label}</option>)}
+          </select>
+          <button type="button" className="btn primary" onClick={loadSample}>Use sample</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Or upload an encrypted patient file (.txt)</legend>
+        <div className="row">
+          <input ref={input} type="file" accept=".txt" aria-label="Encrypted patient file" />
+          <button type="button" className="btn" onClick={loadUpload}>Upload</button>
+        </div>
+      </fieldset>
+      {error && <p role="alert" className="error">{error}</p>}
+    </Dialog>
+  );
+}
+
+interface ExportProps extends BaseProps {
+  marks: Mark[];
+  getGraph: () => HTMLElement | null;
+}
+
+const FORMATS: { value: ExportFormat; label: string; ext: string }[] = [
+  { value: 'all', label: 'All three formats', ext: '' },
+  { value: 'csv', label: 'CSV: table of recorded data', ext: '.csv' },
+  { value: 'txt', label: 'TXT: encrypted data, usable as a simulated patient', ext: '.txt' },
+  { value: 'png', label: 'PNG: image of the audiogram', ext: '.png' },
+];
+
+export function ExportDialog({ onClose, marks, getGraph }: ExportProps) {
+  const [format, setFormat] = useState<ExportFormat>('csv');
+  const [name, setName] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    const graph = getGraph();
+    if (!graph) return;
+    setBusy(true);
+    try {
+      await exportResults(format, name.trim() || DEFAULT_FILENAMES[format], marks, graph);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog title="Export results" onClose={onClose} actions={<button type="button" className="btn primary" disabled={busy} onClick={submit}>Export</button>}>
+      <fieldset>
+        <legend>Format</legend>
+        {FORMATS.map((f) => (
+          <label key={f.value} className="choice">
+            <input type="radio" name="format" value={f.value} checked={format === f.value} onChange={() => setFormat(f.value)} />
+            {f.label}
+          </label>
+        ))}
+      </fieldset>
+      <label htmlFor="export-name">Filename</label>
+      <div className="row">
+        <input id="export-name" type="text" value={name} placeholder={DEFAULT_FILENAMES[format]} onChange={(e) => setName(e.target.value)} />
+        <span>{FORMATS.find((f) => f.value === format)?.ext}</span>
+      </div>
+    </Dialog>
+  );
+}
