@@ -1,6 +1,10 @@
 # AHSLAB Audiometric Simulation Suite
 
-A browser-based simulator for learning and practicing pure-tone audiometry. Built with React, TypeScript and Vite.
+![AHSLAB Audiometric Simulation Suite: test, mask, plot: the full pure-tone workflow](docs/images/hero.png)
+
+A free, browser-based simulator for learning and practicing pure-tone audiometry: air and bone conduction, masking, simulated patients with realistic response variability, and live audiograms. Built with React, TypeScript and Vite.
+
+`audiometry` · `audiology` · `audiogram` · `hearing-test` · `masking` · `bone-conduction` · `education`
 
 ## Features
 
@@ -46,6 +50,10 @@ npm run build      # type-check and build to dist/
 - `src/components` – audiogram SVG, control panel, dialogs
 - `src/useAudiometer.ts` – application state and keyboard handling
 - `public/audiograms` – sample patients
+
+## License
+
+Released under the [MIT License](LICENSE).
 
 ## Contributing
 

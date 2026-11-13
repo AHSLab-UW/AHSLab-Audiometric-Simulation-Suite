@@ -2,6 +2,10 @@
   "name": "ahslab-audiometric-simulation-suite",
   "private": true,
   "version": "2.0.0",
+  "description": "Free in-browser pure-tone audiometry simulator for audiology education: air/bone conduction, masking, simulated patients and live audiograms.",
+  "license": "MIT",
+  "keywords": ["audiometry","audiology","hearing-test","audiogram","pure-tone-audiometry","masking","bone-conduction","air-conduction","hearing-loss","education","simulator","react","typescript","vite"],
+  "repository": {"type":"git","url":"git+https://github.com/shenyi-uw/Hearing-Test-Simulator-2.git"},
   "type": "module",
   "engines": {
     "node": ">=20"
