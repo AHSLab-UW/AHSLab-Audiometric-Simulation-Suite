@@ -37,6 +37,11 @@ A small arrow on a symbol means **no response** at that level (out-of-range). BC
 beside the frequency line, not on it. Lines join consecutive AC thresholds of the same ear and
 masking condition.
 
+In the post-practice comparison, ground-truth AC and BC thresholds are shown as solid and dashed
+lines, respectively. Expected unmasked and masked results are shown as the symbols above without
+connecting lines. The table lists the masker levels used and identifies masking dilemmas, for which
+no reliable masked estimate is shown.
+
 ## 3. Modes
 
 ### Test hearing → Manual
@@ -65,11 +70,12 @@ Use the ascending method (below) and don't trust a single response.
 
 ### Practice audiometry → Manual → Generate a new patient
 
-Choose *Common cases*, *Tricky cases*, a random mix or a specific type, then press Generate. Read the case
+Choose *Common cases*, *Challenging cases* or a random mix, then press Generate. Read the case
 history (including which ear the patient says hears better) before you start. Press **D** when finished to
 see a review: your audiogram beside the true audiogram, the recommended test sequence with the reasons for
-each masking decision, and notes on missing or unneeded work. The review is not graded. Use *Next patient*
-for another case of the same type. Each case has a code (e.g. `tricky/k3x9ab`) that you can enter to repeat it.
+each masking decision, the scenario title and case code, and notes on missing or unneeded work. The review
+is not graded. Use *Next patient* for another case from the same selection. You can enter a case code
+(e.g. `tricky/k3x9ab`) to repeat a patient.
 
 ### Practice audiometry → Automatic
 The program plots the simulated patient's expected threshold for the current ear, conduction,
@@ -79,8 +85,16 @@ frequency and masking settings. Use it to **check** your own manual results.
 No sound; plot symbols directly. Extra keys: **C** cycles AC/BC, **M** masking, **E** ear,
 **R** response / no response. Enter records, Backspace deletes.
 
+To plot a generated patient, choose **Generate case**, select a scenario or case category and press
+**Generate and plot**. An optional case code recreates a specific patient and overrides the scenario
+selection. This replaces any current marks; export them first if needed. The generated ground-truth
+thresholds, scenario and case history are shown immediately. You can edit the marks, and the original
+history remains visible after **Done** until you clear or import an audiogram, begin a hearing test,
+or plot a simulated threshold in automatic practice.
+
 ### Import / Export / Clear
 - **Export** as CSV (data table), TXT (encrypted; usable as a patient file) and/or PNG (image).
+  Exports contain the current audiogram only, not the generated case history or case code.
 - **Import** a CSV exported from this app to redisplay it.
 - **Clear** removes all marks.
 

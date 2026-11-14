@@ -1,18 +1,19 @@
-import { airMaskingRange, boneMaskingRange, findThreshold, INTERAURAL_ATTENUATION_AC } from './listener';
+import { airMaskingRange, boneMaskingRange, findThreshold, INTERAURAL_ATTENUATION_AC, patientLevel } from './listener';
 import type { SelfReport } from './generator';
 import type { Conduction, Ear, Mark } from '../types';
 
 /**
  * Recommended pure-tone test sequence derived from the ground-truth audiogram. It follows the manual
  * threshold procedure (ASHA, 2005) and the masking rules used by the simulated listener (REFERENCES.md):
- * AC masking when AC(test ear) - IA >= BC(non-test ear), BC masking when the air-bone gap is >= 15 dB.
+ * The simulator uses a conservative AC cross-hearing criterion and recommends BC masking for an
+ * air-bone gap of at least 10 dB. Masking order and masker levels are teaching conventions.
  * It is shown for learning and is not used to grade the student.
  */
 
-const OCTAVES = [250, 500, 1000, 2000, 4000, 8000];
-const INTER_OCTAVES = [[500, 1000, 750], [1000, 2000, 1500], [2000, 4000, 3000], [4000, 8000, 6000]];
+const AC_FREQUENCIES = [250, 500, 1000, 2000, 3000, 4000, 6000, 8000];
+const INTER_OCTAVES = [[500, 1000, 750], [1000, 2000, 1500]];
 const BC_FREQUENCIES = [250, 500, 1000, 2000, 4000];
-const AIR_BONE_GAP_RULE = 15;
+const AIR_BONE_GAP_RULE = 10;
 const NARROW_PLATEAU = 10;
 
 export interface MaskingNeed {
@@ -45,18 +46,23 @@ export function recommendSequence(truth: Mark[], selfReport: SelfReport | null =
   const pta = (ear: Ear) => (th(ear, 'AC', 500) + th(ear, 'AC', 1000) + th(ear, 'AC', 2000)) / 3;
   // Unmasked bone conduction is not ear specific: it reflects the better cochlea.
   const observedBc = (f: number) => Math.min(th('right', 'BC', f), th('left', 'BC', f));
+  const hasData = (frequency: number) =>
+    (['right', 'left'] as const).every((ear) =>
+      (['AC', 'BC'] as const).every((conduction) => findThreshold(truth, frequency, ear, conduction) !== null),
+    );
+  const missingFrequencies = AC_FREQUENCIES.filter((frequency) => !hasData(frequency));
 
-  const betterByTest: Ear = pta('left') < pta('right') ? 'left' : 'right';
-  const startEar: Ear = selfReport === 'left' || selfReport === 'right' ? selfReport : betterByTest;
+  const startEar: Ear = selfReport === 'left' || selfReport === 'right' ? selfReport : 'right';
   const startReason =
     selfReport === 'left' || selfReport === 'right'
       ? `the patient reports better hearing in the ${startEar} ear`
-      : 'the patient reports no difference, so begin with the right ear by convention';
+      : 'no better ear is identified, so either ear can be tested first; right is chosen here';
 
   const maskingNeeds: MaskingNeed[] = [];
   for (const ear of ['right', 'left'] as const) {
     const nte = other(ear);
-    for (const f of OCTAVES) {
+    for (const f of AC_FREQUENCIES) {
+      if (!hasData(f)) continue;
       const acTE = th(ear, 'AC', f);
       if (acTE - INTERAURAL_ATTENUATION_AC >= observedBc(f)) {
         maskingNeeds.push({
@@ -66,6 +72,7 @@ export function recommendSequence(truth: Mark[], selfReport: SelfReport | null =
       }
     }
     for (const f of BC_FREQUENCIES) {
+      if (!hasData(f)) continue;
       const gap = th(ear, 'AC', f) - observedBc(f);
       if (gap >= AIR_BONE_GAP_RULE) {
         maskingNeeds.push({
@@ -84,16 +91,23 @@ export function recommendSequence(truth: Mark[], selfReport: SelfReport | null =
   const bcOrder = (['right', 'left'] as const).filter((e) => needs('BC', e).length).sort((a, b) => bcGap(b) - bcGap(a));
 
   const interOctaves = (ear: Ear) =>
-    INTER_OCTAVES.filter(([lo, hi]) => Math.abs(th(ear, 'AC', lo) - th(ear, 'AC', hi)) >= 20).map(([, , mid]) => mid);
+    INTER_OCTAVES.filter(([lo, hi]) => {
+      const observed = (frequency: number) => patientLevel(truth, { frequency, ear, conduction: 'AC', masked: false, maskerLevel: 0 });
+      const lower = observed(lo);
+      const upper = observed(hi);
+      return lower !== null && upper !== null && Math.abs(lower - upper) >= 20;
+    }).map(([, , mid]) => mid);
 
   const acStep = (ear: Ear, first: boolean): TestStep => {
     const extra = interOctaves(ear);
     return {
       title: `${cap(ear)} ear: air conduction, unmasked`,
       detail:
-        `Test 1000, 2000, 4000, 8000 Hz, retest 1000 Hz, then 500 and 250 Hz` +
-        (extra.length ? `; add inter-octave ${hz(extra)} Hz (a difference of 20 dB or more between adjacent octaves).` : '.') +
-        (first ? ` Start here: ${startReason}.` : ' Test the poorer ear second so the better ear is established first.'),
+        `Test 1000, 2000, 3000, 4000, 6000 and 8000 Hz` +
+        (first ? ', retest 1000 Hz' : '') +
+        `, then 500 and 250 Hz; consider 125 Hz if low-frequency loss is present` +
+        (extra.length ? `; add ${hz(extra)} Hz (a difference of at least 20 dB between adjacent octaves from 500 to 2000 Hz).` : '.') +
+        (first ? ` Start here: ${startReason}.` : ' Test the other ear; a routine 1000 Hz retest is not required in the second ear.'),
     };
   };
 
@@ -101,7 +115,7 @@ export function recommendSequence(truth: Mark[], selfReport: SelfReport | null =
     list
       .map((n) => {
         const width = n.maximum - n.minimum;
-        const plateau = width > 0 ? `plateau ${n.minimum}–${n.maximum} dB` : `no plateau (minimum ${n.minimum} dB exceeds maximum ${n.maximum} dB)`;
+        const plateau = width > 0 ? `model plateau ${n.minimum}–${n.maximum} dB` : `no plateau (minimum ${n.minimum} dB is at or above maximum ${n.maximum} dB)`;
         return `${n.frequency} Hz: start ${n.initial} dB, ${plateau}${width > 0 && width <= NARROW_PLATEAU ? ' (narrow: over-masking risk)' : ''}`;
       })
       .join('; ');
@@ -112,35 +126,41 @@ export function recommendSequence(truth: Mark[], selfReport: SelfReport | null =
     acStep(other(startEar), false),
     {
       title: 'Bone conduction, unmasked',
-      detail: `Test ${hz(BC_FREQUENCIES)} Hz at the mastoid. Compare with AC to find air-bone gaps and to decide whether masking is needed.`,
+      detail: `Test ${hz(BC_FREQUENCIES)} Hz at the mastoid; add 3000 Hz if needed. Compare with AC to find air-bone gaps and to decide whether masking is needed. Unmasked BC is not ear-specific.`,
     },
   ];
 
-  if (!maskingNeeds.length) {
+  if (missingFrequencies.length) {
+    steps.push({
+      title: 'Incomplete patient data',
+      detail: `Masking cannot be assessed at ${hz(missingFrequencies)} Hz because required AC or BC thresholds are missing. Do not treat missing values as normal hearing.`,
+    });
+  }
+  if (!maskingNeeds.length && !missingFrequencies.length) {
     steps.push({
       title: 'No masking needed',
-      detail: `AC differences between ears stay below the ${INTERAURAL_ATTENUATION_AC} dB interaural attenuation and there are no air-bone gaps of ${AIR_BONE_GAP_RULE} dB or more, so unmasked results are final.`,
+      detail: `The simulator's AC cross-hearing criterion is not met and there are no air-bone gaps of ${AIR_BONE_GAP_RULE} dB or more, so masking is not indicated by these rules.`,
     });
   }
   acOrder.forEach((ear, i) => {
     const list = needs('AC', ear);
     steps.push({
       title: `${cap(ear)} ear: air conduction, masked (${other(ear)} ear masked)`,
-      detail: `${i === 0 && acOrder.length > 1 ? 'Poorer ear first. ' : ''}Needed at ${hz(list.map((n) => n.frequency))} Hz because ${list[0].reason}. ${describe(list)}.`,
+      detail: `${i === 0 && acOrder.length > 1 ? 'This example chooses the poorer ear first; other orders are possible. ' : ''}Review masking at ${hz(list.map((n) => n.frequency))} Hz; for example, ${list[0].reason}. ${describe(list)}.`,
     });
   });
   bcOrder.forEach((ear, i) => {
     const list = needs('BC', ear);
     steps.push({
       title: `${cap(ear)} ear: bone conduction, masked (${other(ear)} ear masked)`,
-      detail: `${i === 0 && bcOrder.length > 1 ? 'Larger air-bone gap first. ' : ''}Needed at ${hz(list.map((n) => n.frequency))} Hz because of ${list[0].reason}. Allow for the occlusion effect. ${describe(list)}.`,
+      detail: `${i === 0 && bcOrder.length > 1 ? 'This example chooses the larger average gap first; other orders are possible. ' : ''}Review masking at ${hz(list.map((n) => n.frequency))} Hz; for example, ${list[0].reason}. Allow for the occlusion effect. ${describe(list)}.`,
     });
   });
   const dilemmas = maskingNeeds.filter((n) => n.maximum <= n.minimum);
   if (dilemmas.length) {
     steps.push({
       title: 'Masking dilemma',
-      detail: 'At some frequencies the minimum masker level is above the maximum, so a reliable masked threshold cannot be obtained. Record the best estimate, report the limitation and consider insert earphones (larger interaural attenuation).',
+      detail: 'At some frequencies the model minimum masker level is at or above the maximum, so no usable plateau exists. Record the limitation and consider insert earphones or other clinical alternatives; this simulator assumes fixed supra-aural attenuation.',
     });
   }
   steps.push({ title: 'Finish', detail: 'Complete the audiogram, check that BC does not exceed AC, and compare the ears.' });
@@ -156,7 +176,7 @@ export function reviewNotes(truth: Mark[], student: Mark[], rec: Recommendation)
     rec.maskingNeeds.some((n) => n.ear === ear && n.conduction === conduction && n.frequency === f);
 
   for (const ear of ['right', 'left'] as const) {
-    const missing = OCTAVES.filter((f) => !responses.some((m) => m.ear === ear && m.conduction === 'AC' && m.frequency === f));
+    const missing = AC_FREQUENCIES.filter((f) => !responses.some((m) => m.ear === ear && m.conduction === 'AC' && m.frequency === f));
     if (missing.length) notes.push(`${cap(ear)} ear AC: no threshold recorded at ${hz(missing)} Hz.`);
   }
   const missingBc = BC_FREQUENCIES.filter((f) => !responses.some((m) => m.conduction === 'BC' && m.frequency === f));

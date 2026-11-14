@@ -58,15 +58,80 @@ describe('generator', () => {
       expect(c.selfReportedBetterEar).toBe(Math.abs(d) < 10 ? 'same' : d > 0 ? 'right' : 'left');
     }
   });
+
+  it('does not present diagnosis labels in generated patient histories', () => {
+    for (const { id, title } of SCENARIOS) {
+      for (const seed of seeds) {
+        const patient = generateCase(id, seed);
+        expect(patient.history.toLowerCase()).not.toContain(title.toLowerCase());
+        expect(patient.history).not.toMatch(/tympanosclerosis|otosclerosis|sensorineural|conductive|carhart|masking dilemma|cookie-bite|presbycusis|otitis media/i);
+      }
+    }
+  });
 });
 
 describe('protocol', () => {
-  it('needs no masking for normal hearing and starts with the reported better ear', () => {
+  it('starts with the reported better ear', () => {
     const c = generateCase('normal', 'n1');
     const rec = recommendSequence(c.marks, 'left');
-    expect(rec.maskingNeeds).toHaveLength(0);
     expect(rec.startEar).toBe('left');
     expect(rec.steps[1].title).toMatch(/^Left/);
+  });
+
+  it('uses the reported better ear, or chooses right without inventing a better ear', () => {
+    const c = generateCase('asymmetric-snhl', 's0');
+    const rec = recommendSequence(c.marks, 'same');
+    expect(rec.startEar).toBe('right');
+    expect(rec.steps[1].detail).toContain('either ear');
+    expect(rec.steps[2].detail).not.toContain('poorer ear');
+  });
+
+  it('uses the diagnostic frequency sequence and retests 1000 Hz only in the first ear', () => {
+    const rec = recommendSequence(generateCase('normal', 'n1').marks);
+    expect(rec.steps[1].detail).toContain('1000, 2000, 3000, 4000, 6000 and 8000 Hz, retest 1000 Hz');
+    expect(rec.steps[2].detail).toContain('routine 1000 Hz retest is not required');
+    expect(rec.steps[2].detail).not.toContain('Hz, retest 1000 Hz');
+  });
+
+  it('recommends BC masking when the air-bone gap is exactly 10 dB', () => {
+    const marks: Mark[] = [
+      { frequency: 1000, level: 20, ear: 'right', conduction: 'AC', masked: false, maskLevel: 0, response: true },
+      { frequency: 1000, level: 10, ear: 'right', conduction: 'BC', masked: false, maskLevel: 0, response: true },
+      { frequency: 1000, level: 10, ear: 'left', conduction: 'AC', masked: false, maskLevel: 0, response: true },
+      { frequency: 1000, level: 10, ear: 'left', conduction: 'BC', masked: false, maskLevel: 0, response: true },
+    ];
+    expect(recommendSequence(marks).maskingNeeds).toContainEqual(
+      expect.objectContaining({ ear: 'right', conduction: 'BC', frequency: 1000 }),
+    );
+    expect(recommendSequence(marks).maskingNeeds).not.toContainEqual(
+      expect.objectContaining({ ear: 'left', conduction: 'BC', frequency: 1000 }),
+    );
+  });
+
+  it('checks AC masking at 3000 and 6000 Hz', () => {
+    const rec = recommendSequence(generateCase('dead-ear', 's0').marks);
+    expect(rec.maskingNeeds.some((n) => n.conduction === 'AC' && n.frequency === 3000)).toBe(true);
+    expect(rec.maskingNeeds.some((n) => n.conduction === 'AC' && n.frequency === 6000)).toBe(true);
+  });
+
+  it('adds 750 and 1500 Hz for 20 dB differences between the relevant octaves', () => {
+    const thresholds = new Map([[250, 10], [500, 10], [1000, 30], [2000, 50], [3000, 50], [4000, 50], [6000, 50], [8000, 50]]);
+    const marks: Mark[] = (['right', 'left'] as const).flatMap((ear) =>
+      (['AC', 'BC'] as const).flatMap((conduction) =>
+        [...thresholds].map(([frequency, level]) => ({
+          frequency, level, ear, conduction, masked: false, maskLevel: 0, response: true,
+        })),
+      ),
+    );
+    const rec = recommendSequence(marks);
+    expect(rec.steps[1].detail).toContain('add 750, 1500 Hz');
+  });
+
+  it('does not claim masking is unnecessary when required patient data is missing', () => {
+    const rec = recommendSequence([]);
+    expect(rec.maskingNeeds).toHaveLength(0);
+    expect(rec.steps.some((step) => step.title === 'Incomplete patient data')).toBe(true);
+    expect(rec.steps.some((step) => step.title === 'No masking needed')).toBe(false);
   });
 
   it('flags AC masking of the poorer ear in a dead-ear case', () => {

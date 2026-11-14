@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { answer, startExercise } from './exercise';
 import { decryptText, encryptText } from './crypto';
 import { marksToCsv, parseCsv } from './csv';
-import { patientLevel, respond } from './listener';
+import { expectedMarks, expectedThresholds, type ExpectedThreshold } from './expected';
+import { boneMaskingRange, patientLevel, respond } from './listener';
 import { lineGroups, removeMark, upsertMark } from './marks';
+import { recommendSequence } from './protocol';
 import type { Mark } from '../types';
 
 const mark = (over: Partial<Mark> = {}): Mark => ({
@@ -87,10 +89,121 @@ describe('simulated listener', () => {
     expect(patientLevel(profound, cond)).toBe(50);
   });
 
+  it('makes the AC under-masking transition continuous and monotonic', () => {
+    const patient = [
+      mark({ ear: 'right', level: 80 }), mark({ ear: 'left', level: 20 }),
+      mark({ ear: 'right', level: 80, conduction: 'BC' }), mark({ ear: 'left', level: 20, conduction: 'BC' }),
+    ];
+    const levels = Array.from({ length: 151 }, (_, maskerLevel) =>
+      patientLevel(patient, { ...cond, masked: true, maskerLevel })!,
+    );
+
+    expect(levels[74]).toBeCloseTo(84.5);
+    expect(levels[75]).toBeCloseTo(85);
+    expect(levels.every((level, i) => i === 0 || level >= levels[i - 1])).toBe(true);
+  });
+
+  it('accounts for occlusion in BC cross-hearing and transitions continuously', () => {
+    const patient = [
+      mark({ frequency: 500, ear: 'right', level: 80 }), mark({ frequency: 500, ear: 'left', level: 30 }),
+      mark({ frequency: 500, ear: 'right', level: 60, conduction: 'BC' }),
+      mark({ frequency: 500, ear: 'left', level: 20, conduction: 'BC' }),
+    ];
+    const c = { frequency: 500, ear: 'right' as const, conduction: 'BC' as const, masked: true };
+    const levels = Array.from({ length: 151 }, (_, maskerLevel) =>
+      patientLevel(patient, { ...c, maskerLevel })!,
+    );
+
+    expect(levels[99]).toBeCloseTo(63.9);
+    expect(levels[100]).toBeCloseTo(65);
+    expect(levels.every((level, i) => i === 0 || level >= levels[i - 1])).toBe(true);
+  });
+
+  it('uses the better cochlea for unmasked BC when the ears are within the occlusion range', () => {
+    const patient = [
+      mark({ frequency: 500, ear: 'right', level: 40 }), mark({ frequency: 500, ear: 'left', level: 40 }),
+      mark({ frequency: 500, ear: 'right', level: 25, conduction: 'BC' }),
+      mark({ frequency: 500, ear: 'left', level: 30, conduction: 'BC' }),
+    ];
+
+    expect(patientLevel(patient, { frequency: 500, ear: 'right', conduction: 'BC', masked: false, maskerLevel: 0 })).toBe(25);
+    expect(patientLevel(patient, { frequency: 500, ear: 'left', conduction: 'BC', masked: false, maskerLevel: 0 })).toBe(25);
+  });
+
+  it('keeps BC masking monotonic when no plateau is available', () => {
+    const patient = [
+      mark({ frequency: 500, ear: 'right', level: 60 }), mark({ frequency: 500, ear: 'left', level: 70 }),
+      mark({ frequency: 500, ear: 'right', level: 30, conduction: 'BC' }),
+      mark({ frequency: 500, ear: 'left', level: 0, conduction: 'BC' }),
+    ];
+    const c = { frequency: 500, ear: 'right' as const, conduction: 'BC' as const, masked: true };
+    const levels = Array.from({ length: 151 }, (_, maskerLevel) =>
+      patientLevel(patient, { ...c, maskerLevel })!,
+    );
+
+    expect(levels.every((level, i) => i === 0 || level >= levels[i - 1])).toBe(true);
+  });
+
+  it('does not assign a negative occlusion effect at negative thresholds', () => {
+    expect(boneMaskingRange(125, 10, -10, -10).maximum).toBe(45);
+  });
+
   it('responds probabilistically around the threshold', () => {
     expect(respond(40, 10, () => 0.5)).toBe(true);
     expect(respond(-10, 10, () => 0.5)).toBe(false);
     expect(respond(0, null, () => 0.4)).toBe(true);
+  });
+});
+
+describe('review threshold expectations', () => {
+  it('reports ground truth, unmasked cross-hearing, and masked expected AC thresholds', () => {
+    const patient = [
+      mark({ ear: 'right', level: 80 }), mark({ ear: 'left', level: 20 }),
+      mark({ ear: 'right', level: 80, conduction: 'BC' }), mark({ ear: 'left', level: 20, conduction: 'BC' }),
+    ];
+    const rec = recommendSequence(patient);
+    const expected = expectedThresholds(patient, rec).find(
+      (row) => row.ear === 'right' && row.conduction === 'AC' && row.frequency === 1000,
+    );
+
+    expect(expected).toMatchObject({
+      truth: 80,
+      unmasked: 60,
+      masked: 85,
+      maskingRequired: true,
+      dilemma: false,
+    });
+    expect(expected?.maskerLevel).toBeGreaterThan(0);
+    expect(expectedMarks(expectedThresholds(patient, rec), 'masked')).toContainEqual(
+      expect.objectContaining({ ear: 'right', conduction: 'AC', response: true }),
+    );
+  });
+
+  it('labels masking dilemmas and withholds an unreliable masked estimate', () => {
+    const patient = [
+      mark({ frequency: 500, ear: 'right', level: 80 }),
+      mark({ frequency: 500, ear: 'left', level: 80 }),
+      mark({ frequency: 500, ear: 'right', conduction: 'BC', level: 10 }),
+      mark({ frequency: 500, ear: 'left', conduction: 'BC', level: 10 }),
+    ];
+    const rows = expectedThresholds(patient, recommendSequence(patient));
+    const ac = rows.find((row) => row.ear === 'right' && row.conduction === 'AC');
+    const bc = rows.find((row) => row.ear === 'right' && row.conduction === 'BC');
+
+    expect(ac).toMatchObject({ maskingRequired: true, dilemma: true, masked: null });
+    expect(bc).toMatchObject({ maskingRequired: true, dilemma: true, masked: null });
+    expect(expectedMarks(rows, 'masked')).toHaveLength(0);
+  });
+
+  it('marks modeled thresholds above the output limit as no response', () => {
+    const row: ExpectedThreshold = {
+      ear: 'right', conduction: 'AC', frequency: 1000, truth: 120, unmasked: 121, masked: 125,
+      maskerLevel: 60, maskingRequired: true, dilemma: false,
+    };
+
+    expect(expectedMarks([row], 'masked')).toEqual([
+      expect.objectContaining({ level: 120, response: false, masked: true }),
+    ]);
   });
 });
 

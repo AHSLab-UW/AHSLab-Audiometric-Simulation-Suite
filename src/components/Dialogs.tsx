@@ -83,10 +83,40 @@ interface PatientProps extends BaseProps {
 
 const SELECTIONS: { value: Selection; label: string }[] = [
   { value: 'common', label: 'Common cases' },
-  { value: 'tricky', label: 'Tricky cases (masking, mixed, asymmetric)' },
+  { value: 'tricky', label: 'Challenging cases' },
   { value: 'any', label: 'Random mix' },
-  ...SCENARIOS.map((s) => ({ value: s.id, label: s.title })),
 ];
+
+export function DrawCaseDialog({ onClose, onGenerate, hasMarks }: BaseProps & {
+  onGenerate: (generated: GeneratedCase) => void;
+  hasMarks: boolean;
+}) {
+  const [selection, setSelection] = useState<Selection>('any');
+  const [code, setCode] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const generate = () => {
+    const generated = code.trim() ? generateFromCode(code) : generateCase(selection, newSeed());
+    if (!generated) return setError('That case code is not valid. Codes look like "tricky/k3x9ab".');
+    onGenerate(generated);
+    onClose();
+  };
+
+  return (
+    <Dialog title="Generate an audiogram" onClose={onClose}>
+      <label htmlFor="draw-scenario">Scenario</label>
+      <select id="draw-scenario" value={selection} onChange={(e) => setSelection(e.target.value as Selection)}>
+        {SELECTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+        {SCENARIOS.map((scenario) => <option key={scenario.id} value={scenario.id}>{scenario.title}</option>)}
+      </select>
+      <label htmlFor="draw-case-code">Case code (optional; overrides scenario)</label>
+      <input id="draw-case-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="tricky/k3x9ab" />
+      {hasMarks && <p>Generating a case replaces the current audiogram. Export it first if you want to keep it.</p>}
+      {error && <p role="alert" className="error">{error}</p>}
+      <button type="button" className="btn primary" onClick={generate}>Generate and plot</button>
+    </Dialog>
+  );
+}
 
 export function PatientDialog({ onClose, onLoad, onGenerate }: PatientProps) {
   const [error, setError] = useState<string | null>(null);
@@ -188,6 +218,7 @@ export function ExportDialog({ onClose, marks, getGraph }: ExportProps) {
 
   return (
     <Dialog title="Export results" onClose={onClose} actions={<button type="button" className="btn primary" disabled={busy} onClick={submit}>Export</button>}>
+      <p>Exports include the audiogram only, not the case history or case code.</p>
       <fieldset>
         <legend>Format</legend>
         {FORMATS.map((f) => (

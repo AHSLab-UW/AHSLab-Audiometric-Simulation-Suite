@@ -203,7 +203,7 @@ export const SCENARIOS: Scenario[] = [
       const gap = step5(rng, 20, 40);
       return {
         ...pair(() => ({ bc: normalBc(rng), gap: flatGap(gap + step5(rng, -5, 5)) })),
-        history: `${age(rng, 4, 12)}-year-old child with recurrent ear infections. Parents report asking for repetition and a louder TV. Otoscopy: dull, retracted tympanic membranes with effusion.`,
+        history: `${age(rng, 4, 12)}-year-old child with a history of ear infections. Parents report asking for repetition and a louder TV. Otoscopy: dull, retracted tympanic membranes.`,
       };
     },
   },
@@ -214,7 +214,7 @@ export const SCENARIOS: Scenario[] = [
       const gap = step5(rng, 25, 45);
       return {
         ...withEars(bad, { bc: normalBc(rng), gap: flatGap(gap) }, { bc: normalBc(rng), gap: NO_GAP }),
-        history: `${age(rng, 18, 55)}-year-old adult with sudden muffled hearing and fullness in the ${bad} ear after a cold. Otoscopy: ${bad} tympanic membrane bulging with fluid. Other ear normal.`,
+        history: `${age(rng, 18, 55)}-year-old adult with sudden muffled hearing and fullness in the ${bad} ear after a cold. Otoscopy: ${bad} tympanic membrane appears bulging; other tympanic membrane appears normal.`,
       };
     },
   },
@@ -226,7 +226,7 @@ export const SCENARIOS: Scenario[] = [
       const gap = step5(rng, 20, 35);
       return {
         ...pair(() => ({ bc: slopingBc(low + step5(rng, -5, 5), high + step5(rng, -5, 5)), gap: flatGap(gap + step5(rng, -5, 5)) })),
-        history: `${age(rng, 60, 85)}-year-old adult with long-standing age-related loss who now has chronic otitis media in both ears with intermittent drainage.`,
+        history: `${age(rng, 60, 85)}-year-old adult reporting long-standing difficulty hearing and intermittent drainage from both ears.`,
       };
     },
   },
@@ -273,7 +273,7 @@ export const SCENARIOS: Scenario[] = [
           { bc: profoundBc(level), gap: [[250, 25], [8000, 40]] },
           { bc: rng() < 0.5 ? normalBc(rng) : slopingBc(step5(rng, 5, 15), step5(rng, 25, 40)), gap: NO_GAP },
         ),
-        history: `${age(rng, 30, 70)}-year-old adult who lost hearing in the ${bad} ear suddenly years ago (viral illness) and relies on the other ear. Wants a baseline evaluation.`,
+        history: `${age(rng, 30, 70)}-year-old adult reporting a sudden change in hearing in the ${bad} ear years ago and relying on the other ear. Wants a baseline evaluation.`,
       };
     },
   },
@@ -289,7 +289,7 @@ export const SCENARIOS: Scenario[] = [
           { bc: normalBc(rng), gap: flatGap(gap) },
           { bc: slopingBc(step5(rng, 25, 40), high), gap: NO_GAP },
         ),
-        history: `${age(rng, 45, 75)}-year-old adult with known age-related loss in the ${other(conductive)} ear and recently cerumen impaction and a perforation in the ${conductive} ear after swimming.`,
+        history: `${age(rng, 45, 75)}-year-old adult reporting longstanding hearing difficulty in the ${other(conductive)} ear and recent difficulty in the ${conductive} ear after swimming. Otoscopy: cerumen and an apparent tympanic membrane perforation in the ${conductive} ear.`,
       };
     },
   },
@@ -299,7 +299,7 @@ export const SCENARIOS: Scenario[] = [
       const gap = step5(rng, 50, 60);
       return {
         ...pair(() => ({ bc: normalBc(rng), gap: flatGap(gap + step5(rng, -5, 5)) })),
-        history: `${age(rng, 25, 65)}-year-old adult with bilateral chronic ear disease (tympanosclerosis), significant hearing difficulty since childhood; previous surgery in both ears.`,
+        history: `${age(rng, 25, 65)}-year-old adult reporting significant hearing difficulty since childhood and previous surgery in both ears.`,
       };
     },
   },

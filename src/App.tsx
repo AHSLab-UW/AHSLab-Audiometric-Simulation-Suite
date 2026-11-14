@@ -4,11 +4,11 @@ import { Audiogram } from './components/Audiogram';
 import { AutoExercise } from './components/AutoExercise';
 import { ControlPanel } from './components/ControlPanel';
 import { CaseHistory, ReviewPanel } from './components/Review';
-import { CalibrationDialog, ExportDialog, ImportDialog, PatientDialog } from './components/Dialogs';
+import { CalibrationDialog, DrawCaseDialog, ExportDialog, ImportDialog, PatientDialog } from './components/Dialogs';
 import { generateCase } from './model/generator';
 import { useAudiometer } from './useAudiometer';
 
-type DialogName = 'calibration' | 'import' | 'export' | 'patient-auto' | 'patient-manual';
+type DialogName = 'calibration' | 'import' | 'export' | 'patient-auto' | 'patient-manual' | 'draw-case';
 
 export function App() {
   const a = useAudiometer();
@@ -73,13 +73,24 @@ export function App() {
             />
           )}
           {mode === 'manual' && a.patientCase && <CaseHistory patientCase={a.patientCase} />}
-          {mode === 'idle' && a.review && <ReviewPanel review={a.review} onClose={a.closeReview} onNext={nextPatient} />}
-          <div ref={graphRef} className="card graph-card">
-            <Audiogram
-              marks={a.marks}
-              cursor={mode === 'manual' || mode === 'draw' ? settings : null}
+          {(mode === 'draw' || (mode === 'idle' && !a.review)) && a.drawCase && (
+            <CaseHistory patientCase={a.drawCase} showScenario />
+          )}
+          {mode === 'idle' && a.review ? (
+            <ReviewPanel
+              review={{ ...a.review, student: a.marks }}
+              onClose={a.closeReview}
+              onNext={nextPatient}
+              studentGraphRef={graphRef}
             />
-          </div>
+          ) : (
+            <div ref={graphRef} className="card graph-card">
+              <Audiogram
+                marks={a.marks}
+                cursor={mode === 'manual' || mode === 'draw' ? settings : null}
+              />
+            </div>
+          )}
           {a.marks.length > 0 && (
             <details className="card results">
               <summary>Recorded results ({a.marks.length})</summary>
@@ -104,10 +115,11 @@ export function App() {
       <footer className="footer">Branding and design follow the AHSLab Hearing Screener (MIT) · <a href="https://github.com/shenyi-uw/Hearing-Test-Simulator-2/blob/main/REFERENCES.md">References</a></footer>
 
       {dialog === 'calibration' && <CalibrationDialog onClose={closeDialog} />}
-      {dialog === 'import' && <ImportDialog onClose={closeDialog} onImport={a.setMarks} />}
+      {dialog === 'import' && <ImportDialog onClose={closeDialog} onImport={a.importMarks} />}
       {dialog === 'export' && <ExportDialog onClose={closeDialog} marks={a.marks} getGraph={() => graphRef.current} />}
       {dialog === 'patient-auto' && <PatientDialog onClose={closeDialog} onLoad={a.plotSimulatedThreshold} />}
       {dialog === 'patient-manual' && <PatientDialog onClose={closeDialog} onLoad={(p) => a.startManual(p)} onGenerate={(c) => { a.setMarks([]); a.startManual(c.marks, c); }} />}
+      {dialog === 'draw-case' && <DrawCaseDialog onClose={closeDialog} onGenerate={a.plotGeneratedCase} hasMarks={a.marks.length > 0} />}
     </>
   );
 }

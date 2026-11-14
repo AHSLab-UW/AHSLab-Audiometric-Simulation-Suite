@@ -40,6 +40,7 @@ export function useAudiometer() {
   const [mode, setMode] = useState<Mode>('idle');
   const [patient, setPatient] = useState<Mark[] | null>(null);
   const [patientCase, setPatientCase] = useState<GeneratedCase | null>(null);
+  const [drawCase, setDrawCase] = useState<GeneratedCase | null>(null);
   const [review, setReview] = useState<Review | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [tone, setTone] = useState<{ playing: boolean; heard: boolean | null }>({ playing: false, heard: null });
@@ -110,6 +111,7 @@ export function useAudiometer() {
       if (settings.conduction === 'BC') setNotice(MESSAGES.BC_MANUAL);
       setPatient(simulatedPatient);
       setPatientCase(generated);
+      setDrawCase(null);
       setReview(null);
       update({ response: true });
       setMode('manual');
@@ -117,10 +119,24 @@ export function useAudiometer() {
     [settings.conduction, update],
   );
 
-  const startDraw = useCallback(() => setMode('draw'), []);
+  const startDraw = useCallback(() => {
+    setReview(null);
+    setMode('draw');
+  }, []);
+
+  const plotGeneratedCase = useCallback((generated: GeneratedCase) => {
+    setMarks(generated.marks);
+    setDrawCase(generated);
+  }, []);
+
+  const importMarks = useCallback((imported: Mark[]) => {
+    setMarks(imported);
+    setDrawCase(null);
+  }, []);
 
   const startAuto = useCallback(() => {
     if (settings.conduction === 'BC') return setNotice(MESSAGES.BC_AUTO);
+    setDrawCase(null);
     setMode('auto');
   }, [settings.conduction]);
 
@@ -139,12 +155,16 @@ export function useAudiometer() {
     (data: Mark[]) => {
       const threshold = patientLevel(data, settings);
       if (threshold === null) return setNotice(MESSAGES.NO_PATIENT_DATA);
+      setDrawCase(null);
       recordMark(settings, clampLevel(Math.round(threshold / LEVEL_STEP) * LEVEL_STEP), true);
     },
     [recordMark, settings],
   );
 
-  const clear = useCallback(() => setMarks([]), []);
+  const clear = useCallback(() => {
+    setMarks([]);
+    setDrawCase(null);
+  }, []);
 
   const active = mode === 'manual' || mode === 'draw';
   const latest = useRef({ presentTone, record, deleteCurrent, end, stepFrequency, stepLevel, update, settings, mode });
@@ -184,9 +204,9 @@ export function useAudiometer() {
   }, [active, dialogOpen]);
 
   return {
-    settings, update, marks, setMarks, mode, patient, patientCase, review, closeReview, notice, setNotice, tone, setDialogOpen,
+    settings, update, marks, setMarks, mode, patient, patientCase, drawCase, review, closeReview, notice, setNotice, tone, setDialogOpen,
     stepFrequency, stepLevel, stepMasker, record, recordMark, deleteCurrent, presentTone,
-    startManual, startDraw, startAuto, end, plotSimulatedThreshold, clear,
+    startManual, startDraw, startAuto, end, plotSimulatedThreshold, plotGeneratedCase, importMarks, clear,
   };
 }
 

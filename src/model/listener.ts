@@ -28,7 +28,7 @@ const OCCLUSION_EFFECT_LEVEL = 60;
 const otherEar = (ear: Ear): Ear => (ear === 'left' ? 'right' : 'left');
 
 function occlusionEffect(frequency: number, level: number) {
-  return Math.ceil(((OCCLUSION_EFFECT[frequency] ?? 0) * level) / OCCLUSION_EFFECT_LEVEL);
+  return Math.ceil(((OCCLUSION_EFFECT[frequency] ?? 0) * Math.max(0, level)) / OCCLUSION_EFFECT_LEVEL);
 }
 
 /** Looks up a recorded threshold, preferring masked marks. */
@@ -95,10 +95,9 @@ function airConductionLevel(acTE: number, acNTE: number, bcTE: number, bcNTE: nu
 
   if (c.masked && crossHearing) {
     const { initial, minimum, maximum } = airMaskingRange(acTE, acNTE, bcTE);
-    if (c.maskerLevel < initial) return bcNTE + ia + central;
-    if (c.maskerLevel < minimum) return bcNTE + ia + (c.maskerLevel - initial) + central;
-    if (c.maskerLevel < maximum) return acTE + central;
-    return acTE + (c.maskerLevel - maximum) + central;
+    return maskedCrossHearingLevel(
+      c.maskerLevel, initial, minimum, maximum, bcNTE + ia, acTE, central,
+    );
   }
   if (crossHearing) return bcNTE + ia;
   if (c.masked) {
@@ -112,19 +111,47 @@ function boneConductionLevel(acNTE: number, bcTE: number, bcNTE: number, c: Cond
   const ia = INTERAURAL_ATTENUATION_BC;
   const central = c.masked ? CENTRAL_MASKING : 0;
   const oeTE = occlusionEffect(c.frequency, bcTE);
-  const crossHearing = bcTE >= bcNTE - oeTE;
+  const crossHearingThreshold = bcNTE - oeTE;
+  const maskedCrossHearing = bcTE >= crossHearingThreshold;
 
   const { initial, minimum, maximum } = boneMaskingRange(c.frequency, acNTE, bcTE, bcNTE);
 
-  if (c.masked && crossHearing) {
-    if (c.maskerLevel < initial) return bcNTE + central;
-    if (c.maskerLevel < minimum) return bcNTE + (c.maskerLevel - initial) + central;
-    if (c.maskerLevel < maximum) return bcTE + central;
-    return bcTE + (c.maskerLevel - maximum) + central;
+  if (c.masked && maskedCrossHearing) {
+    return maskedCrossHearingLevel(
+      c.maskerLevel, initial, minimum, maximum, crossHearingThreshold, bcTE, central,
+    );
   }
-  if (crossHearing) return bcNTE + ia;
+  if (bcTE >= bcNTE) return bcNTE + ia;
   if (c.masked) return bcTE + Math.max(0, c.maskerLevel - maximum) + central;
   return bcTE;
+}
+
+function maskedCrossHearingLevel(
+  maskerLevel: number,
+  initial: number,
+  minimum: number,
+  maximum: number,
+  crossHearingThreshold: number,
+  testEarThreshold: number,
+  central: number,
+) {
+  const ramp = (level: number) => {
+    if (minimum <= initial) return testEarThreshold;
+    const progress = Math.min(1, Math.max(0, (level - initial) / (minimum - initial)));
+    return crossHearingThreshold + progress * (testEarThreshold - crossHearingThreshold);
+  };
+
+  if (maskerLevel < initial) return crossHearingThreshold + central;
+
+  if (maximum <= minimum) {
+    const overMaskingStart = Math.max(initial, maximum);
+    if (maskerLevel < overMaskingStart) return ramp(maskerLevel) + central;
+    return ramp(overMaskingStart) + (maskerLevel - overMaskingStart) + central;
+  }
+
+  if (minimum > initial && maskerLevel < minimum) return ramp(maskerLevel) + central;
+  if (maskerLevel < maximum) return testEarThreshold + central;
+  return testEarThreshold + (maskerLevel - maximum) + central;
 }
 
 /** Probabilistic yes/no response: logistic psychometric function with 50% at threshold and ~4.4 dB between the 10% and 90% points (steep, as for pure tones in quiet; see REFERENCES.md). */

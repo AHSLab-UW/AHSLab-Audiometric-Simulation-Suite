@@ -1,6 +1,5 @@
 import { forwardRef } from 'react';
 import { FREQUENCIES, MAX_LEVEL, MIN_LEVEL } from '../constants';
-import { lineGroups } from '../model/marks';
 import type { Conduction, Ear, Mark } from '../types';
 
 const W = 700;
@@ -62,17 +61,59 @@ const maskRows: { conduction: Conduction; ear: Ear }[] = [
 interface Props {
   marks: Mark[];
   cursor?: { frequency: number; level: number; ear: Ear } | null;
+  showSymbols?: boolean;
+  connectBone?: boolean;
+  referenceSymbols?: Mark[];
 }
 
-export const Audiogram = forwardRef<SVGSVGElement, Props>(function Audiogram({ marks, cursor }, ref) {
+export const Audiogram = forwardRef<SVGSVGElement, Props>(function Audiogram(
+  { marks, cursor, showSymbols = true, connectBone = false, referenceSymbols = [] },
+  ref,
+) {
   const levels = Array.from({ length: (MAX_LEVEL - MIN_LEVEL) / 10 + 1 }, (_, i) => MIN_LEVEL + i * 10);
+  const drawLines = (lineMarks: Mark[], includeBone: boolean) => {
+    const groups = new Map<string, Mark[]>();
+    for (const mark of lineMarks) {
+      if (mark.conduction === 'BC' && !includeBone) continue;
+      const key = `${mark.ear}-${mark.conduction}-${mark.masked}`;
+      groups.set(key, [...(groups.get(key) ?? []), mark]);
+    }
+
+    return [...groups.values()].flatMap((group) =>
+      group.sort((a, b) => a.frequency - b.frequency).slice(1).flatMap((mark, i) => {
+        const from = group[i];
+        if (!mark.response || !from.response) return [];
+        const [x1, y1, x2, y2] = [
+          xFor(from.frequency) + sideShift(from.conduction, from.ear), yFor(from.level),
+          xFor(mark.frequency) + sideShift(mark.conduction, mark.ear), yFor(mark.level),
+        ];
+        const length = Math.hypot(x2 - x1, y2 - y1);
+        const gap = showSymbols && length > 0 ? Math.min(12, length / 3) / length : 0;
+        return (
+          <line
+            key={`${mark.ear}-${mark.conduction}-${mark.masked}-${mark.frequency}`}
+            data-series="threshold-line"
+            data-conduction={mark.conduction}
+            x1={x1 + (x2 - x1) * gap} y1={y1 + (y2 - y1) * gap}
+            x2={x2 - (x2 - x1) * gap} y2={y2 - (y2 - y1) * gap}
+            stroke={COLORS[mark.ear]} strokeWidth="2.5"
+            strokeDasharray={!showSymbols && mark.conduction === 'BC' ? '8 5' : undefined}
+            strokeLinecap="round" opacity="0.9"
+          />
+        );
+      }),
+    );
+  };
+
   return (
     <svg
       ref={ref}
       className="audiogram"
       viewBox={`0 0 ${W} ${H}`}
       role="img"
-      aria-label={`Audiogram with ${marks.length} recorded threshold${marks.length === 1 ? '' : 's'}`}
+      aria-label={showSymbols
+        ? `Audiogram with ${marks.length} recorded threshold${marks.length === 1 ? '' : 's'}`
+        : 'Ground-truth threshold lines and expected audiometric symbols'}
     >
       <rect width={W} height={H} fill="#fff" />
       <text x={W / 2} y="18" textAnchor="middle" className="axis-title">Frequency (Hz)</text>
@@ -95,28 +136,9 @@ export const Audiogram = forwardRef<SVGSVGElement, Props>(function Audiogram({ m
         </g>
       ))}
 
-      {lineGroups(marks).flatMap((group) =>
-        group.slice(1).flatMap((m, i) => {
-          const from = group[i];
-          if (!m.response || !from.response) return [];
-          const [x1, y1, x2, y2] = [
-            xFor(from.frequency) + sideShift(from.conduction, from.ear), yFor(from.level),
-            xFor(m.frequency) + sideShift(m.conduction, m.ear), yFor(m.level),
-          ];
-          const length = Math.hypot(x2 - x1, y2 - y1);
-          const gap = Math.min(12, length / 3) / length;
-          return (
-            <line
-              key={`${m.ear}-${m.masked}-${m.frequency}`}
-              x1={x1 + (x2 - x1) * gap} y1={y1 + (y2 - y1) * gap}
-              x2={x2 - (x2 - x1) * gap} y2={y2 - (y2 - y1) * gap}
-              stroke={COLORS[m.ear]} strokeWidth="2.5" opacity="0.85"
-            />
-          );
-        }),
-      )}
+      {drawLines(marks, connectBone)}
 
-      {marks.map((m) => (
+      {showSymbols && marks.map((m) => (
         <g
           key={`${m.frequency}-${m.ear}-${m.conduction}-${m.masked}`}
           transform={`translate(${xFor(m.frequency) + sideShift(m.conduction, m.ear)} ${yFor(m.level)})`}
@@ -124,6 +146,16 @@ export const Audiogram = forwardRef<SVGSVGElement, Props>(function Audiogram({ m
           <title>{`${m.ear} ${m.conduction}${m.masked ? ' masked' : ''} ${m.frequency} Hz: ${m.level} dB HL${m.response ? '' : ' (no response)'}`}</title>
           <Symbol mark={m} />
         </g>
+      ))}
+      {referenceSymbols.map((mark) => (
+          <g
+            key={`expected-${mark.frequency}-${mark.ear}-${mark.conduction}-${mark.masked}`}
+            data-series="expected-symbol"
+            transform={`translate(${xFor(mark.frequency) + sideShift(mark.conduction, mark.ear)} ${yFor(mark.level)})`}
+          >
+            <title>{`Expected ${mark.ear} ${mark.conduction} ${mark.masked ? 'masked' : 'unmasked'} ${mark.frequency} Hz: ${mark.response ? `${mark.level} dB HL` : `no response at ${mark.level} dB HL`}`}</title>
+            <Symbol mark={mark} />
+          </g>
       ))}
 
       {cursor && (
@@ -142,7 +174,7 @@ export const Audiogram = forwardRef<SVGSVGElement, Props>(function Audiogram({ m
             <text x={PLOT.left - 30} y={y + 15} textAnchor="end" className="tick" fill={COLORS[row.ear]}>
               {row.conduction} {row.ear === 'left' ? 'L' : 'R'}
             </text>
-            {marks
+            {(showSymbols ? marks : referenceSymbols)
               .filter((m) => m.masked && m.response && m.conduction === row.conduction && m.ear === row.ear)
               .map((m) => (
                 <text key={m.frequency} x={xFor(m.frequency)} y={y + 15} textAnchor="middle" className="tick">

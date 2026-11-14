@@ -47,7 +47,7 @@ const Hotkey = ({ keys, children, onClick }: { keys: string; children: ReactNode
 
 interface Props {
   a: Audiometer;
-  openDialog: (d: 'calibration' | 'import' | 'export' | 'patient-auto' | 'patient-manual') => void;
+  openDialog: (d: 'calibration' | 'import' | 'export' | 'patient-auto' | 'patient-manual' | 'draw-case') => void;
 }
 
 export function ControlPanel({ a, openDialog }: Props) {
@@ -103,6 +103,9 @@ export function ControlPanel({ a, openDialog }: Props) {
       {(mode === 'manual' || mode === 'draw') && (
         <div className="stack">
           <p className="badge">{mode === 'draw' ? 'Draw audiogram' : a.patient ? 'Simulated listener' : 'Manual test'}</p>
+          {mode === 'draw' && (
+            <button type="button" className="btn" onClick={() => openDialog('draw-case')}>Generate case</button>
+          )}
           <ul className="hotkeys">
             {mode === 'manual' && <Hotkey keys="Space" onClick={a.presentTone}>Present tone</Hotkey>}
             <Hotkey keys="← →">Frequency</Hotkey>

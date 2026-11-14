@@ -47,11 +47,14 @@ justified masking decisions; masker in the plateau; consistent AC/BC results; ex
 
 ## 4. Building simulated patients
 
-A simulated patient is a set of thresholds. Create one in three ways:
+A simulated patient is a set of thresholds. Create one in four ways:
 
 1. **Draw audiogram**: plot the true thresholds (AC and BC, both ears), then **Export → TXT**.
 2. **Edit a CSV**: export a CSV, edit it in a spreadsheet, re-import to check it, then export a TXT.
 3. **Use the three bundled samples** in `public/audiograms/` (CSV and encrypted TXT).
+4. **Generate in Draw audiogram**: choose **Generate case**, select a scenario, and generate its
+   ground-truth marks. The displayed scenario and history can be used when preparing teaching material;
+   export the marks as TXT for simulated-patient practice. This replaces any marks already plotted.
 
 Requirements for the simulation to respond at a frequency:
 
@@ -78,14 +81,17 @@ from 14 scenario types (`src/model/generator.ts`). *Common* cases are typical cl
 sensorineural loss, unilateral profound loss with a shadow curve, conductive loss opposite a sensorineural
 loss, and a bilateral large air-bone gap where the masking plateau closes). Each case is built from a
 sensorineural configuration plus an air-bone gap with 5 dB jitter, includes a case history and the
-self-reported better ear, and has a code (`selection/seed`). Give students a code to assign the same case
-to everyone.
+self-reported better ear, and has a code (`selection/seed`). Before testing, the selector offers only
+common, challenging, or mixed cases, and the history does not show the scenario title or case code.
+The title and code are revealed in the review. Give students a code to assign the same case to everyone;
+codes containing specific scenario names disclose the scenario, so use a tier-based code for a blind case.
 
 After Done, students see a non-graded review: their audiogram, the true audiogram, the recommended
 sequence (`src/model/protocol.ts`: start with the self-reported better ear; AC both ears; unmasked BC;
-AC masking where AC − 40 dB ≥ BC; BC masking where the air-bone gap is ≥ 15 dB; poorer ear first for AC
-masking, larger gap first for BC masking; starting masker level and plateau for each) and notes on gaps in
-their results. The recommended order is a teaching convention; clinics differ.
+AC masking where AC − 40 dB ≥ unmasked BC; BC masking where the air-bone gap is ≥ 10 dB; poorer ear first
+for AC masking, larger gap first for BC masking; starting masker level and model plateau for each) and
+notes on gaps in their results. The masking order and masker levels are simulator teaching conventions,
+not universal clinical instructions. The review uses the ground truth and is not a real-time test plan.
 
 ## 5. What the simulation models
 
@@ -97,6 +103,8 @@ Details and sources: [REFERENCES.md](../REFERENCES.md). In short:
   unmasked, the reported level is BC(non-test) + 40 (shadow curve).
 - **Masking:** effective-masking correction factor 15 dB; central masking 5 dB; minimum and maximum
   masker limits define the plateau; above the maximum the response rises dB for dB (over-masking).
+  The simulated under-masking transition is interpolated for a monotonic response, and a closed
+  plateau does not settle at a stable masked threshold.
 - **Occlusion effect:** approximate table by frequency, scaled by level, used for masked BC.
 - **Response variability:** logistic psychometric function; 50% yes at threshold, 10–90% over about
   4.4 dB. The automatic search has about +3 dB ascending bias, SD ≈ 2.5 dB, and test–retest 95%
