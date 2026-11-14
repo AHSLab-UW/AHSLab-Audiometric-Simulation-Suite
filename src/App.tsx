@@ -3,7 +3,9 @@ import { isAudioSupported } from './audio/player';
 import { Audiogram } from './components/Audiogram';
 import { AutoExercise } from './components/AutoExercise';
 import { ControlPanel } from './components/ControlPanel';
+import { CaseHistory, ReviewPanel } from './components/Review';
 import { CalibrationDialog, ExportDialog, ImportDialog, PatientDialog } from './components/Dialogs';
+import { generateCase } from './model/generator';
 import { useAudiometer } from './useAudiometer';
 
 type DialogName = 'calibration' | 'import' | 'export' | 'patient-auto' | 'patient-manual';
@@ -13,6 +15,13 @@ export function App() {
   const [dialog, setDialog] = useState<DialogName | null>(null);
   const graphRef = useRef<HTMLDivElement>(null);
   const { settings, mode } = a;
+
+  const nextPatient = () => {
+    if (!a.review?.patientCase) return;
+    const next = generateCase(a.review.patientCase.selection);
+    a.setMarks([]);
+    a.startManual(next.marks, next);
+  };
 
   const openDialog = (name: DialogName) => {
     a.setDialogOpen(true);
@@ -63,6 +72,8 @@ export function App() {
               onDone={a.end}
             />
           )}
+          {mode === 'manual' && a.patientCase && <CaseHistory patientCase={a.patientCase} />}
+          {mode === 'idle' && a.review && <ReviewPanel review={a.review} onClose={a.closeReview} onNext={nextPatient} />}
           <div ref={graphRef} className="card graph-card">
             <Audiogram
               marks={a.marks}
@@ -96,7 +107,7 @@ export function App() {
       {dialog === 'import' && <ImportDialog onClose={closeDialog} onImport={a.setMarks} />}
       {dialog === 'export' && <ExportDialog onClose={closeDialog} marks={a.marks} getGraph={() => graphRef.current} />}
       {dialog === 'patient-auto' && <PatientDialog onClose={closeDialog} onLoad={a.plotSimulatedThreshold} />}
-      {dialog === 'patient-manual' && <PatientDialog onClose={closeDialog} onLoad={(p) => a.startManual(p)} />}
+      {dialog === 'patient-manual' && <PatientDialog onClose={closeDialog} onLoad={(p) => a.startManual(p)} onGenerate={(c) => { a.setMarks([]); a.startManual(c.marks, c); }} />}
     </>
   );
 }

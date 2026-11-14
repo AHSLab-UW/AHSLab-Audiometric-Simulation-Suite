@@ -70,6 +70,23 @@ The TXT format is lightly encrypted so students do not casually read the answer 
 It is obfuscation, not security: do not rely on it for high-stakes assessment where students can
 inspect the page source. For assessment, hand out TXT files only and keep your CSV originals private.
 
+### Generated patients
+
+You do not need to write cases: *Practice audiometry → Manual → Generate a new patient* creates a patient
+from 14 scenario types (`src/model/generator.ts`). *Common* cases are typical clinical presentations;
+*Tricky* cases need masking judgement (bilateral mixed loss, otosclerosis with a Carhart notch, asymmetric
+sensorineural loss, unilateral profound loss with a shadow curve, conductive loss opposite a sensorineural
+loss, and a bilateral large air-bone gap where the masking plateau closes). Each case is built from a
+sensorineural configuration plus an air-bone gap with 5 dB jitter, includes a case history and the
+self-reported better ear, and has a code (`selection/seed`). Give students a code to assign the same case
+to everyone.
+
+After Done, students see a non-graded review: their audiogram, the true audiogram, the recommended
+sequence (`src/model/protocol.ts`: start with the self-reported better ear; AC both ears; unmasked BC;
+AC masking where AC − 40 dB ≥ BC; BC masking where the air-bone gap is ≥ 15 dB; poorer ear first for AC
+masking, larger gap first for BC masking; starting masker level and plateau for each) and notes on gaps in
+their results. The recommended order is a teaching convention; clinics differ.
+
 ## 5. What the simulation models
 
 Details and sources: [REFERENCES.md](../REFERENCES.md). In short:

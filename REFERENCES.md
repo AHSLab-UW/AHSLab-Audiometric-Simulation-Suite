@@ -22,3 +22,13 @@ verify them (especially numeric values) before relying on them academically.**
 Visual design follows the AHSLab Hearing Screener
 (https://github.com/AHSLab-UW/UWAHSLAB_Hearing_Screener, MIT license, © UW Auditory Human Systems
 Laboratory): colours, Albert Sans typography, `logo.png` and `backgroundSwirls.png`.
+
+## Generated patients and recommended sequence
+
+Scenario configurations (presbycusis, noise notch, cookie-bite, otosclerosis with Carhart notch of
+5/10/15/5 dB at 0.5/1/2/4 kHz, conductive and mixed loss, dead ear / shadow curve) follow common textbook
+patterns (Katz, *Handbook of Clinical Audiology*; Martin & Clark, *Introduction to Audiology*). Thresholds
+are teaching simulations, not epidemiological samples. The sequence follows ASHA (2005) (start with the
+better ear; 1 kHz, higher frequencies, retest 1 kHz, then lower; inter-octaves for 20 dB differences) and
+the masking rules above (AC masking when AC − IA ≥ BC of the other ear; BC masking when the air-bone gap
+is ≥ 15 dB). The mask-first ear ordering is a teaching convention.

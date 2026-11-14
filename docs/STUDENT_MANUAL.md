@@ -63,6 +63,14 @@ The patient responds **probabilistically**, like a real client: at threshold the
 the time, and a few dB above it nearly always. Re-present a tone and you may get a different answer.
 Use the ascending method (below) and don't trust a single response.
 
+### Practice audiometry → Manual → Generate a new patient
+
+Choose *Common cases*, *Tricky cases*, a random mix or a specific type, then press Generate. Read the case
+history (including which ear the patient says hears better) before you start. Press **D** when finished to
+see a review: your audiogram beside the true audiogram, the recommended test sequence with the reasons for
+each masking decision, and notes on missing or unneeded work. The review is not graded. Use *Next patient*
+for another case of the same type. Each case has a code (e.g. `tricky/k3x9ab`) that you can enter to repeat it.
+
 ### Practice audiometry → Automatic
 The program plots the simulated patient's expected threshold for the current ear, conduction,
 frequency and masking settings. Use it to **check** your own manual results.
