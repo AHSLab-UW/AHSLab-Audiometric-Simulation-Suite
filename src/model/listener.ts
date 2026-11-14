@@ -18,9 +18,9 @@ export interface Condition {
   maskerLevel: number;
 }
 
-const INTERAURAL_ATTENUATION_AC = 40;
+export const INTERAURAL_ATTENUATION_AC = 40;
 const INTERAURAL_ATTENUATION_BC = 0;
-const CORRECTION_FACTOR = 15;
+export const CORRECTION_FACTOR = 15;
 const CENTRAL_MASKING = 5;
 const OCCLUSION_EFFECT: Record<number, number> = { 125: 20, 250: 20, 500: 15, 750: 10, 1000: 5 };
 const OCCLUSION_EFFECT_LEVEL = 60;
@@ -31,7 +31,8 @@ function occlusionEffect(frequency: number, level: number) {
   return Math.ceil(((OCCLUSION_EFFECT[frequency] ?? 0) * level) / OCCLUSION_EFFECT_LEVEL);
 }
 
-function threshold(data: Mark[], frequency: number, ear: Ear, conduction: Conduction): number | null {
+/** Looks up a recorded threshold, preferring masked marks. */
+export function findThreshold(data: Mark[], frequency: number, ear: Ear, conduction: Conduction): number | null {
   const candidates = data.filter((m) => m.response && m.frequency === frequency && m.conduction === conduction);
   const masked = candidates.find((m) => m.ear === ear && m.masked);
   if (masked) return masked.level;
@@ -45,10 +46,10 @@ function threshold(data: Mark[], frequency: number, ear: Ear, conduction: Conduc
 /** Returns the simulated threshold for the condition, or null if the patient data is incomplete. */
 export function patientLevel(data: Mark[], c: Condition): number | null {
   const nte = otherEar(c.ear);
-  let acTE = threshold(data, c.frequency, c.ear, 'AC');
-  let acNTE = threshold(data, c.frequency, nte, 'AC');
-  let bcTE = threshold(data, c.frequency, c.ear, 'BC');
-  let bcNTE = threshold(data, c.frequency, nte, 'BC');
+  let acTE = findThreshold(data, c.frequency, c.ear, 'AC');
+  let acNTE = findThreshold(data, c.frequency, nte, 'AC');
+  let bcTE = findThreshold(data, c.frequency, c.ear, 'BC');
+  let bcNTE = findThreshold(data, c.frequency, nte, 'BC');
   if (acTE === null || acNTE === null || bcTE === null || bcNTE === null) return null;
 
   // A bone conduction threshold worse than air conduction is inconsistent; use the average.
@@ -60,15 +61,40 @@ export function patientLevel(data: Mark[], c: Condition): number | null {
     : boneConductionLevel(acNTE, bcTE, bcNTE, c);
 }
 
+export interface MaskingRange {
+  /** Starting masker level. */
+  initial: number;
+  /** Lowest masker level that fully masks the non-test ear. */
+  minimum: number;
+  /** Highest masker level before over-masking. A plateau exists only if maximum > minimum. */
+  maximum: number;
+}
+
+export function airMaskingRange(acTE: number, acNTE: number, bcTE: number): MaskingRange {
+  const initial = acNTE + CORRECTION_FACTOR;
+  return {
+    initial,
+    minimum: acNTE + (acTE - INTERAURAL_ATTENUATION_AC) + CORRECTION_FACTOR,
+    maximum: bcTE + INTERAURAL_ATTENUATION_AC + CORRECTION_FACTOR,
+  };
+}
+
+export function boneMaskingRange(frequency: number, acNTE: number, bcTE: number, bcNTE: number): MaskingRange {
+  const oeTE = occlusionEffect(frequency, bcTE);
+  return {
+    initial: acNTE + CORRECTION_FACTOR + occlusionEffect(frequency, bcNTE),
+    minimum: acNTE + CORRECTION_FACTOR + (bcTE - bcNTE) + oeTE,
+    maximum: bcTE + INTERAURAL_ATTENUATION_AC + oeTE + CORRECTION_FACTOR,
+  };
+}
+
 function airConductionLevel(acTE: number, acNTE: number, bcTE: number, bcNTE: number, c: Condition) {
   const ia = INTERAURAL_ATTENUATION_AC;
   const central = c.masked ? CENTRAL_MASKING : 0;
   const crossHearing = acTE - ia >= bcNTE;
 
   if (c.masked && crossHearing) {
-    const initial = acNTE + CORRECTION_FACTOR;
-    const minimum = acNTE + (acTE - ia) + CORRECTION_FACTOR;
-    const maximum = bcTE + ia + CORRECTION_FACTOR;
+    const { initial, minimum, maximum } = airMaskingRange(acTE, acNTE, bcTE);
     if (c.maskerLevel < initial) return bcNTE + ia + central;
     if (c.maskerLevel < minimum) return bcNTE + ia + (c.maskerLevel - initial) + central;
     if (c.maskerLevel < maximum) return acTE + central;
@@ -88,9 +114,7 @@ function boneConductionLevel(acNTE: number, bcTE: number, bcNTE: number, c: Cond
   const oeTE = occlusionEffect(c.frequency, bcTE);
   const crossHearing = bcTE >= bcNTE - oeTE;
 
-  const initial = acNTE + CORRECTION_FACTOR + occlusionEffect(c.frequency, bcNTE);
-  const minimum = acNTE + CORRECTION_FACTOR + (bcTE - bcNTE) + oeTE;
-  const maximum = bcTE + INTERAURAL_ATTENUATION_AC + oeTE + CORRECTION_FACTOR;
+  const { initial, minimum, maximum } = boneMaskingRange(c.frequency, acNTE, bcTE, bcNTE);
 
   if (c.masked && crossHearing) {
     if (c.maskerLevel < initial) return bcNTE + central;

@@ -5,6 +5,7 @@ import { decryptText } from '../model/crypto';
 import { CsvFormatError, parseCsv } from '../model/csv';
 import { DEFAULT_FILENAMES, exportResults, type ExportFormat } from '../model/files';
 import type { Mark } from '../types';
+import { generateCase, generateFromCode, newSeed, SCENARIOS, type GeneratedCase, type Selection } from '../model/generator';
 import { Dialog } from './Dialog';
 
 interface BaseProps {
@@ -76,10 +77,21 @@ export function ImportDialog({ onClose, onImport }: ImportProps) {
 
 interface PatientProps extends BaseProps {
   onLoad: (patient: Mark[]) => void;
+  /** When provided, the dialog offers generated practice patients. */
+  onGenerate?: (generated: GeneratedCase) => void;
 }
 
-export function PatientDialog({ onClose, onLoad }: PatientProps) {
+const SELECTIONS: { value: Selection; label: string }[] = [
+  { value: 'common', label: 'Common cases' },
+  { value: 'tricky', label: 'Tricky cases (masking, mixed, asymmetric)' },
+  { value: 'any', label: 'Random mix' },
+  ...SCENARIOS.map((s) => ({ value: s.id, label: s.title })),
+];
+
+export function PatientDialog({ onClose, onLoad, onGenerate }: PatientProps) {
   const [error, setError] = useState<string | null>(null);
+  const [selection, setSelection] = useState<Selection>('common');
+  const [code, setCode] = useState('');
   const [sample, setSample] = useState(SAMPLE_PATIENTS[0].file);
   const input = useRef<HTMLInputElement>(null);
 
@@ -103,8 +115,28 @@ export function PatientDialog({ onClose, onLoad }: PatientProps) {
       return response.text();
     });
 
+  const generate = () => {
+    const generated = code.trim() ? generateFromCode(code) : generateCase(selection, newSeed());
+    if (!generated) return setError('That case code is not valid. Codes look like "tricky/k3x9ab".');
+    onGenerate?.(generated);
+    onClose();
+  };
+
   return (
     <Dialog title="Choose a simulated patient" onClose={onClose}>
+      {onGenerate && (
+        <fieldset>
+          <legend>Generate a new patient</legend>
+          <div className="row">
+            <select value={selection} onChange={(e) => setSelection(e.target.value as Selection)} aria-label="Case type">
+              {SELECTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+            <button type="button" className="btn primary" onClick={generate}>Generate</button>
+          </div>
+          <label htmlFor="case-code">Or enter a case code to repeat a patient (optional)</label>
+          <input id="case-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="tricky/k3x9ab" />
+        </fieldset>
+      )}
       <fieldset>
         <legend>Sample patient</legend>
         <div className="row">

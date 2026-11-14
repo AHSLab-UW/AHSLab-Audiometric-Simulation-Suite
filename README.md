@@ -10,6 +10,7 @@ A free, browser-based simulator for learning and practicing pure-tone audiometry
 
 - **Test hearing** – present real tones (air conduction, optional narrow-band masking noise in the opposite ear) and record thresholds, either with the manual controls or the automatic threshold search.
 - **Practice audiometry** – test a simulated patient (built-in samples or an encrypted `.txt` file) that models cross hearing, masking and over-masking.
+- **Generated practice patients** – unlimited, realistic, seeded cases (common or tricky: otosclerosis, asymmetric loss, dead ear, masking dilemma, …) with a short case history and the patient's self-reported better ear. When you press Done, a non-graded review shows your audiogram next to the true one, the recommended test sequence (start ear, masking decisions) and notes on your results.
 - **Draw audiogram** – plot results directly with standard symbols (O/X, △/□, `<` `>`, `[` `]`, no-response arrows).
 - **Import / export** – CSV, encrypted `.txt` (usable as a simulated patient) and PNG.
 - **Calibration** – a 1 kHz tone for setting the system volume.

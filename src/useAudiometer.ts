@@ -4,6 +4,7 @@ import {
   DEFAULT_FREQUENCY, DEFAULT_LEVEL, DEFAULT_MASKER_LEVEL, FREQUENCIES, LEVEL_STEP, MESSAGES, TONE_SECONDS,
   clampLevel,
 } from './constants';
+import type { GeneratedCase } from './model/generator';
 import { patientLevel, respond } from './model/listener';
 import { removeMark, upsertMark } from './model/marks';
 import type { Conduction, Ear, Mark, Mode } from './types';
@@ -27,11 +28,19 @@ const INITIAL: Settings = {
 const isEditable = (el: EventTarget | null) =>
   el instanceof HTMLElement && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName));
 
+export interface Review {
+  truth: Mark[];
+  student: Mark[];
+  patientCase: GeneratedCase | null;
+}
+
 export function useAudiometer() {
   const [settings, setSettings] = useState<Settings>(INITIAL);
   const [marks, setMarks] = useState<Mark[]>([]);
   const [mode, setMode] = useState<Mode>('idle');
   const [patient, setPatient] = useState<Mark[] | null>(null);
+  const [patientCase, setPatientCase] = useState<GeneratedCase | null>(null);
+  const [review, setReview] = useState<Review | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [tone, setTone] = useState<{ playing: boolean; heard: boolean | null }>({ playing: false, heard: null });
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -97,9 +106,11 @@ export function useAudiometer() {
   useEffect(() => () => window.clearTimeout(toneTimer.current), []);
 
   const startManual = useCallback(
-    (simulatedPatient: Mark[] | null = null) => {
+    (simulatedPatient: Mark[] | null = null, generated: GeneratedCase | null = null) => {
       if (settings.conduction === 'BC') setNotice(MESSAGES.BC_MANUAL);
       setPatient(simulatedPatient);
+      setPatientCase(generated);
+      setReview(null);
       update({ response: true });
       setMode('manual');
     },
@@ -114,10 +125,14 @@ export function useAudiometer() {
   }, [settings.conduction]);
 
   const end = useCallback(() => {
+    if (patient) setReview({ truth: patient, student: marks, patientCase });
     setMode('idle');
     setPatient(null);
+    setPatientCase(null);
     setTone({ playing: false, heard: null });
-  }, []);
+  }, [patient, marks, patientCase]);
+
+  const closeReview = useCallback(() => setReview(null), []);
 
   /** Practice automatic mode: plot the simulated patient's threshold for the current condition. */
   const plotSimulatedThreshold = useCallback(
@@ -169,7 +184,7 @@ export function useAudiometer() {
   }, [active, dialogOpen]);
 
   return {
-    settings, update, marks, setMarks, mode, patient, notice, setNotice, tone, setDialogOpen,
+    settings, update, marks, setMarks, mode, patient, patientCase, review, closeReview, notice, setNotice, tone, setDialogOpen,
     stepFrequency, stepLevel, stepMasker, record, recordMark, deleteCurrent, presentTone,
     startManual, startDraw, startAuto, end, plotSimulatedThreshold, clear,
   };
