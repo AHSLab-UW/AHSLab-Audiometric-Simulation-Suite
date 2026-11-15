@@ -47,14 +47,6 @@ h1, h2, p { margin: 0; }
 .graph-column { display: grid; gap: 12px; min-width: 0; }
 .graph-card { padding: 8px; background: #fff; color: var(--chart-text); }
 .audiogram { width: 100%; height: auto; display: block; }
-.audiogram .grid { stroke: #cfd6e0; stroke-width: 1; }
-.audiogram .grid.zero { stroke: #7d8899; }
-.audiogram .grid.major { stroke: #aeb8c6; }
-.audiogram .grid.minor { stroke-dasharray: 3 3; }
-.audiogram .tick { font-size: 12px; fill: var(--chart-text); }
-.audiogram .minor-tick { font-size: 10px; fill: #5a6575; }
-.audiogram .axis-title { font-size: 12px; font-weight: 600; fill: #5a6575; }
-.audiogram .mask-row { fill: #f6f8fb; stroke: #d3d9e2; }
 
 .control-panel { display: grid; gap: 10px; position: sticky; top: 12px; }
 .control-panel hr { border: 0; border-top: 1px solid var(--border); width: 100%; margin: 2px 0; }

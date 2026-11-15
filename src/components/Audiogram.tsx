@@ -8,6 +8,8 @@ const MASK_TOP = PLOT.bottom + 55;
 const MASK_ROW = 22;
 const H = MASK_TOP + MASK_ROW * 4 + 20;
 const COLORS: Record<Ear, string> = { right: '#c1272d', left: '#1f3fd6' };
+const CHART_TEXT = '#1c2430';
+const SECONDARY_TEXT = '#5a6575';
 const MAJOR_FREQUENCIES = [125, 250, 500, 1000, 2000, 4000, 8000];
 
 const OCTAVES = Math.log2(FREQUENCIES[FREQUENCIES.length - 1] / FREQUENCIES[0]);
@@ -116,21 +118,25 @@ export const Audiogram = forwardRef<SVGSVGElement, Props>(function Audiogram(
         : 'Ground-truth threshold lines and expected audiometric symbols'}
     >
       <rect width={W} height={H} fill="#fff" />
-      <text x={W / 2} y="18" textAnchor="middle" className="axis-title">Frequency (Hz)</text>
-      <text transform={`translate(18 ${(PLOT.top + PLOT.bottom) / 2}) rotate(-90)`} textAnchor="middle" className="axis-title">
+      <text x={W / 2} y="18" textAnchor="middle" fill={SECONDARY_TEXT} fontSize="12" fontWeight="600">Frequency (Hz)</text>
+      <text transform={`translate(18 ${(PLOT.top + PLOT.bottom) / 2}) rotate(-90)`} textAnchor="middle" fill={SECONDARY_TEXT} fontSize="12" fontWeight="600">
         Hearing level (dB HL)
       </text>
 
       {levels.map((level) => (
         <g key={level}>
-          <line x1={PLOT.left - 25} x2={PLOT.right + 25} y1={yFor(level)} y2={yFor(level)} className={level === 0 ? 'grid zero' : 'grid'} />
-          <text x={PLOT.left - 32} y={yFor(level) + 4} textAnchor="end" className="tick">{level}</text>
+          <line x1={PLOT.left - 25} x2={PLOT.right + 25} y1={yFor(level)} y2={yFor(level)}
+            stroke={level === 0 ? '#7d8899' : '#cfd6e0'} strokeWidth="1" />
+          <text x={PLOT.left - 32} y={yFor(level) + 4} textAnchor="end" fill={CHART_TEXT} fontSize="12">{level}</text>
         </g>
       ))}
       {FREQUENCIES.map((f) => (
         <g key={f}>
-          <line x1={xFor(f)} x2={xFor(f)} y1={PLOT.top} y2={PLOT.bottom} className={MAJOR_FREQUENCIES.includes(f) ? 'grid major' : 'grid minor'} />
-          <text x={xFor(f)} y={PLOT.top - 10} textAnchor="middle" className={MAJOR_FREQUENCIES.includes(f) ? 'tick' : 'tick minor-tick'}>
+          <line x1={xFor(f)} x2={xFor(f)} y1={PLOT.top} y2={PLOT.bottom}
+            stroke={MAJOR_FREQUENCIES.includes(f) ? '#aeb8c6' : '#cfd6e0'} strokeWidth="1"
+            strokeDasharray={MAJOR_FREQUENCIES.includes(f) ? undefined : '3 3'} />
+          <text x={xFor(f)} y={PLOT.top - 10} textAnchor="middle"
+            fill={MAJOR_FREQUENCIES.includes(f) ? CHART_TEXT : SECONDARY_TEXT} fontSize={MAJOR_FREQUENCIES.includes(f) ? '12' : '10'}>
             {formatFrequency(f)}
           </text>
         </g>
@@ -165,19 +171,19 @@ export const Audiogram = forwardRef<SVGSVGElement, Props>(function Audiogram(
         </g>
       )}
 
-      <text x={PLOT.left - 70} y={MASK_TOP - 8} className="axis-title" textAnchor="start">Masking level (dB HL)</text>
+      <text x={PLOT.left - 70} y={MASK_TOP - 8} fill={SECONDARY_TEXT} fontSize="12" fontWeight="600" textAnchor="start">Masking level (dB HL)</text>
       {maskRows.map((row, i) => {
         const y = MASK_TOP + i * MASK_ROW;
         return (
           <g key={`${row.conduction}${row.ear}`}>
-            <rect x={PLOT.left - 25} y={y} width={PLOT.right - PLOT.left + 50} height={MASK_ROW} className="mask-row" />
-            <text x={PLOT.left - 30} y={y + 15} textAnchor="end" className="tick" fill={COLORS[row.ear]}>
+            <rect x={PLOT.left - 25} y={y} width={PLOT.right - PLOT.left + 50} height={MASK_ROW} fill="#f6f8fb" stroke="#d3d9e2" />
+            <text x={PLOT.left - 30} y={y + 15} textAnchor="end" fill={CHART_TEXT} fontSize="12">
               {row.conduction} {row.ear === 'left' ? 'L' : 'R'}
             </text>
             {(showSymbols ? marks : referenceSymbols)
               .filter((m) => m.masked && m.response && m.conduction === row.conduction && m.ear === row.ear)
               .map((m) => (
-                <text key={m.frequency} x={xFor(m.frequency)} y={y + 15} textAnchor="middle" className="tick">
+                <text key={m.frequency} x={xFor(m.frequency)} y={y + 15} textAnchor="middle" fill={CHART_TEXT} fontSize="12">
                   {m.maskLevel}
                 </text>
               ))}

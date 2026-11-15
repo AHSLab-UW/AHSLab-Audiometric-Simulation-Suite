@@ -15,6 +15,21 @@ const render = (element: ReactElement) =>
   new DOMParser().parseFromString(renderToStaticMarkup(element), 'text/html');
 
 describe('review audiogram', () => {
+  it('includes self-contained grid and masking-table styles for image export', () => {
+    const doc = render(<Audiogram marks={[mark({ masked: true, maskLevel: 55 })]} />);
+    const svg = doc.querySelector('svg')!;
+    const gridLines = [...svg.querySelectorAll('line')].filter((line) => !line.hasAttribute('data-series'));
+    expect(gridLines.length).toBeGreaterThan(20);
+    expect(gridLines.every((line) => line.getAttribute('stroke') && line.getAttribute('stroke-width'))).toBe(true);
+    expect(gridLines.some((line) => line.getAttribute('stroke-dasharray') === '3 3')).toBe(true);
+    const rows = [...svg.querySelectorAll('rect')].filter((rect) => rect.getAttribute('fill') === '#f6f8fb');
+    expect(rows).toHaveLength(4);
+    expect(rows.every((row) => row.getAttribute('stroke') === '#d3d9e2')).toBe(true);
+    const value = [...svg.querySelectorAll('text')].find((text) => text.textContent === '55');
+    expect(value?.getAttribute('fill')).toBe('#1c2430');
+    expect(value?.getAttribute('font-size')).toBe('12');
+  });
+
   it('draws continuous truth lines and standard expected symbols without expected lines', () => {
     const truth = [
       mark({ frequency: 500 }), mark({ frequency: 1000, level: 30 }),

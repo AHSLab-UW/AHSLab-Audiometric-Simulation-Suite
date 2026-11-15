@@ -36,7 +36,7 @@ export function App() {
     <>
       <header className="header">
         <div className="eyebrow">
-          <img className="logo" src="/images/logo.png" alt="UW AHSLab logo" />
+          <img className="logo" src={`${import.meta.env.BASE_URL}images/logo.png`} alt="UW AHSLab logo" />
           <div>
             <h6>University of Washington</h6>
             <h1>AHSLAB <strong>Audiometric Simulation Suite</strong></h1>

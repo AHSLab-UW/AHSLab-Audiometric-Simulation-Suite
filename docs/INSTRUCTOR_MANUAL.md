@@ -18,6 +18,13 @@ for a local demo). Audio requires a browser with the Web Audio API and a user ge
 button) before sound plays. Students need headphones; for classroom use, verify each device with
 the **Calibration** tone before starting.
 
+For [UW Shared Web Hosting](https://uwconnect.uw.edu/it?id=kb_article_view&sysparm_article=KB0034884),
+activate the hosting service first. Employee accounts use SFTP to `ovid.u.washington.edu` on port
+22 with their UW NetID. Create a dedicated directory under `public_html` and upload the **contents**
+of `dist/` into it, preserving the `assets/`, `images/`, and `audiograms/` folders. Avoid replacing
+an existing site's files. Open the corresponding website directory URL with a trailing slash and
+check the logo, generated cases, sample patients, and audio. Do not upload source files or credentials.
+
 Nothing is stored: refreshing the page clears marks. Students should **Export** their work.
 
 ## 2. Suggested learning outcomes
