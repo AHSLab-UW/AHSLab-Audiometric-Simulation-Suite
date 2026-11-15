@@ -4,6 +4,10 @@
 
 A free, browser-based simulator for learning and practicing pure-tone audiometry: air and bone conduction, masking, simulated patients with realistic response variability, and live audiograms. Built with React, TypeScript and Vite.
 
+**[Try the app online](https://faculty.washington.edu/shenyi/AHSLAB_Audiometric_Simulation_Suite/)**.
+Your feedback is highly appreciated! Please share suggestions or report issues on the
+[GitHub issues page](https://github.com/AHSLab-UW/AHSLab-Audiometric-Simulation-Suite/issues).
+
 `audiometry` · `audiology` · `audiogram` · `hearing-test` · `masking` · `bone-conduction` · `education`
 
 ## Features

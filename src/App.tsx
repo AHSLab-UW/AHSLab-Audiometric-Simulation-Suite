@@ -113,7 +113,9 @@ export function App() {
         </div>
       </main>
 
-      <footer className="footer">Branding and design follow the AHSLab Hearing Screener (MIT) · <a href="https://github.com/shenyi-uw/Hearing-Test-Simulator-2/blob/main/REFERENCES.md">References</a></footer>
+      <footer className="footer">
+        <a href="https://github.com/AHSLab-UW/AHSLab-Audiometric-Simulation-Suite">GitHub repository</a>
+      </footer>
 
       {dialog === 'calibration' && <CalibrationDialog onClose={closeDialog} />}
       {dialog === 'import' && <ImportDialog onClose={closeDialog} onImport={a.importMarks} />}

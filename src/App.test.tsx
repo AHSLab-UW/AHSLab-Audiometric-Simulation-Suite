@@ -37,6 +37,8 @@ describe('practice review', () => {
     const { container } = render(<App />);
     expect(screen.getByRole('img', { name: 'UW AHSLab logo' }).getAttribute('src'))
       .toBe(`${import.meta.env.BASE_URL}images/logo.png`);
+    expect(screen.getByRole('link', { name: 'GitHub repository' }).getAttribute('href'))
+      .toBe('https://github.com/AHSLab-UW/AHSLab-Audiometric-Simulation-Suite');
     const graph = container.querySelector('.graph-card');
     expect(graph).toBeTruthy();
 
