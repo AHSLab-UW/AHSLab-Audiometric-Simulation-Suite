@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { answer, startExercise } from './exercise';
 import { decryptText, encryptText } from './crypto';
@@ -60,10 +59,6 @@ describe('csv', () => {
 describe('crypto', () => {
   it('round-trips text', () => expect(decryptText(encryptText('hello'))).toBe('hello'));
 
-  it.each(['MildBilateralConductiveHearingLoss', 'SevereUnilateralHearingLoss'])('decrypts shipped sample %s', (name) => {
-    const marks = parseCsv(decryptText(readFileSync(`public/audiograms/${name}.txt`, 'utf8')));
-    expect(marks.length).toBeGreaterThan(10);
-  });
 });
 
 describe('simulated listener', () => {

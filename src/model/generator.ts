@@ -108,7 +108,7 @@ const notchBc = (low: number, notch: number): Points =>
 const profoundBc = (level: number): Points => [[250, level - 5], [1000, level], [8000, level + 5]];
 
 export type ScenarioId =
-  | 'normal' | 'presbycusis' | 'noise-notch' | 'flat-snhl' | 'ski-slope' | 'cookie-bite' | 'bilateral-conductive'
+  | 'normal' | 'presbycusis' | 'noise-notch' | 'flat-snhl' | 'ski-slope' | 'rising-snhl' | 'cookie-bite' | 'bilateral-conductive'
   | 'unilateral-conductive' | 'bilateral-mixed' | 'otosclerosis' | 'asymmetric-snhl' | 'dead-ear'
   | 'conductive-plus-snhl' | 'masking-dilemma';
 
@@ -183,6 +183,22 @@ export const SCENARIOS: Scenario[] = [
       return {
         ...pair(() => ({ bc: skiBc(low + step5(rng, -5, 5), high + step5(rng, -5, 5)), gap: NO_GAP })),
         history: `${age(rng, 45, 80)}-year-old adult. Can hear people talking but cannot understand words, especially women's and children's voices.`,
+      };
+    },
+  },
+  {
+    // Keep existing seeded random pools stable; this configuration is chosen explicitly.
+    id: 'rising-snhl', tier: 'common', weight: 0, title: 'Bilateral rising sensorineural loss',
+    build: (rng) => {
+      const low = step5(rng, 50, 65);
+      const high = step5(rng, 15, 30);
+      const spec = (): EarSpec => ({
+        bc: [[250, low + step5(rng, -5, 5)], [2000, low - 5], [4000, 40], [8000, high]],
+        gap: NO_GAP,
+      });
+      return {
+        ...pair(spec),
+        history: `${age(rng, 30, 65)}-year-old adult reporting difficulty understanding conversation in both ears.`,
       };
     },
   },

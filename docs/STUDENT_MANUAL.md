@@ -67,6 +67,8 @@ You are the **audiologist** and the computer is a simulated patient.
 The patient responds **probabilistically**, like a real client: at threshold they respond about half
 the time, and a few dB above it nearly always. Re-present a tone and you may get a different answer.
 Use the ascending method (below) and don't trust a single response.
+The six numbered samples are synthetic teaching examples inspired by broad audiogram patterns;
+they are not patient records. Their histories and thresholds are generated, not transcribed.
 
 ### Practice audiometry → Manual → Generate a new patient
 
@@ -160,7 +162,7 @@ simulator uses an approximate occlusion table (20 dB at 125/250 Hz, 15 at 500, 1
 ## 7. Practice checklist
 
 1. Calibrate and set a comfortable volume.
-2. Load a sample patient (try *Severe unilateral hearing loss*).
+2. Generate a patient using the case code `dead-ear/s0`.
 3. Test the better ear AC, then the poorer ear AC unmasked. Do you see a shadow curve?
 4. Retest the poorer ear AC with masking; find a masker on the plateau.
 5. Test BC for both ears, masking as needed.

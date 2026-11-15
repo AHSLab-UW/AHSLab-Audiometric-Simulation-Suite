@@ -21,7 +21,7 @@ the **Calibration** tone before starting.
 For [UW Shared Web Hosting](https://uwconnect.uw.edu/it?id=kb_article_view&sysparm_article=KB0034884),
 activate the hosting service first. Employee accounts use SFTP to `ovid.u.washington.edu` on port
 22 with their UW NetID. Create a dedicated directory under `public_html` and upload the **contents**
-of `dist/` into it, preserving the `assets/`, `images/`, and `audiograms/` folders. Avoid replacing
+of `dist/` into it, preserving the `assets/` and `images/` folders. Avoid replacing
 an existing site's files. Open the corresponding website directory URL with a trailing slash and
 check the logo, generated cases, sample patients, and audio. Do not upload source files or credentials.
 
@@ -43,7 +43,7 @@ After using the simulator students can:
 | --- | --- | --- |
 | Symbols drill | Draw audiogram | Give a table of thresholds; students plot all symbols and export a PNG. |
 | Hearing your own thresholds | Test hearing → Manual / Automatic | Calibration is approximate; treat results as demonstrations, not diagnostics. |
-| Find the shadow curve | Practice → Manual, *Severe unilateral hearing loss* | Test the poor ear AC unmasked, then masked. |
+| Find the shadow curve | Practice → Manual, case code `dead-ear/s0` | Test the poor ear AC unmasked, then masked. |
 | Masking plateau | Practice → Manual | Students log response vs masker level in 5–10 dB steps and sketch the plateau. |
 | Conductive loss | *Mild bilateral conductive hearing loss* | Verify air–bone gap with BC; discuss occlusion effect at low frequencies. |
 | Reliability | Practice → Manual | Students test the same condition twice and compare; relate to the variability numbers in the README. |
@@ -58,7 +58,7 @@ A simulated patient is a set of thresholds. Create one in four ways:
 
 1. **Draw audiogram**: plot the true thresholds (AC and BC, both ears), then **Export → TXT**.
 2. **Edit a CSV**: export a CSV, edit it in a spreadsheet, re-import to check it, then export a TXT.
-3. **Use the three bundled samples** in `public/audiograms/` (CSV and encrypted TXT).
+3. **Use the six synthetic samples** in the practice patient selector.
 4. **Generate in Draw audiogram**: choose **Generate case**, select a scenario, and generate its
    ground-truth marks. The displayed scenario and history can be used when preparing teaching material;
    export the marks as TXT for simulated-patient practice. This replaces any marks already plotted.
@@ -83,7 +83,8 @@ inspect the page source. For assessment, hand out TXT files only and keep your C
 ### Generated patients
 
 You do not need to write cases: *Practice audiometry → Manual → Generate a new patient* creates a patient
-from 14 scenario types (`src/model/generator.ts`). Automatic practice uses the same patient and review,
+from 15 scenario types (`src/model/generator.ts`); the rising configuration is available as a sample,
+by case code, and in Draw mode rather than the random pools. Automatic practice uses the same patient and review,
 but calculates each selected threshold on Enter and selects a 5 dB masker level on the modeled plateau
 (or a safe initial level if cross-hearing is not expected).
 It reports a masking dilemma or unavailable masker setting without recording a masked threshold.

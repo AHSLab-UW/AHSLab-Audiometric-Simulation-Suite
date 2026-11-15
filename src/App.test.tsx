@@ -2,9 +2,8 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { DEFAULT_MASKER_LEVEL, clampLevel } from './constants';
-import { encryptText } from './model/crypto';
-import { marksToCsv } from './model/csv';
 import { generateFromCode } from './model/generator';
+import { generateSamplePatient, SAMPLE_PATIENTS } from './model/samplePatients';
 import { patientLevel } from './model/listener';
 import { automaticThreshold } from './model/automaticPractice';
 
@@ -143,21 +142,36 @@ describe('automatic practice patient selection', () => {
 
   it('continues to load and plot a sample patient', async () => {
     mockDialogs();
-    const patient = generateFromCode('common/s0')!;
+    const patient = generateSamplePatient(0);
     const threshold = patientLevel(patient.marks, {
       ear: 'right', conduction: 'AC', masked: false, frequency: 250, maskerLevel: DEFAULT_MASKER_LEVEL,
     })!;
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true, text: async () => encryptText(marksToCsv(patient.marks, { responsesOnly: true })),
-    }));
     render(<App />);
     fireEvent.click(within(screen.getByRole('group', { name: 'Practice audiometry' })).getByRole('button', { name: 'Automatic' }));
+    expect(within(screen.getByRole('combobox', { name: 'Sample patient' })).getAllByRole('option')).toHaveLength(SAMPLE_PATIENTS.length);
     fireEvent.click(screen.getByRole('button', { name: 'Use sample' }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Measure threshold' })).toBeTruthy());
     fireEvent.click(screen.getByRole('button', { name: 'Measure threshold' }));
     await waitFor(() => expect(screen.getByText(
       `right AC 250 Hz: ${clampLevel(Math.round(threshold / 5) * 5)} dB HL`, { selector: 'title' },
     )).toBeTruthy());
+    expect(screen.getByRole('region', { name: 'Case history' }).textContent).toContain(patient.history);
+  });
+
+  it('starts a selected synthetic sample in manual practice and reveals its details only in review', () => {
+    mockDialogs();
+    const patient = generateSamplePatient(3);
+    render(<App />);
+    fireEvent.click(within(screen.getByRole('group', { name: 'Practice audiometry' })).getByRole('button', { name: 'Manual' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Sample patient' }), { target: { value: '3' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Use sample' }));
+    const history = screen.getByRole('region', { name: 'Case history' });
+    expect(history.textContent).toContain(patient.history);
+    expect(history.textContent).not.toContain(patient.title);
+    expect(history.textContent).not.toContain(patient.code);
+    fireEvent.click(screen.getByRole('button', { name: 'Record' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(screen.getByRole('region', { name: 'Test review' }).textContent).toContain(patient.code);
   });
 
   it('lets students choose ear, conduction, masking and frequency while selecting the masker automatically', () => {

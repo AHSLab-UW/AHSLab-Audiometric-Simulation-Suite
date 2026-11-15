@@ -6,6 +6,7 @@ import { CsvFormatError, parseCsv } from '../model/csv';
 import { DEFAULT_FILENAMES, exportResults, type ExportFormat } from '../model/files';
 import type { Mark } from '../types';
 import { generateCase, generateFromCode, newSeed, SCENARIOS, type GeneratedCase, type Selection } from '../model/generator';
+import { generateSamplePatient, SAMPLE_PATIENTS } from '../model/samplePatients';
 import { Dialog } from './Dialog';
 
 interface BaseProps {
@@ -38,12 +39,6 @@ export function CalibrationDialog({ onClose }: BaseProps) {
     </Dialog>
   );
 }
-
-const SAMPLE_PATIENTS = [
-  { file: 'MildBilateralConductiveHearingLoss', label: 'Mild bilateral conductive hearing loss' },
-  { file: 'ModToSevereBilateralConductiveHearingLoss', label: 'Moderate to severe bilateral conductive hearing loss' },
-  { file: 'SevereUnilateralHearingLoss', label: 'Severe unilateral hearing loss' },
-];
 
 const readFile = (file: File) => file.text();
 
@@ -121,7 +116,7 @@ export function PatientDialog({ onClose, onLoad, onGenerate }: PatientProps) {
   const [error, setError] = useState<string | null>(null);
   const [selection, setSelection] = useState<Selection>('common');
   const [code, setCode] = useState('');
-  const [sample, setSample] = useState(SAMPLE_PATIENTS[0].file);
+  const [sample, setSample] = useState(0);
   const input = useRef<HTMLInputElement>(null);
 
   async function load(getText: () => Promise<string>) {
@@ -137,12 +132,10 @@ export function PatientDialog({ onClose, onLoad, onGenerate }: PatientProps) {
     const file = input.current?.files?.[0];
     return file ? load(() => readFile(file)) : setError('Choose a .txt file first.');
   };
-  const loadSample = () =>
-    load(async () => {
-      const response = await fetch(`${import.meta.env.BASE_URL}audiograms/${sample}.txt`);
-      if (!response.ok) throw new Error('Sample not found');
-      return response.text();
-    });
+  const loadSample = () => {
+    onGenerate(generateSamplePatient(sample));
+    onClose();
+  };
 
   const generate = () => {
     const generated = code.trim() ? generateFromCode(code) : generateCase(selection, newSeed());
@@ -167,11 +160,12 @@ export function PatientDialog({ onClose, onLoad, onGenerate }: PatientProps) {
       <fieldset>
         <legend>Sample patient</legend>
         <div className="row">
-          <select value={sample} onChange={(e) => setSample(e.target.value)} aria-label="Sample patient">
-            {SAMPLE_PATIENTS.map((p) => <option key={p.file} value={p.file}>{p.label}</option>)}
+          <select value={sample} onChange={(e) => setSample(Number(e.target.value))} aria-label="Sample patient">
+            {SAMPLE_PATIENTS.map((p, index) => <option key={p.seed} value={index}>{p.label}</option>)}
           </select>
           <button type="button" className="btn primary" onClick={loadSample}>Use sample</button>
         </div>
+        <p>Synthetic examples inspired by broad audiogram patterns; not patient records.</p>
       </fieldset>
       <fieldset>
         <legend>Or upload an encrypted patient file (.txt)</legend>

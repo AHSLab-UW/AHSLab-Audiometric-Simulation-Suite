@@ -54,7 +54,7 @@ npm run build      # type-check and build to dist/
 - `src/model` – marks, CSV/encryption, simulated listener, automatic exercise (pure, unit-tested)
 - `src/components` – audiogram SVG, control panel, dialogs
 - `src/useAudiometer.ts` – application state and keyboard handling
-- `public/audiograms` – sample patients
+- `src/model/samplePatients.ts` – reproducible synthetic sample patients
 
 ## License
 
