@@ -5,6 +5,7 @@ import {
   clampLevel,
 } from './constants';
 import type { GeneratedCase } from './model/generator';
+import { automaticThreshold } from './model/automaticPractice';
 import { patientLevel, respond } from './model/listener';
 import { removeMark, upsertMark } from './model/marks';
 import type { Conduction, Ear, Mark, Mode } from './types';
@@ -32,6 +33,7 @@ export interface Review {
   truth: Mark[];
   student: Mark[];
   patientCase: GeneratedCase | null;
+  practiceMode?: 'manual' | 'practice-auto';
 }
 
 export function useAudiometer() {
@@ -119,6 +121,15 @@ export function useAudiometer() {
     [settings.conduction, update],
   );
 
+  const startPracticeAuto = useCallback((simulatedPatient: Mark[], generated: GeneratedCase | null = null) => {
+    setPatient(simulatedPatient);
+    setPatientCase(generated);
+    setDrawCase(null);
+    setReview(null);
+    setNotice(null);
+    setMode('practice-auto');
+  }, []);
+
   const startDraw = useCallback(() => {
     setReview(null);
     setMode('draw');
@@ -141,35 +152,35 @@ export function useAudiometer() {
   }, [settings.conduction]);
 
   const end = useCallback(() => {
-    if (patient) setReview({ truth: patient, student: marks, patientCase });
+    if (patient) setReview({ truth: patient, student: marks, patientCase, practiceMode: mode === 'practice-auto' ? 'practice-auto' : 'manual' });
     setMode('idle');
     setPatient(null);
     setPatientCase(null);
     setTone({ playing: false, heard: null });
-  }, [patient, marks, patientCase]);
+  }, [patient, marks, patientCase, mode]);
 
   const closeReview = useCallback(() => setReview(null), []);
 
-  /** Practice automatic mode: plot the simulated patient's threshold for the current condition. */
-  const plotSimulatedThreshold = useCallback(
-    (data: Mark[]) => {
-      const threshold = patientLevel(data, settings);
-      if (threshold === null) return setNotice(MESSAGES.NO_PATIENT_DATA);
-      setDrawCase(null);
-      recordMark(settings, clampLevel(Math.round(threshold / LEVEL_STEP) * LEVEL_STEP), true);
-    },
-    [recordMark, settings],
-  );
+  const measureAutomatic = useCallback(() => {
+    if (!patient) return;
+    const result = automaticThreshold(patient, settings);
+    if (result.kind === 'missing-data') return setNotice(MESSAGES.NO_PATIENT_DATA);
+    if (result.kind === 'masking-dilemma') return setNotice('Masking dilemma: no reliable masking plateau exists for this condition. No threshold was recorded.');
+    if (result.kind === 'masker-out-of-range') return setNotice('No usable 5 dB masker level is available within the simulator range. No threshold was recorded.');
+    setNotice(null);
+    update({ level: result.level, ...(settings.masked ? { maskerLevel: result.maskerLevel } : {}) });
+    recordMark({ ...settings, maskerLevel: result.maskerLevel }, result.level, result.response);
+  }, [patient, settings, update, recordMark]);
 
   const clear = useCallback(() => {
     setMarks([]);
     setDrawCase(null);
   }, []);
 
-  const active = mode === 'manual' || mode === 'draw';
-  const latest = useRef({ presentTone, record, deleteCurrent, end, stepFrequency, stepLevel, update, settings, mode });
+  const active = mode === 'manual' || mode === 'draw' || mode === 'practice-auto';
+  const latest = useRef({ presentTone, record, measureAutomatic, deleteCurrent, end, stepFrequency, stepLevel, update, settings, mode });
   useEffect(() => {
-    latest.current = { presentTone, record, deleteCurrent, end, stepFrequency, stepLevel, update, settings, mode };
+    latest.current = { presentTone, record, measureAutomatic, deleteCurrent, end, stepFrequency, stepLevel, update, settings, mode };
   });
 
   useEffect(() => {
@@ -178,14 +189,15 @@ export function useAudiometer() {
       if (isEditable(event.target) || event.ctrlKey || event.metaKey || event.altKey) return;
       const h = latest.current;
       const draw = h.mode === 'draw';
+      const automatic = h.mode === 'practice-auto';
       const actions: Record<string, (() => void) | undefined> = {
         ArrowLeft: () => h.stepFrequency(-1),
         ArrowRight: () => h.stepFrequency(1),
-        ArrowDown: () => h.stepLevel(-1),
-        ArrowUp: () => h.stepLevel(1),
-        Enter: h.record,
+        ArrowDown: automatic ? undefined : () => h.stepLevel(-1),
+        ArrowUp: automatic ? undefined : () => h.stepLevel(1),
+        Enter: automatic ? h.measureAutomatic : h.record,
         Backspace: h.deleteCurrent,
-        ' ': draw ? undefined : h.presentTone,
+        ' ': draw || automatic ? undefined : h.presentTone,
         d: h.end,
         c: draw ? () => h.update({ conduction: h.settings.conduction === 'AC' ? 'BC' : 'AC' }) : undefined,
         e: draw ? () => h.update({ ear: h.settings.ear === 'left' ? 'right' : 'left' }) : undefined,
@@ -206,7 +218,7 @@ export function useAudiometer() {
   return {
     settings, update, marks, setMarks, mode, patient, patientCase, drawCase, review, closeReview, notice, setNotice, tone, setDialogOpen,
     stepFrequency, stepLevel, stepMasker, record, recordMark, deleteCurrent, presentTone,
-    startManual, startDraw, startAuto, end, plotSimulatedThreshold, plotGeneratedCase, importMarks, clear,
+    startManual, startPracticeAuto, startDraw, startAuto, end, measureAutomatic, plotGeneratedCase, importMarks, clear,
   };
 }
 

@@ -78,8 +78,14 @@ is not graded. Use *Next patient* for another case from the same selection. You 
 (e.g. `tricky/k3x9ab`) to repeat a patient.
 
 ### Practice audiometry → Automatic
-The program plots the simulated patient's expected threshold for the current ear, conduction,
-frequency and masking settings. Use it to **check** your own manual results.
+Choose a generated patient, a sample, or an encrypted patient file, just as in manual practice.
+Set the ear, AC/BC, masking and frequency, then press **Enter** or **Measure threshold**. Repeat
+for the same patient; **D** opens the same post-test review as manual practice. The simulator
+calculates the expected threshold rather than performing repeated tone presentations. For masked
+tests it chooses an available 5 dB masker setting on the modeled plateau (or a safe initial level
+if cross-hearing is not expected); if there is a masking
+dilemma or no usable setting, it reports the problem without recording a threshold. A threshold
+above the output limit is recorded as no response.
 
 ### Draw audiogram
 No sound; plot symbols directly. Extra keys: **C** cycles AC/BC, **M** masking, **E** ear,
@@ -90,7 +96,7 @@ To plot a generated patient, choose **Generate case**, select a scenario or case
 selection. This replaces any current marks; export them first if needed. The generated ground-truth
 thresholds, scenario and case history are shown immediately. You can edit the marks, and the original
 history remains visible after **Done** until you clear or import an audiogram, begin a hearing test,
-or plot a simulated threshold in automatic practice.
+or begin automatic practice.
 
 ### Import / Export / Clear
 - **Export** as CSV (data table), TXT (encrypted; usable as a patient file) and/or PNG (image).

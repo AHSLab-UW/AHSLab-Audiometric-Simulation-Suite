@@ -12,4 +12,4 @@ export interface Mark {
   response: boolean;
 }
 
-export type Mode = 'idle' | 'auto' | 'manual' | 'draw';
+export type Mode = 'idle' | 'auto' | 'manual' | 'practice-auto' | 'draw';

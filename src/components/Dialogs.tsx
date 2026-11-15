@@ -77,8 +77,7 @@ export function ImportDialog({ onClose, onImport }: ImportProps) {
 
 interface PatientProps extends BaseProps {
   onLoad: (patient: Mark[]) => void;
-  /** When provided, the dialog offers generated practice patients. */
-  onGenerate?: (generated: GeneratedCase) => void;
+  onGenerate: (generated: GeneratedCase) => void;
 }
 
 const SELECTIONS: { value: Selection; label: string }[] = [
@@ -148,25 +147,23 @@ export function PatientDialog({ onClose, onLoad, onGenerate }: PatientProps) {
   const generate = () => {
     const generated = code.trim() ? generateFromCode(code) : generateCase(selection, newSeed());
     if (!generated) return setError('That case code is not valid. Codes look like "tricky/k3x9ab".');
-    onGenerate?.(generated);
+    onGenerate(generated);
     onClose();
   };
 
   return (
     <Dialog title="Choose a simulated patient" onClose={onClose}>
-      {onGenerate && (
-        <fieldset>
-          <legend>Generate a new patient</legend>
-          <div className="row">
-            <select value={selection} onChange={(e) => setSelection(e.target.value as Selection)} aria-label="Case type">
-              {SELECTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-            <button type="button" className="btn primary" onClick={generate}>Generate</button>
-          </div>
-          <label htmlFor="case-code">Or enter a case code to repeat a patient (optional)</label>
-          <input id="case-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="tricky/k3x9ab" />
-        </fieldset>
-      )}
+      <fieldset>
+        <legend>Generate a new patient</legend>
+        <div className="row">
+          <select value={selection} onChange={(e) => setSelection(e.target.value as Selection)} aria-label="Case type">
+            {SELECTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+          <button type="button" className="btn primary" onClick={generate}>Generate</button>
+        </div>
+        <label htmlFor="case-code">Or enter a case code to repeat a patient (optional)</label>
+        <input id="case-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="tricky/k3x9ab" />
+      </fieldset>
       <fieldset>
         <legend>Sample patient</legend>
         <div className="row">

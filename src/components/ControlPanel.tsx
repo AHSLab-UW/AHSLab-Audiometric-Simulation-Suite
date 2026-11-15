@@ -54,6 +54,7 @@ export function ControlPanel({ a, openDialog }: Props) {
   const { settings: s, mode } = a;
   const idle = mode === 'idle';
   const auto = mode === 'auto';
+  const practiceAuto = mode === 'practice-auto';
   const freqIndex = FREQUENCIES.indexOf(s.frequency as (typeof FREQUENCIES)[number]);
 
   return (
@@ -72,9 +73,9 @@ export function ControlPanel({ a, openDialog }: Props) {
       <hr />
       <Stepper label="Frequency" value={s.frequency} unit="Hz" disabled={auto} atMin={freqIndex === 0} atMax={freqIndex === FREQUENCIES.length - 1}
         onStep={a.stepFrequency} />
-      <Stepper label="Signal level" value={s.level} unit="dB HL" disabled={auto} atMin={s.level <= MIN_LEVEL} atMax={s.level >= MAX_LEVEL}
+      <Stepper label="Signal level" value={s.level} unit="dB HL" disabled={auto || practiceAuto} atMin={s.level <= MIN_LEVEL} atMax={s.level >= MAX_LEVEL}
         onStep={a.stepLevel} />
-      <Stepper label="Masker level" value={s.maskerLevel} unit="dB HL" disabled={auto} atMin={s.maskerLevel <= MIN_LEVEL}
+      <Stepper label="Masker level" value={s.maskerLevel} unit="dB HL" disabled={auto || practiceAuto} atMin={s.maskerLevel <= MIN_LEVEL}
         atMax={s.maskerLevel >= MAX_LEVEL} onStep={a.stepMasker} />
       <hr />
 
@@ -100,16 +101,16 @@ export function ControlPanel({ a, openDialog }: Props) {
         </div>
       )}
 
-      {(mode === 'manual' || mode === 'draw') && (
+      {(mode === 'manual' || mode === 'draw' || practiceAuto) && (
         <div className="stack">
-          <p className="badge">{mode === 'draw' ? 'Draw audiogram' : a.patient ? 'Simulated listener' : 'Manual test'}</p>
+          <p className="badge">{mode === 'draw' ? 'Draw audiogram' : practiceAuto ? 'Automatic simulated practice' : a.patient ? 'Simulated listener' : 'Manual test'}</p>
           {mode === 'draw' && (
             <button type="button" className="btn" onClick={() => openDialog('draw-case')}>Generate case</button>
           )}
           <ul className="hotkeys">
             {mode === 'manual' && <Hotkey keys="Space" onClick={a.presentTone}>Present tone</Hotkey>}
             <Hotkey keys="← →">Frequency</Hotkey>
-            <Hotkey keys="↑ ↓">Level (5 dB)</Hotkey>
+            {!practiceAuto && <Hotkey keys="↑ ↓">Level (5 dB)</Hotkey>}
             {mode === 'draw' && (
               <>
                 <Hotkey keys="C" onClick={() => a.update({ conduction: s.conduction === 'AC' ? 'BC' : 'AC' })}>Cycle AC/BC</Hotkey>
@@ -118,7 +119,7 @@ export function ControlPanel({ a, openDialog }: Props) {
                 <Hotkey keys="R" onClick={() => a.update({ response: !s.response })}>Cycle response</Hotkey>
               </>
             )}
-            <Hotkey keys="Enter" onClick={a.record}>Record</Hotkey>
+            <Hotkey keys="Enter" onClick={practiceAuto ? a.measureAutomatic : a.record}>{practiceAuto ? 'Measure threshold' : 'Record'}</Hotkey>
             <Hotkey keys="Backspace" onClick={a.deleteCurrent}>Delete mark</Hotkey>
             <Hotkey keys="D" onClick={a.end}>Done</Hotkey>
           </ul>

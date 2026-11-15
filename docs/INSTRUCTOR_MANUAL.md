@@ -83,7 +83,11 @@ inspect the page source. For assessment, hand out TXT files only and keep your C
 ### Generated patients
 
 You do not need to write cases: *Practice audiometry → Manual → Generate a new patient* creates a patient
-from 14 scenario types (`src/model/generator.ts`). *Common* cases are typical clinical presentations;
+from 14 scenario types (`src/model/generator.ts`). Automatic practice uses the same patient and review,
+but calculates each selected threshold on Enter and selects a 5 dB masker level on the modeled plateau
+(or a safe initial level if cross-hearing is not expected).
+It reports a masking dilemma or unavailable masker setting without recording a masked threshold.
+*Common* cases are typical clinical presentations;
 *Tricky* cases need masking judgement (bilateral mixed loss, otosclerosis with a Carhart notch, asymmetric
 sensorineural loss, unilateral profound loss with a shadow curve, conductive loss opposite a sensorineural
 loss, and a bilateral large air-bone gap where the masking plateau closes). Each case is built from a

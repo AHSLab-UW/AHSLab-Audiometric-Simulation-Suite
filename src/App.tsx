@@ -20,7 +20,8 @@ export function App() {
     if (!a.review?.patientCase) return;
     const next = generateCase(a.review.patientCase.selection);
     a.setMarks([]);
-    a.startManual(next.marks, next);
+    if (a.review.practiceMode === 'practice-auto') a.startPracticeAuto(next.marks, next);
+    else a.startManual(next.marks, next);
   };
 
   const openDialog = (name: DialogName) => {
@@ -72,7 +73,7 @@ export function App() {
               onDone={a.end}
             />
           )}
-          {mode === 'manual' && a.patientCase && <CaseHistory patientCase={a.patientCase} />}
+          {(mode === 'manual' || mode === 'practice-auto') && a.patientCase && <CaseHistory patientCase={a.patientCase} />}
           {(mode === 'draw' || (mode === 'idle' && !a.review)) && a.drawCase && (
             <CaseHistory patientCase={a.drawCase} showScenario />
           )}
@@ -117,7 +118,7 @@ export function App() {
       {dialog === 'calibration' && <CalibrationDialog onClose={closeDialog} />}
       {dialog === 'import' && <ImportDialog onClose={closeDialog} onImport={a.importMarks} />}
       {dialog === 'export' && <ExportDialog onClose={closeDialog} marks={a.marks} getGraph={() => graphRef.current} />}
-      {dialog === 'patient-auto' && <PatientDialog onClose={closeDialog} onLoad={a.plotSimulatedThreshold} />}
+      {dialog === 'patient-auto' && <PatientDialog onClose={closeDialog} onLoad={a.startPracticeAuto} onGenerate={(c) => { a.setMarks([]); a.startPracticeAuto(c.marks, c); }} />}
       {dialog === 'patient-manual' && <PatientDialog onClose={closeDialog} onLoad={(p) => a.startManual(p)} onGenerate={(c) => { a.setMarks([]); a.startManual(c.marks, c); }} />}
       {dialog === 'draw-case' && <DrawCaseDialog onClose={closeDialog} onGenerate={a.plotGeneratedCase} hasMarks={a.marks.length > 0} />}
     </>

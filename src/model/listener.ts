@@ -27,7 +27,7 @@ const OCCLUSION_EFFECT_LEVEL = 60;
 
 const otherEar = (ear: Ear): Ear => (ear === 'left' ? 'right' : 'left');
 
-function occlusionEffect(frequency: number, level: number) {
+export function occlusionEffect(frequency: number, level: number) {
   return Math.ceil(((OCCLUSION_EFFECT[frequency] ?? 0) * Math.max(0, level)) / OCCLUSION_EFFECT_LEVEL);
 }
 
