@@ -114,6 +114,10 @@ export function App() {
       </main>
 
       <footer className="footer">
+        <a href="https://github.com/AHSLab-UW/AHSLab-Audiometric-Simulation-Suite/blob/master/docs/STUDENT_MANUAL.md" target="_blank" rel="noreferrer">Student manual</a>
+        {' · '}
+        <a href="https://github.com/AHSLab-UW/AHSLab-Audiometric-Simulation-Suite/blob/master/docs/INSTRUCTOR_MANUAL.md" target="_blank" rel="noreferrer">Instructor manual</a>
+        {' · '}
         <a href="https://github.com/AHSLab-UW/AHSLab-Audiometric-Simulation-Suite">GitHub repository</a>
       </footer>
 
